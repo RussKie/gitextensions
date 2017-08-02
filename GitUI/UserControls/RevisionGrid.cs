@@ -64,7 +64,7 @@ namespace GitUI
         private Brush _selectedItemBrush;
         private SolidBrush _authoredRevisionsBrush;
         private Brush _filledItemBrush; // disposable brush
-
+        private readonly IGravatarService _gravatarService = new GravatarService();
         private readonly FormRevisionFilter _revisionFilter = new FormRevisionFilter();
 
         private RefsFiltringOptions _refsOptions = RefsFiltringOptions.All | RefsFiltringOptions.Boundary;
@@ -1440,7 +1440,7 @@ namespace GitUI
             public Font RefsFont;
         }
 
-        private void RevisionsCellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        private async void RevisionsCellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
             // If our loading state has changed since the last paint, update it.
             if (Loading != null)
@@ -1687,18 +1687,11 @@ namespace GitUI
                         int gravatarTop = e.CellBounds.Top + textHeight + 6;
                         int gravatarLeft = e.CellBounds.Left + baseOffset + 2;
 
-
-                        Image gravatar = Gravatar.GravatarService.GetImageFromCache(revision.AuthorEmail + gravatarSize.ToString() + ".png", revision.AuthorEmail, AppSettings.AuthorImageCacheDays, gravatarSize, AppSettings.GravatarCachePath, FallBackService.MonsterId);
-
-                        if (gravatar == null && !string.IsNullOrEmpty(revision.AuthorEmail))
-                        {
-                            ThreadPool.QueueUserWorkItem(o =>
-                            Gravatar.GravatarService.LoadCachedImage(revision.AuthorEmail + gravatarSize.ToString() + ".png", revision.AuthorEmail, null, AppSettings.AuthorImageCacheDays, gravatarSize, AppSettings.GravatarCachePath, RefreshGravatar, FallBackService.MonsterId));
-                        }
-
+                        var gravatar = await _gravatarService.GetAvatarAsync(revision.AuthorEmail, gravatarSize, DefaultImageType.MonsterId);
                         if (gravatar != null)
+                        {
                             e.Graphics.DrawImage(gravatar, gravatarLeft + 1, gravatarTop + 1, gravatarSize, gravatarSize);
-
+                        }
                         e.Graphics.DrawRectangle(Pens.Black, gravatarLeft, gravatarTop, gravatarSize + 1, gravatarSize + 1);
 
                         string authorText;

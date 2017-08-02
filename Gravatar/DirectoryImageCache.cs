@@ -1,124 +1,143 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.IO.Abstractions;
+using System.Threading.Tasks;
 
 namespace Gravatar
 {
-    internal class DirectoryImageCache : IImageCache
+    public interface IImageCache
     {
-        private static Object padlock = new Object();
+        Task AddImageAsync(string imageFileName, Stream imageStream);
+        Task<Image> GetImageAsync(string imageFileName, Bitmap defaultBitmap);
+        Task RemoveAllAsync();
+        Task RemoveImageAsync(string imageFileName);
+    }
 
-        string cachePath;
-        public string Path { get { return cachePath; } }
+    public class DirectoryImageCache : IImageCache
+    {
+        private const int DefaultCacheDays = 30;
+        private readonly string _cachePath;
+        private readonly int _cacheDays;
+        private readonly IFileSystem _fileSystem;
 
-        public DirectoryImageCache(string cachePath)
+
+        public DirectoryImageCache(string cachePath, int cacheDays, IFileSystem fileSystem)
         {
-            this.cachePath = cachePath;
+            _cachePath = cachePath;
+            _fileSystem = fileSystem;
+            _cacheDays = cacheDays;
+            if (_cacheDays < 1)
+            {
+                _cacheDays = DefaultCacheDays;
+            }
         }
 
-        public void ClearCache()
+        public DirectoryImageCache(string cachePath, int cacheDays)
+            : this(cachePath, cacheDays, new FileSystem())
         {
-            lock (padlock)
-            {
-                if (!Directory.Exists(cachePath))
-                    return;
+        }
 
-                foreach (string file in Directory.GetFiles(cachePath))
+
+        public async Task AddImageAsync(string imageFileName, Stream imageStream)
+        {
+            if (!_fileSystem.Directory.Exists(_cachePath))
+            {
+                _fileSystem.Directory.CreateDirectory(_cachePath);
+            }
+
+            try
+            {
+                string file = Path.Combine(_cachePath, imageFileName);
+                using (var output = new FileStream(file, FileMode.Create))
                 {
-                    try
+                    byte[] buffer = new byte[1024];
+                    int read;
+
+                    if (imageStream == null)
                     {
-                        File.Delete(file);
+                        return;
                     }
-                    catch
-                    { }
-                }
-            }
-        }
-
-        public void DeleteCachedFile(string imageFileName)
-        {
-            lock (padlock)
-            {
-                if (File.Exists(cachePath + imageFileName))
-                {
-                    try
+                    while ((read = await imageStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
                     {
-
-                        File.Delete(cachePath + imageFileName);
-                    }
-                    catch
-                    { }
-                }
-            }
-        }
-
-        public bool FileIsCached(string imageFileName)
-        {
-            lock (padlock)
-            {
-                return File.Exists(cachePath + imageFileName);
-            }
-        }
-
-        public bool FileIsExpired(string imageFileName, int cacheDays)
-        {
-            var file = new FileInfo(cachePath + imageFileName);
-            if (file.Exists)
-            {
-                if (file.LastWriteTime < DateTime.Now.AddDays(-cacheDays))
-                    return true;
-            }
-
-            return false;
-        }
-
-        public Image LoadImageFromCache(string imageFileName, Bitmap defaultBitmap)
-        {
-            lock (padlock)
-            {
-                try
-                {
-                    if (!File.Exists(cachePath + imageFileName))
-                        return null;
-
-                    using (Stream fileStream = new FileStream(cachePath + imageFileName, FileMode.Open, FileAccess.Read))
-                    {
-                        return Image.FromStream(fileStream);
+                        output.Write(buffer, 0, read);
                     }
                 }
-                catch
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+
+        public async Task<Image> GetImageAsync(string imageFileName, Bitmap defaultBitmap)
+        {
+            string file = Path.Combine(_cachePath, imageFileName);
+            try
+            {
+                if (HasExpired(file))
                 {
                     return null;
                 }
+                return await Task.Run(() =>
+                {
+                    using (Stream fileStream = new FileStream(file, FileMode.Open, FileAccess.Read))
+                    {
+                        return Image.FromStream(fileStream);
+                    }
+                });
+            }
+            catch
+            {
+                return null;
             }
         }
 
-        public void CacheImage(string imageFileName, Stream imageStream)
+        public async Task RemoveAllAsync()
         {
-            if (!Directory.Exists(cachePath))
-                Directory.CreateDirectory(cachePath);
-
-            lock (padlock)
+            if (!_fileSystem.Directory.Exists(_cachePath))
+            {
+                return;
+            }
+            foreach (var file in _fileSystem.Directory.GetFiles(_cachePath))
             {
                 try
                 {
-                    using (var output = new FileStream(cachePath + imageFileName, FileMode.Create))
-                    {
-                        byte[] buffer = new byte[1024];
-                        int read;
-
-                        if (imageStream != null)
-                            while ((read = imageStream.Read(buffer, 0, buffer.Length)) > 0)
-                            {
-                                output.Write(buffer, 0, read);
-                            }
-                    }
+                    await Task.Run(() => _fileSystem.File.Delete(file));
                 }
                 catch
                 {
+                    // do nothing
                 }
             }
         }
 
+        public async Task RemoveImageAsync(string imageFileName)
+        {
+            string file = Path.Combine(_cachePath, imageFileName);
+            if (!_fileSystem.File.Exists(file))
+            {
+                return;
+            }
+            try
+            {
+                await Task.Run(() => _fileSystem.File.Delete(file));
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+
+
+        private bool HasExpired(string fileName)
+        {
+            var file = _fileSystem.FileInfo.FromFileName(fileName);
+            if (!file.Exists)
+            {
+                return true;
+            }
+            return file.LastWriteTime < DateTime.Now.AddDays(-_cacheDays);
+        }
     }
 }

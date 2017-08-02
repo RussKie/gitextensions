@@ -484,8 +484,8 @@ namespace GitCommands
 
         public static int AuthorImageSize
         {
-            get { return GetInt("authorimagesize", 80); }
-            set { SetInt("authorimagesize", value); }
+            get { return 80; }
+            set { /* deprecated */ }
         }
 
         public static int AuthorImageCacheDays
@@ -914,7 +914,7 @@ namespace GitCommands
             set { SetInt("revisiongridquicksearchtimeout", value); }
         }
 
-        public static string GravatarFallbackService
+        public static string GravatarDefaultImageType
         {
             get { return GetString("gravatarfallbackservice", "Identicon"); }
             set { SetString("gravatarfallbackservice", value); }

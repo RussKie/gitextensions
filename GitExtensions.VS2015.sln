@@ -129,6 +129,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConEmuWinForms", "Externals
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppVeyorIntegration", "Plugins\BuildServerIntegration\AppVeyorIntegration\AppVeyorIntegration.csproj", "{39228D7F-9239-4A2D-8A6F-4D0F7DEB9178}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{325C4FE4-E07C-42D9-8C22-E77264FCA49E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GravatarTests", "UnitTests\GravatarTests\GravatarTests.csproj", "{93CE3A27-5A63-4436-8C64-CBCA75322C5B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -589,6 +593,18 @@ Global
 		{39228D7F-9239-4A2D-8A6F-4D0F7DEB9178}.ReleaseTC|Any CPU.Build.0 = Release|Any CPU
 		{39228D7F-9239-4A2D-8A6F-4D0F7DEB9178}.ReleaseTC|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{39228D7F-9239-4A2D-8A6F-4D0F7DEB9178}.ReleaseTC|Mixed Platforms.Build.0 = Release|Any CPU
+		{93CE3A27-5A63-4436-8C64-CBCA75322C5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93CE3A27-5A63-4436-8C64-CBCA75322C5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93CE3A27-5A63-4436-8C64-CBCA75322C5B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{93CE3A27-5A63-4436-8C64-CBCA75322C5B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{93CE3A27-5A63-4436-8C64-CBCA75322C5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93CE3A27-5A63-4436-8C64-CBCA75322C5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93CE3A27-5A63-4436-8C64-CBCA75322C5B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{93CE3A27-5A63-4436-8C64-CBCA75322C5B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{93CE3A27-5A63-4436-8C64-CBCA75322C5B}.ReleaseTC|Any CPU.ActiveCfg = Release|Any CPU
+		{93CE3A27-5A63-4436-8C64-CBCA75322C5B}.ReleaseTC|Any CPU.Build.0 = Release|Any CPU
+		{93CE3A27-5A63-4436-8C64-CBCA75322C5B}.ReleaseTC|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{93CE3A27-5A63-4436-8C64-CBCA75322C5B}.ReleaseTC|Mixed Platforms.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -624,5 +640,6 @@ Global
 		{C0A7B025-B7EE-477A-BAC7-A6365E7BD893} = {D3E0C080-5AC9-45DD-91A5-4933956C3560}
 		{1DC7D403-484B-43B4-B017-1356397A32CB} = {0E859634-B3DF-46AC-A73C-D49734F19D6A}
 		{39228D7F-9239-4A2D-8A6F-4D0F7DEB9178} = {F1B97F5D-CA42-4280-94A1-CE412BEA20DF}
+		{93CE3A27-5A63-4436-8C64-CBCA75322C5B} = {325C4FE4-E07C-42D9-8C22-E77264FCA49E}
 	EndGlobalSection
 EndGlobal

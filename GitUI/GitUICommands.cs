@@ -22,6 +22,9 @@ namespace GitUI
     /// <summary>Contains methods to invoke GitEx forms, dialogs, etc.</summary>
     public sealed class GitUICommands : IGitUICommands
     {
+        private readonly IGravatarService _gravatarService = new GravatarService();
+
+
         public GitUICommands(GitModule module)
         {
             Module = module;
@@ -213,20 +216,20 @@ namespace GitUI
             return true;
         }
 
+        private DefaultImageType GetDefaultImageType()
+        {
+            DefaultImageType defaultImageType;
+            if (!Enum.TryParse(Settings.GravatarDefaultImageType, true, out defaultImageType))
+            {
+                Settings.GravatarDefaultImageType = DefaultImageType.None.ToString();
+                defaultImageType = DefaultImageType.None;
+            }
+            return defaultImageType;
+        }
+
         public void CacheAvatar(string email)
         {
-            FallBackService gravatarFallBack = FallBackService.Identicon;
-            try
-            {
-                gravatarFallBack =
-                    (FallBackService)Enum.Parse(typeof(FallBackService), Settings.GravatarFallbackService);
-            }
-            catch
-            {
-                Settings.GravatarFallbackService = gravatarFallBack.ToString();
-            }
-            GravatarService.CacheImage(email + ".png", email, Settings.AuthorImageSize,
-                gravatarFallBack);
+            _gravatarService.GetAvatarAsync(email, Settings.AuthorImageSize, GetDefaultImageType());
         }
 
         public Icon FormIcon { get { return GitExtensionsForm.ApplicationIcon; } }
