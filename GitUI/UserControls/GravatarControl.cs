@@ -33,7 +33,7 @@ namespace GitUI
         public string Email { get; private set; }
 
 
-        public async void LoadImage(string email)
+        public void LoadImage(string email)
         {
             if (string.IsNullOrEmpty(email))
             {
@@ -42,7 +42,7 @@ namespace GitUI
             }
 
             Email = email;
-            await UpdateGravatar();
+            UpdateGravatar();
         }
 
 
@@ -63,7 +63,7 @@ namespace GitUI
             _gravatarImg.Refresh();
         }
 
-        private async Task UpdateGravatar()
+        private async void UpdateGravatar()
         {
             // resize our control (I'm not using AutoSize for a reason)
             Size = new Size(Settings.AuthorImageSize, Settings.AuthorImageSize);
@@ -83,7 +83,7 @@ namespace GitUI
         private async void RefreshToolStripMenuItemClick(object sender, EventArgs e)
         {
             await _gravatarService.RemoveAvatarAsync(Email);
-            await UpdateGravatar();
+            UpdateGravatar();
         }
 
         private void RegisterAtGravatarcomToolStripMenuItemClick(object sender, EventArgs e)
@@ -101,7 +101,7 @@ namespace GitUI
         private async void ClearImagecacheToolStripMenuItemClick(object sender, EventArgs e)
         {
             await _gravatarService.ClearCacheAsync();
-            await UpdateGravatar();
+            UpdateGravatar();
         }
 
         private async void noImageService_Click(object sender, EventArgs e)
@@ -113,7 +113,7 @@ namespace GitUI
             }
             Settings.GravatarDefaultImageType = ((DefaultImageType)tag).ToString();
             await _gravatarService.ClearCacheAsync();
-            await UpdateGravatar();
+            UpdateGravatar();
         }
 
         private void noImageGeneratorToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
