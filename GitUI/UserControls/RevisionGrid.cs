@@ -1446,7 +1446,7 @@ namespace GitUI
             public Font RefsFont;
         }
 
-        private async void RevisionsCellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        private void RevisionsCellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
             // If our loading state has changed since the last paint, update it.
             if (Loading != null)
@@ -1693,12 +1693,12 @@ namespace GitUI
                         int gravatarTop = e.CellBounds.Top + textHeight + 6;
                         int gravatarLeft = e.CellBounds.Left + baseOffset + 2;
 
-                        var gravatar = _avatarCache.GetImage($"{revision.AuthorEmail}.png", null);
+                        var gravatar = _gravatarService.GetImage(revision.AuthorEmail, null);
                         if (gravatar == null)
                         {
                             gravatar = Resources.User;
                             // kick off download operation, will likely display the avatar during the next round of repaint
-                            await _gravatarService.GetAvatarAsync(revision.AuthorEmail, AppSettings.AuthorImageSize, AppSettings.GravatarDefaultImageType)
+                            _gravatarService.GetAvatarAsync(revision.AuthorEmail, AppSettings.AuthorImageSize, AppSettings.GravatarDefaultImageType)
                                 .ContinueWith(t => this.InvokeAsync(() =>
                                 {
                                     Revisions.InvalidateCell(e.ColumnIndex, e.RowIndex);
