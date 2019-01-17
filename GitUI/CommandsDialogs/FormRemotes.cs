@@ -369,7 +369,8 @@ Inactive remote is completely invisible to git.");
 
                 if (!string.IsNullOrEmpty(result.UserMessage))
                 {
-                    MessageBox.Show(this, result.UserMessage, _gitMessage.Text);
+                    MessageBox.Show(this, result.UserMessage, _gitMessage.Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return;
                 }
                 else
                 {

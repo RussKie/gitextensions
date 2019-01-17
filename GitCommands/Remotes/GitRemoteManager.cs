@@ -274,8 +274,26 @@ namespace GitCommands.Remotes
             bool remoteDisabled = false;
             if (creatingNew)
             {
-                output = module.AddRemote(remoteName, remoteUrl);
-                updateRemoteRequired = true;
+                if (GetEnabledRemoteNames().FirstOrDefault(r => r == remoteName) != null)
+                {
+                    return new GitRemoteSaveResult($"An active remote named \"{remoteName}\" already exists.", false);
+                }
+                else if (GetDisabledRemoteNames().FirstOrDefault(r => r == remoteName) != null)
+                {
+                    return new GitRemoteSaveResult($"An inactive remote named \"{remoteName}\" already exists.", false);
+                }
+                else
+                {
+                    output = module.AddRemote(remoteName, remoteUrl);
+
+                    // If output was returned, something went wrong
+                    if (output.Length > 0)
+                    {
+                        return new GitRemoteSaveResult(output, false);
+                    }
+
+                    updateRemoteRequired = true;
+                }
             }
             else
             {
