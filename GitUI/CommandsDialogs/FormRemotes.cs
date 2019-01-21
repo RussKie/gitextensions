@@ -82,6 +82,12 @@ Inactive remote is completely invisible to git.");
 
         private readonly TranslationString _lvgDisabledHeader =
             new TranslationString("Inactive");
+
+        private readonly TranslationString _enabledRemoteAlreadyExists =
+            new TranslationString("An active remote named \"{0}\" already exists.");
+
+        private readonly TranslationString _disabledRemoteAlreadyExists =
+            new TranslationString("An inactive remote named \"{0}\" already exists.");
         #endregion
 
         [Obsolete("For VS designer and translation test only. Do not remove.")]
@@ -358,6 +364,18 @@ Inactive remote is completely invisible to git.");
                     (!string.IsNullOrEmpty(remotePushUrl) && remotePushUrl.Equals(remoteUrl, StringComparison.OrdinalIgnoreCase)))
                 {
                     checkBoxSepPushUrl.Checked = false;
+                }
+
+                if (_remoteManager.EnabledRemoteExists(remote))
+                {
+                    MessageBox.Show(this, string.Format(_enabledRemoteAlreadyExists.Text, remote), _gitMessage.Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return;
+                }
+
+                if (_remoteManager.DisabledRemoteExists(remote))
+                {
+                    MessageBox.Show(this, string.Format(_disabledRemoteAlreadyExists.Text, remote), _gitMessage.Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return;
                 }
 
                 // update all other remote properties
