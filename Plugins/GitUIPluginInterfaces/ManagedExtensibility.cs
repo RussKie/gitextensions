@@ -117,6 +117,11 @@ namespace GitUIPluginInterfaces
             GetOrCreateLazyExportProvider(applicationDataFolder);
         }
 
+        public static Lazy<T> GetExport<T>()
+        {
+            return GetOrCreateLazyExportProvider(null).Value.GetExport<T>();
+        }
+
         public static IEnumerable<Lazy<T>> GetExports<T>()
         {
             return GetOrCreateLazyExportProvider(null).Value.GetExports<T>();

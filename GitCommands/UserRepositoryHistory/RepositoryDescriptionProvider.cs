@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using GitCommands.Git;
@@ -18,16 +19,14 @@ namespace GitCommands.UserRepositoryHistory
         string Get(string repositoryDir);
     }
 
+    [Export(typeof(IRepositoryDescriptionProvider))]
     public sealed class RepositoryDescriptionProvider : IRepositoryDescriptionProvider
     {
         private const string RepositoryDescriptionFileName = "description";
         private const string DefaultDescription = "Unnamed repository; edit this file 'description' to name the repository.";
-        private readonly IGitDirectoryResolver _gitDirectoryResolver;
 
-        public RepositoryDescriptionProvider(IGitDirectoryResolver gitDirectoryResolver)
-        {
-            _gitDirectoryResolver = gitDirectoryResolver;
-        }
+        [Import(typeof(IGitDirectoryResolver))]
+        private readonly IGitDirectoryResolver _gitDirectoryResolver;
 
         /// <summary>
         /// Returns a short name for repository.

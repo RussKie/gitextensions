@@ -205,8 +205,16 @@ namespace GitUI.CommandsDialogs
             revisionDiff.Bind(RevisionGrid, fileTree, () => RequestRefresh());
             fileTree.Bind(() => RequestRefresh());
 
-            var repositoryDescriptionProvider = new RepositoryDescriptionProvider(new GitDirectoryResolver());
-            _appTitleGenerator = new AppTitleGenerator(repositoryDescriptionProvider);
+            ////var repositoryDescriptionProvider = new RepositoryDescriptionProvider(); //// (new GitDirectoryResolver());
+
+            ////var repositoryDescriptionProvider1 = ManagedExtensibility.GetExports<IRepositoryDescriptionProvider>();
+            ////var eee = ManagedExtensibility.GetExports<IRepositoryDescriptionProvider>().Select(lazy => lazy.Value).ToArray();
+
+            //// _appTitleGenerator = new AppTitleGenerator(repositoryDescriptionProvider);
+
+            var repositoryDescriptionProvider = ManagedExtensibility.GetExport<IRepositoryDescriptionProvider>().Value;
+            _appTitleGenerator = ManagedExtensibility.GetExport<IAppTitleGenerator>().Value;
+
             _windowsJumpListManager = new WindowsJumpListManager(repositoryDescriptionProvider);
 
             InitCountArtificial(out _gitStatusMonitor);
@@ -873,6 +881,8 @@ namespace GitUI.CommandsDialogs
 
         private void ShowDashboard()
         {
+            // ManagedExtensibility.GetExports <
+
             toolPanel.SuspendLayout();
             toolPanel.TopToolStripPanelVisible = false;
             toolPanel.BottomToolStripPanelVisible = false;

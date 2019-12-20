@@ -1,3 +1,4 @@
+using System.ComponentModel.Composition;
 using GitCommands.UserRepositoryHistory;
 using GitExtUtils;
 using GitUIPluginInterfaces;
@@ -21,18 +22,15 @@ namespace GitCommands
     /// <summary>
     /// Generates application title.
     /// </summary>
+    [Export(typeof(IAppTitleGenerator))]
     public sealed class AppTitleGenerator : IAppTitleGenerator
     {
 #if DEBUG
         private static string? _extraInfo;
 #endif
 
+        [Import(typeof(IRepositoryDescriptionProvider))]
         private readonly IRepositoryDescriptionProvider _description;
-
-        public AppTitleGenerator(IRepositoryDescriptionProvider description)
-        {
-            _description = description;
-        }
 
         /// <summary>
         /// Generates main window title according to given repository.
