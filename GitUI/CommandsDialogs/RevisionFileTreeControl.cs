@@ -14,12 +14,13 @@ using GitExtUtils.GitUI;
 using GitUI.CommandsDialogs.BrowseDialog;
 using GitUI.Hotkey;
 using GitUI.Properties;
+using GitUI.Script;
 using JetBrains.Annotations;
 using ResourceManager;
 
 namespace GitUI.CommandsDialogs
 {
-    public partial class RevisionFileTreeControl : GitModuleControl
+    public partial class RevisionFileTreeControl : GitModuleControl, IScriptHostControl
     {
         private readonly TranslationString _resetFileCaption = new TranslationString("Reset");
         private readonly TranslationString _resetFileText = new TranslationString("Are you sure you want to reset this file or directory?");
@@ -52,6 +53,7 @@ See the changes in the commit form.");
         private readonly IFullPathResolver _fullPathResolver;
         private readonly IFindFilePredicateProvider _findFilePredicateProvider;
         [CanBeNull] private GitRevision _revision;
+        private bool _settingsLoaded;
 
         public RevisionFileTreeControl()
         {
@@ -299,16 +301,16 @@ See the changes in the commit form.");
                 switch (gitItem.ObjectType)
                 {
                     case GitObjectType.Blob:
-                    {
-                        UICommands.StartFileHistoryDialog(this, gitItem.FileName, _revision);
-                        break;
-                    }
+                        {
+                            UICommands.StartFileHistoryDialog(this, gitItem.FileName, _revision);
+                            break;
+                        }
 
                     case GitObjectType.Commit:
-                    {
-                        SpawnCommitBrowser(gitItem);
-                        break;
-                    }
+                        {
+                            SpawnCommitBrowser(gitItem);
+                            break;
+                        }
                 }
             }
         }
@@ -366,22 +368,22 @@ See the changes in the commit form.");
                 {
                     case GitObjectType.Blob:
                     case GitObjectType.Commit:
-                    {
-                        var file = new GitItemStatus
                         {
-                            IsTracked = true,
-                            Name = gitItem.Name,
-                            TreeGuid = gitItem.ObjectId,
-                            IsSubmodule = gitItem.ObjectType == GitObjectType.Commit
-                        };
+                            var file = new GitItemStatus
+                            {
+                                IsTracked = true,
+                                Name = gitItem.Name,
+                                TreeGuid = gitItem.ObjectId,
+                                IsSubmodule = gitItem.ObjectType == GitObjectType.Commit
+                            };
 
-                        return FileText.ViewGitItemAsync(file);
-                    }
+                            return FileText.ViewGitItemAsync(file);
+                        }
 
                     default:
-                    {
-                        return FileText.ViewTextAsync("", "");
-                    }
+                        {
+                            return FileText.ViewTextAsync("", "");
+                        }
                 }
             }
         }
@@ -545,6 +547,32 @@ See the changes in the commit form.");
 
         private void FileTreeContextMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            var isWorkingDirectory = false;
+            if (_revision != null)
+            {
+                isWorkingDirectory = _revision.ObjectId.IsArtificial || _revision.ObjectId == Module.GetCurrentCheckout();
+            }
+
+            if (isWorkingDirectory)
+            {
+                FileTreeContextMenu.AppendUserScripts(runScriptToolStripMenuItem,
+                    (s, _) =>
+                    {
+                        if (_settingsLoaded == false)
+                        {
+                            new FormSettings(UICommands).LoadSettings();
+                            _settingsLoaded = true;
+                        }
+
+                        // have no knowledge of the revision grid, so can't refresh...
+                        ScriptRunner.RunScript(this, Module, sender.ToString(), UICommands, null);
+                    });
+            }
+            else
+            {
+                runScriptToolStripMenuItem.Visible = false;
+            }
+
             var gitItem = tvGitTree.SelectedNode?.Tag as GitItem;
             var itemSelected = gitItem != null;
             var isFile = itemSelected && gitItem.ObjectType == GitObjectType.Blob;
@@ -790,5 +818,21 @@ See the changes in the commit form.");
 
             return _revisionFileTreeController.SelectFileOrFolder(tvGitTree, filePath.Substring(Module.WorkingDir.Length));
         }
+
+        #region IScriptHostControl
+
+        GitRevision IScriptHostControl.GetCurrentRevision()
+            => _revision;
+
+        GitRevision IScriptHostControl.GetLatestSelectedRevision()
+            => _revision;
+
+        IReadOnlyList<GitRevision> IScriptHostControl.GetSelectedRevisions()
+            => new[] { _revision };
+
+        Point IScriptHostControl.GetQuickItemSelectorLocation()
+            => Point.Empty;
+
+        #endregion
     }
 }
