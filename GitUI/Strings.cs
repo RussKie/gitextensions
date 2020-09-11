@@ -77,6 +77,9 @@ namespace GitUI
 - For multiple selected commits (up to four), show the difference for all the first selected with the last selected commit.
 - For more than four selected commits, show the difference from the first to the last selected commit.");
 
+        private readonly TranslationString _rotHidden = new TranslationString("[ Hidden ]");
+        private readonly TranslationString _rotInactive = new TranslationString("[ Inactive ]");
+
         // public only because of FormTranslate
         public Strings()
         {
@@ -160,5 +163,8 @@ namespace GitUI
         public static string DiffSelectedWithRememberedFile => _instance.Value._diffSelectedWithRememberedFile.Text;
         public static string ShowDiffForAllParentsText => _instance.Value._showDiffForAllParentsText.Text;
         public static string ShowDiffForAllParentsTooltip => _instance.Value._showDiffForAllParentsTooltip.Text;
+
+        public static string Hidden => _instance.Value._rotHidden.Text;
+        public static string Inactive => _instance.Value._rotInactive.Text;
     }
 }

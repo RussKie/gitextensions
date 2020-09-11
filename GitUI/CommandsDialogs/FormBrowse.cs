@@ -188,7 +188,7 @@ namespace GitUI.CommandsDialogs
             _filterBranchHelper = new FilterBranchHelper(toolStripBranchFilterComboBox, toolStripBranchFilterDropDownButton, RevisionGrid);
             _aheadBehindDataProvider = GitVersion.Current.SupportAheadBehindData ? new AheadBehindDataProvider(() => Module.GitExecutable) : null;
 
-            repoObjectsTree.Initialize(_aheadBehindDataProvider, _filterBranchHelper);
+            repoObjectsTree.Initialize(_aheadBehindDataProvider, _filterBranchHelper, RevisionGrid);
             toolStripBranchFilterComboBox.DropDown += toolStripBranches_DropDown_ResizeDropDownWidth;
             revisionDiff.Bind(RevisionGrid, fileTree);
 
@@ -208,6 +208,22 @@ namespace GitUI.CommandsDialogs
             {
                 _selectedRevisionUpdatedTargets = UpdateTargets.None;
                 RefreshSelection();
+            };
+            RevisionGrid.RevisionGraphLoaded += (sender, e) =>
+            {
+                if (/* The event is not originated from the revision grid */sender is null
+                    || /* the left panel is hidden */ MainSplitContainer.Panel1Collapsed)
+                {
+                    return;
+                }
+
+                // Apply filtering when:
+                // 1. don't show reflogs, and
+                // 2. one of the following
+                //      a) show the current branch only, or
+                //      b) filter on specific branch
+                bool isFiltering = !AppSettings.ShowReflogReferences && (AppSettings.ShowCurrentBranchOnly || AppSettings.BranchFilterEnabled);
+                repoObjectsTree.RefreshRefs(isFiltering);
             };
 
             _filterRevisionsHelper.SetFilter(filter);

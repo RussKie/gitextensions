@@ -9395,6 +9395,14 @@ Select this commit to populate the full message.</source>
         <source>Remove the selected invalid repository</source>
         <target />
       </trans-unit>
+      <trans-unit id="_rotHidden.Text">
+        <source>[ Hidden ]</source>
+        <target />
+      </trans-unit>
+      <trans-unit id="_rotInactive.Text">
+        <source>[ Inactive ]</source>
+        <target />
+      </trans-unit>
       <trans-unit id="_searchingFor.Text">
         <source>Searching for: </source>
         <target />
