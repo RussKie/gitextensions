@@ -229,7 +229,7 @@ namespace GitUI.BranchTreePanel
                 }
                 else
                 {
-                    if (ParentPath == _remote.Name)
+                    if (_remote.Name == ParentPath)
                     {
                         parentPath = $"{_remote.Name}/{Strings.Hidden}";
                     }
