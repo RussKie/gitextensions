@@ -40,7 +40,7 @@ namespace GitCommands
                 _configByCommand.AddOrUpdate(
                     command,
                     addValueFactory: _ => new[] { configItem },
-                    updateValueFactory: (_, items) => items.Append(configItem));
+                    updateValueFactory: (_, items) => items.AppendTo(configItem));
             }
         }
 
