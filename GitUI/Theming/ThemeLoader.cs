@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
-//using ExCSS;
+using System.Linq;
+using ExCSS;
+using GitCommands;
 using GitExtUtils.GitUI.Theming;
+using Color = System.Drawing.Color;
 
 namespace GitUI.Theming
 {
@@ -15,13 +19,13 @@ namespace GitUI.Theming
         private const string ClassSelector = ".";
         private const string ColorProperty = "color";
 
-        ////private readonly StylesheetParser _parser;
+        private readonly StylesheetParser _parser;
         private readonly IThemeCssUrlResolver _urlResolver;
         private readonly IThemeFileReader _themeFileReader;
 
         public ThemeLoader(IThemeCssUrlResolver urlResolver, IThemeFileReader themeFileReader)
         {
-            ////_parser = new StylesheetParser();
+            _parser = new StylesheetParser();
             _urlResolver = urlResolver;
             _themeFileReader = themeFileReader;
         }
@@ -33,18 +37,17 @@ namespace GitUI.Theming
             return new Theme(themeColors.AppColors, themeColors.SysColors, themeId);
         }
 
-        /*
         private void LoadThemeColors(string themeFileName, string[] cssImportChain, in IReadOnlyList<string> allowedClasses, ThemeColors themeColors)
         {
             string content = _themeFileReader.ReadThemeFile(themeFileName);
-            var stylesheet = _parser.Parse(content);
-            if (stylesheet.Errors.Count > 0)
-            {
-                throw new ThemeException(
-                    $"Error parsing CSS:{Environment.NewLine}{string.Join(Environment.NewLine, stylesheet.Errors)}", themeFileName);
-            }
+            Stylesheet stylesheet = _parser.Parse(content);
+            ////if (stylesheet.Errors.Count > 0)
+            ////{
+            ////    throw new ThemeException(
+            ////        $"Error parsing CSS:{Environment.NewLine}{string.Join(Environment.NewLine, stylesheet.Errors)}", themeFileName);
+            ////}
 
-            foreach (var importDirective in stylesheet.ImportDirectives)
+            foreach (var importDirective in stylesheet.ImportRules)
             {
                 ImportTheme(themeFileName, importDirective, allowedClasses, cssImportChain, themeColors);
             }
@@ -55,7 +58,7 @@ namespace GitUI.Theming
             }
         }
 
-        private void ImportTheme(string themeFileName, ImportRule importRule, in IReadOnlyList<string> allowedClasses, string[] cssImportChain, ThemeColors themeColors)
+        private void ImportTheme(string themeFileName, IImportRule importRule, in IReadOnlyList<string> allowedClasses, string[] cssImportChain, ThemeColors themeColors)
         {
             string importFilePath;
             try
@@ -77,7 +80,7 @@ namespace GitUI.Theming
                 throw new ThemeException($"Cycling CSS import {importRule.Href}{importChainText}", themeFileName);
             }
 
-            LoadThemeColors(importFilePath, cssImportChain.Append(importFilePath), allowedClasses, themeColors);
+            LoadThemeColors(importFilePath, cssImportChain.AppendTo(importFilePath), allowedClasses, themeColors);
         }
 
         private static void ParseRule(string themeFileName, StyleRule rule, in IReadOnlyList<string> allowedClasses, ThemeColors themeColors)
@@ -151,9 +154,8 @@ namespace GitUI.Theming
         }
 
         private static ThemeException StyleRuleThemeException(StyleRule styleRule, string themePath)
-            => new ThemeException($"Invalid CSS rule '{styleRule.Value}'", themePath);
+            => new ThemeException($"Invalid CSS rule '{styleRule.SelectorText}'", themePath);
 
-        */
 
         private class ThemeColors
         {
