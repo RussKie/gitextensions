@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
+using FluentAssertions;
 using GitCommands;
 using GitCommands.UserRepositoryHistory;
 using NSubstitute;
@@ -16,10 +18,17 @@ namespace GitCommandsTests
         [SetUp]
         public void Setup()
         {
+            // Create the test instance
+            _appTitleGenerator = new();
+
+            // Create mocks for dependencies
             _repositoryDescriptionProvider = Substitute.For<IRepositoryDescriptionProvider>();
             _repositoryDescriptionProvider.Get(Arg.Any<string>()).Returns(ShortName);
 
-            _appTitleGenerator = new AppTitleGenerator(_repositoryDescriptionProvider);
+            // Create the test MEF container and compose the mocks into the test instance
+            CompositionContainer container = new();
+            container.ComposeExportedValue(_repositoryDescriptionProvider);
+            container.ComposeParts(_appTitleGenerator);
         }
 
         [TestCase(null)]

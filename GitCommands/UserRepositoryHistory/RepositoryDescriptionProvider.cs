@@ -25,8 +25,12 @@ namespace GitCommands.UserRepositoryHistory
         private const string RepositoryDescriptionFileName = "description";
         private const string DefaultDescription = "Unnamed repository; edit this file 'description' to name the repository.";
 
+#pragma warning disable CS0649
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         [Import(typeof(IGitDirectoryResolver))]
         private readonly IGitDirectoryResolver _gitDirectoryResolver;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS0649
 
         /// <summary>
         /// Returns a short name for repository.

@@ -3,7 +3,7 @@ Param(
   [string] $version,
   [string] $logFileName = "build.binlog",
   [string][Alias('c')] $configuration = "Debug",
-  [string][Alias('v')] $verbosity = "minimal",
+  [string][Alias('v')] $verbosity = "quiet",
   [switch] $restore,
   [switch][Alias('b')]$build,
   [switch] $rebuild,

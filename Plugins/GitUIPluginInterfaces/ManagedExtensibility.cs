@@ -7,13 +7,16 @@ using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using GitUI;
-using Microsoft;
 using Microsoft.VisualStudio.Composition;
+using Hosting = System.ComponentModel.Composition.Hosting;
 
 namespace GitUIPluginInterfaces
 {
     public static class ManagedExtensibility
     {
+        private static ComposableCatalog? _aggregateCatalog;
+        private static Lazy<ExportProvider>? _exportProvider;
+
         /// <summary>
         /// Gets a root path where user installed plugins are located.
         /// </summary>
@@ -32,8 +35,6 @@ namespace GitUIPluginInterfaces
 
             UserPluginsPath = userPluginsPath;
         }
-
-        private static Lazy<ExportProvider>? _exportProvider;
 
         private static Lazy<ExportProvider> GetOrCreateLazyExportProvider(string? applicationDataFolder)
         {
@@ -71,11 +72,14 @@ namespace GitUIPluginInterfaces
             {
                 var assemblies = pluginFiles.Select(assemblyFile => TryLoadAssembly(assemblyFile)).WhereNotNull().ToArray();
 
-                var discovery = PartDiscovery.Combine(
+                PartDiscovery? discovery = PartDiscovery.Combine(
                     new AttributedPartDiscoveryV1(Resolver.DefaultInstance),
                     new AttributedPartDiscovery(Resolver.DefaultInstance, isNonPublicSupported: true));
-                var parts = ThreadHelper.JoinableTaskFactory.Run(() => discovery.CreatePartsAsync(assemblies));
-                var catalog = ComposableCatalog.Create(Resolver.DefaultInstance).AddParts(parts);
+                DiscoveredParts? parts = ThreadHelper.JoinableTaskFactory.Run(() => discovery.CreatePartsAsync(assemblies));
+
+                var catalog = ComposableCatalog.Create(Resolver.DefaultInstance)
+                    .AddCatalog(_aggregateCatalog)
+                    .AddParts(parts);
 
                 var configuration = CompositionConfiguration.Create(catalog.WithCompositionService());
                 var runtimeComposition = RuntimeComposition.CreateRuntimeComposition(configuration);
@@ -112,10 +116,22 @@ namespace GitUIPluginInterfaces
             }
         }
 
-        public static void SetApplicationDataFolder(string applicationDataFolder)
+        public static void Initialise(IEnumerable<Assembly> assemblies)
         {
-            GetOrCreateLazyExportProvider(applicationDataFolder);
+            PartDiscovery? discovery = PartDiscovery.Combine(
+              new AttributedPartDiscoveryV1(Resolver.DefaultInstance),
+              new AttributedPartDiscovery(Resolver.DefaultInstance, isNonPublicSupported: true));
+            DiscoveredParts? parts = ThreadHelper.JoinableTaskFactory.Run(() => discovery.CreatePartsAsync(assemblies));
+
+            ComposableCatalog? catalog = ComposableCatalog.Create(Resolver.DefaultInstance).AddParts(parts);
+
+            _aggregateCatalog = catalog;
         }
+
+        ////public static void SetApplicationDataFolder(string applicationDataFolder)
+        ////{
+        ////    GetOrCreateLazyExportProvider(applicationDataFolder);
+        ////}
 
         public static Lazy<T> GetExport<T>()
         {

@@ -11,6 +11,7 @@ using GitUI.CommandsDialogs.SettingsDialog;
 using GitUI.CommandsDialogs.SettingsDialog.Pages;
 using GitUI.Infrastructure.Telemetry;
 using GitUI.Theming;
+using GitUIPluginInterfaces;
 using Microsoft.VisualStudio.Threading;
 using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -101,6 +102,12 @@ namespace GitExtensions
                 // Store the shared JoinableTaskContext
                 ThreadHelper.JoinableTaskContext = new JoinableTaskContext();
             }
+
+            ManagedExtensibility.Initialise(new[]
+            {
+                typeof(GitUI.GitExtensionsForm).Assembly,
+                typeof(GitCommands.GitModule).Assembly
+            });
 
             AppSettings.LoadSettings();
 

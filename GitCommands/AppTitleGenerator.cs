@@ -29,8 +29,12 @@ namespace GitCommands
         private static string? _extraInfo;
 #endif
 
+#pragma warning disable CS0649
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         [Import(typeof(IRepositoryDescriptionProvider))]
         private readonly IRepositoryDescriptionProvider _description;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS0649
 
         /// <summary>
         /// Generates main window title according to given repository.

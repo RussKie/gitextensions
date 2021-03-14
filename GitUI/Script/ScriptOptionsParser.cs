@@ -457,7 +457,7 @@ namespace GitUI.Script
                     break;
 
                 case "RepoName":
-                    newString = module is null ? string.Empty : new RepositoryDescriptionProvider(new GitDirectoryResolver()).Get(module.WorkingDir);
+                    newString = module is null ? string.Empty : ""; //// new RepositoryDescriptionProvider(new GitDirectoryResolver()).Get(module.WorkingDir);
                     break;
 
                 case "UserInput":
