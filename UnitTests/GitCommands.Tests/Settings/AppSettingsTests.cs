@@ -16,17 +16,17 @@ namespace GitCommandsTests.Settings
     {
         private const string SettingsFileContent = @"<?xml version=""1.0"" encoding=""utf-8""?><dictionary />";
 
-        [TestCase(null, "https://git-extensions-documentation.readthedocs.org/en/latest/")]
-        [TestCase("", "https://git-extensions-documentation.readthedocs.org/en/latest/")]
-        [TestCase("\t", "https://git-extensions-documentation.readthedocs.org/en/latest/")]
-        [TestCase("master", "https://git-extensions-documentation.readthedocs.org/en/latest/")]
-        [TestCase("feature/test/mystuff", "https://git-extensions-documentation.readthedocs.org/en/latest/")]
-        [TestCase("releases", "https://git-extensions-documentation.readthedocs.org/en/latest/")]
-        [TestCase("releases/4.5", "https://git-extensions-documentation.readthedocs.org/en/latest/")]
-        [TestCase("release", "https://git-extensions-documentation.readthedocs.org/en/latest/")]
-        [TestCase("release/a", "https://git-extensions-documentation.readthedocs.org/en/latest/")]
-        [TestCase("release/5", "https://git-extensions-documentation.readthedocs.org/en/latest/")]
-        [TestCase("release/a4.5", "https://git-extensions-documentation.readthedocs.org/en/latest/")]
+        [TestCase(null, "https://git-extensions-documentation.readthedocs.org/en/dev/")]
+        [TestCase("", "https://git-extensions-documentation.readthedocs.org/en/dev/")]
+        [TestCase("\t", "https://git-extensions-documentation.readthedocs.org/en/dev/")]
+        [TestCase("master", "https://git-extensions-documentation.readthedocs.org/en/dev/")]
+        [TestCase("feature/test/mystuff", "https://git-extensions-documentation.readthedocs.org/en/dev/")]
+        [TestCase("releases", "https://git-extensions-documentation.readthedocs.org/en/dev/")]
+        [TestCase("releases/4.5", "https://git-extensions-documentation.readthedocs.org/en/dev/")]
+        [TestCase("release", "https://git-extensions-documentation.readthedocs.org/en/dev/")]
+        [TestCase("release/a", "https://git-extensions-documentation.readthedocs.org/en/dev/")]
+        [TestCase("release/5", "https://git-extensions-documentation.readthedocs.org/en/dev/")]
+        [TestCase("release/a4.5", "https://git-extensions-documentation.readthedocs.org/en/dev/")]
         [TestCase("release/4.5", "https://git-extensions-documentation.readthedocs.org/en/release-4.5/")]
         [TestCase("release/40.501", "https://git-extensions-documentation.readthedocs.org/en/release-40.501/")]
         public void SetDocumentationBaseUrl_should_currectly_append_verison(string currentGitBranch, string expected)

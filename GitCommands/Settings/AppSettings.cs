@@ -121,7 +121,7 @@ namespace GitCommands
 
         /// <summary>
         /// Gets the base part of the documentation link for the current application version,
-        /// which looks something like "https://git-extensions-documentation.readthedocs.org/en/latest/"
+        /// which looks something like "https://git-extensions-documentation.readthedocs.org/en/dev/"
         /// for the master branch, and "https://git-extensions-documentation.readthedocs.org/en/release-X.Y/"
         /// for a release/X.Y branch.
         ///
@@ -139,7 +139,7 @@ namespace GitCommands
                 throw new InvalidOperationException("Documentation base URL can only be set once");
             }
 
-            string? docVersion = "en/latest/";
+            string? docVersion = "en/dev/";
 
             if (!string.IsNullOrWhiteSpace(currentGitBranch))
             {
