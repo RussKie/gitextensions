@@ -121,7 +121,7 @@ namespace GitCommands
 
         /// <summary>
         /// Gets the base part of the documentation link for the current application version,
-        /// which looks something like "https://git-extensions-documentation.readthedocs.org/en/dev/"
+        /// which looks something like "https://git-extensions-documentation.readthedocs.org/en/main/"
         /// for the master branch, and "https://git-extensions-documentation.readthedocs.org/en/release-X.Y/"
         /// for a release/X.Y branch.
         ///
