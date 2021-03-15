@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using GitCommands.Config;
-using GitCommands.Git;
 using GitCommands.UserRepositoryHistory;
 using GitExtUtils;
 using GitUI.UserControls.RevisionGrid;
@@ -457,7 +457,9 @@ namespace GitUI.Script
                     break;
 
                 case "RepoName":
-                    newString = module is null ? string.Empty : ""; //// new RepositoryDescriptionProvider(new GitDirectoryResolver()).Get(module.WorkingDir);
+                    newString = module is null
+                        ? string.Empty
+                        : ManagedExtensibility.GetExport<IRepositoryDescriptionProvider>().Value.Get(module.WorkingDir);
                     break;
 
                 case "UserInput":
