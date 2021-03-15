@@ -121,9 +121,11 @@ namespace GitCommands
 
         /// <summary>
         /// Gets the base part of the documentation link for the current application version,
-        /// which looks something like "https://git-extensions-documentation.readthedocs.org/"
-        /// for the master branch, and "https://git-extensions-documentation.readthedocs.org/release-X.Y"
+        /// which looks something like "https://git-extensions-documentation.readthedocs.org/en/latest/"
+        /// for the master branch, and "https://git-extensions-documentation.readthedocs.org/en/release-X.Y/"
         /// for a release/X.Y branch.
+        ///
+        /// TODO: We currently use only EN language, but should maybe consider using the user's preferred language.
         /// </summary>
         public static string DocumentationBaseUrl
         {
@@ -137,7 +139,7 @@ namespace GitCommands
                 throw new InvalidOperationException("Documentation base URL can only be set once");
             }
 
-            string? docVersion = null;
+            string? docVersion = "en/latest/";
 
             if (!string.IsNullOrWhiteSpace(currentGitBranch))
             {
