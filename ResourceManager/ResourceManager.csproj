@@ -1,7 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <EnableXlfLocalization>true</EnableXlfLocalization>
+    <UpdateXlfOnBuild>true</UpdateXlfOnBuild>
 
     <!-- To be removed when NRT annotations are complete -->
     <Nullable>annotations</Nullable>
@@ -16,6 +19,7 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="SmartFormat.NET" />
+    <!-- <PackageReference Include="XliffTasks" /> -->
   </ItemGroup>
 
   <ItemGroup>
@@ -26,8 +30,14 @@
 
   <ItemGroup>
     <!-- Resources -->
-    <EmbeddedResource Update="Properties\Resources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="Resources.Designer.cs" />
+    <EmbeddedResource Update="Properties\Resources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="Resources.Designer.cs" XlfInput="false" />
     <Compile Update="Properties\Resources.Designer.cs" AutoGen="True" DependentUpon="Resources.resx" DesignTime="True" />
+    
+    <EmbeddedResource Update="Properties\SR.resx">
+      <GenerateSource>true</GenerateSource>
+      <Namespace>System</Namespace>
+    </EmbeddedResource>
+    <!-- <Compile Update="Properties\SR.Designer.cs" AutoGen="True" DependentUpon="SR.resx" DesignTime="True" /> -->
   </ItemGroup>
 
 </Project>
