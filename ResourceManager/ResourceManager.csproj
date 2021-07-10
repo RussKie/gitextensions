@@ -35,9 +35,8 @@
     
     <EmbeddedResource Update="Properties\SR.resx">
       <GenerateSource>true</GenerateSource>
-      <Namespace>System</Namespace>
+      <Namespace>ResourceManager</Namespace>
     </EmbeddedResource>
-    <!-- <Compile Update="Properties\SR.Designer.cs" AutoGen="True" DependentUpon="SR.resx" DesignTime="True" /> -->
   </ItemGroup>
 
 </Project>

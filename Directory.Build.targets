@@ -15,4 +15,11 @@
   </ItemGroup>
 
   <Sdk Name="Microsoft.Build.CentralPackageVersions" Version="2.0.79" />
+  <Sdk Name="Microsoft.DotNet.Arcade.Sdk" Version="5.0.0-beta.21160.3" />
+
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+
 </Project>

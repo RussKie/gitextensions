@@ -4,6 +4,14 @@ using SmartFormat;
 
 namespace ResourceManager
 {
+    internal static partial class SR
+    {
+        internal static string GetResourceString(string resourceKey)
+        {
+            return "BOO!";
+        }
+    }
+
     /// <summary>Contains common string literals which are translated.</summary>
     public sealed class TranslatedStrings : Translate
     {
@@ -51,6 +59,7 @@ Yes, I allow telemetry!");
         public TranslatedStrings()
         {
             Translator.Translate(this, AppSettings.CurrentTranslation);
+            SR.Culture = new System.Globalization.CultureInfo(AppSettings.CurrentLanguageCode);
         }
 
         private static Lazy<TranslatedStrings> _instance = new();
@@ -63,6 +72,7 @@ Yes, I allow telemetry!");
             }
         }
 
+        public static string FindGitExecutable1 => SR.InstallGitInstructions;
         public static string FindGitExecutable => _instance.Value._findGitExecutable.Text;
         public static string InstallGitInstructions => _instance.Value._installGitInstructions.Text;
         public static string GitExecutableNotFound => _instance.Value._gitExecutableNotFoundText.Text;

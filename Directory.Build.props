@@ -19,6 +19,9 @@
 
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
 
+    <SignAssembly>false</SignAssembly>
+    <SignManifests>false</SignManifests>
+
     <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 
