@@ -12,6 +12,9 @@
     <PackageReference Update="GitInfo" Version="2.1.2" />
     <PackageReference Update="JetBrains.Annotations" Version="2021.2.0" />
     <PackageReference Update="LibGit2Sharp" Version="0.26.2" />
+    <PackageReference Update="Microsoft.Extensions.Configuration" Version="6.0.0-preview.6.21352.12" />
+    <PackageReference Update="Microsoft.Extensions.Configuration.Binder" Version="6.0.0-preview.6.21352.12" />
+    <PackageReference Update="Microsoft.Extensions.Configuration.Xml" Version="6.0.0-preview.6.21352.12" />
     <PackageReference Update="Microsoft.Toolkit.HighPerformance" Version="7.0.2" />
     <PackageReference Update="Microsoft.VisualStudio.Composition" Version="16.9.20" />
     <PackageReference Update="Microsoft.VisualStudio.Threading" Version="16.10.56" />

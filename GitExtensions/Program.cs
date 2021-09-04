@@ -12,6 +12,7 @@ using GitUI.CommandsDialogs.SettingsDialog.Pages;
 using GitUI.Infrastructure.Telemetry;
 using GitUI.NBugReports;
 using GitUIPluginInterfaces;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.Threading;
 
 namespace GitExtensions
@@ -35,6 +36,8 @@ namespace GitExtensions
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
+
+            _ = ApplicationSettings.ApplicationId;
 
             // If an error happens before we had a chance to init the environment information
             // the call to GetInformation() from BugReporter.ShowNBug() will fail.

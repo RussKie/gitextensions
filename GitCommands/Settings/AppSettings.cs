@@ -15,6 +15,7 @@ using GitExtUtils;
 using GitExtUtils.GitUI.Theming;
 using GitUIPluginInterfaces;
 using Microsoft;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Win32;
 
 namespace GitCommands
@@ -50,6 +51,128 @@ namespace GitCommands
         BelowList = 0,
         LeftwardFromList = 1,
         RightwardFromList = 2
+    }
+
+    public class ApplicationGlobalOptions
+    {
+        public bool AddCommitReferenceToCherryPick { get; set; }
+        public bool addnewlinetocommitmessagewhenmissing { get; set; }
+        public bool AutoNormaliseBranchName { get; set; }
+    }
+
+    public class ApplicationSettings
+    {
+        private static string _applicationExecutablePath = Application.ExecutablePath;
+        public static readonly string ApplicationName = "Git Extensions";
+        public static readonly string ApplicationId = ApplicationName.Replace(" ", "");
+        public static readonly string SettingsFileName = ApplicationId + ".settings";
+        public static Lazy<string?> ApplicationDataPath { get; private set; }
+        public static readonly Lazy<string?> LocalApplicationDataPath;
+        public static string SettingsFilePath => Path.Combine(ApplicationDataPath.Value, SettingsFileName);
+
+        static ApplicationSettings()
+        {
+            ApplicationDataPath = new Lazy<string?>(() =>
+            {
+                if (IsPortable())
+                {
+                    return GetGitExtensionsDirectory();
+                }
+
+                // Make ApplicationDataPath version independent
+                return Application.UserAppDataPath.Replace(Application.ProductVersion, string.Empty)
+                                                  .Replace(ApplicationName, ApplicationId); // 'GitExtensions' has been changed to 'Git Extensions' in v3.0
+            });
+
+            LocalApplicationDataPath = new Lazy<string?>(() =>
+            {
+                if (IsPortable())
+                {
+                    return GetGitExtensionsDirectory();
+                }
+
+                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ApplicationId);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
+                return path;
+            });
+
+            bool newFile = CreateEmptySettingsFileIfMissing();
+
+            var builder = new ConfigurationBuilder()
+                .AddXmlFile(SettingsFilePath, optional: false, reloadOnChange: true);
+            IConfigurationRoot configurationRoot = builder.Build();
+
+            ApplicationGlobalOptions globalOptions = new();
+            configurationRoot.Bind("item:key:string", globalOptions);
+
+            ////SettingsContainer = new RepoDistSettings(null, GitExtSettingsCache.FromCache(SettingsFilePath), SettingLevel.Unknown);
+
+            if (newFile || !File.Exists(SettingsFilePath))
+            {
+                ////ImportFromRegistry();
+            }
+
+            ////MigrateAvatarSettings();
+            ////MigrateSshSettings();
+
+            return;
+
+            static bool CreateEmptySettingsFileIfMissing()
+            {
+                try
+                {
+                    string dir = Path.GetDirectoryName(SettingsFilePath);
+                    if (!Directory.Exists(dir) || File.Exists(SettingsFilePath))
+                    {
+                        return false;
+                    }
+                }
+                catch (ArgumentException)
+                {
+                    // Illegal characters in the filename
+                    return false;
+                }
+
+                File.WriteAllText(SettingsFilePath, "<?xml version=\"1.0\" encoding=\"utf-8\"?><dictionary />", Encoding.UTF8);
+                return true;
+            }
+        }
+
+        public static string? GetGitExtensionsDirectory()
+        {
+            return Path.GetDirectoryName(GetGitExtensionsFullPath());
+        }
+
+        public static string GetGitExtensionsFullPath()
+        {
+            return _applicationExecutablePath;
+        }
+
+        // There is a bug in .NET/.NET Designer that fails to execute Properties.Settings.Default call.
+        // Return false whilst we're in the designer.
+        public static bool IsPortable() => !IsDesignMode && Properties.Settings.Default.IsPortable;
+
+        private static bool? _isDesignMode;
+
+        private static bool IsDesignMode
+        {
+            get
+            {
+                if (_isDesignMode is null)
+                {
+                    string processName = Process.GetCurrentProcess().ProcessName.ToLowerInvariant();
+                    _isDesignMode = processName.Contains("devenv") || processName.Contains("designtoolsserver");
+                }
+
+                return _isDesignMode.Value;
+            }
+        }
+
+        ////public static ApplicationGlobalOptions GlobalOptions =>
     }
 
     public static class AppSettings
