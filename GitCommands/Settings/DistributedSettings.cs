@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using GitUIPluginInterfaces;
 
@@ -8,9 +9,10 @@ namespace GitCommands.Settings
     /// Settings that can be distributed with repository.
     /// They can be overridden for a particular repository.
     /// </summary>
-    public class RepoDistSettings : SettingsContainer<RepoDistSettings, GitExtSettingsCache>
+    [DebuggerDisplay("Level = {" + nameof(SettingLevel) + ",nq}, Cache = {" + nameof(SettingsCache) + ",nq}")]
+    public class DistributedSettings : SettingsContainer<DistributedSettings, GitExtSettingsCache>
     {
-        public RepoDistSettings(RepoDistSettings? lowerPriority, GitExtSettingsCache settingsCache, SettingLevel settingLevel)
+        public DistributedSettings(DistributedSettings? lowerPriority, GitExtSettingsCache settingsCache, SettingLevel settingLevel)
             : base(lowerPriority, settingsCache)
         {
             SettingLevel = settingLevel;
@@ -18,40 +20,40 @@ namespace GitCommands.Settings
 
         #region CreateXXX
 
-        public static RepoDistSettings CreateEffective(GitModule module)
+        public static DistributedSettings CreateEffective(GitModule module)
         {
             return CreateLocal(module, CreateDistributed(module, CreateGlobal()), SettingLevel.Effective);
         }
 
-        private static RepoDistSettings CreateLocal(GitModule module, RepoDistSettings? lowerPriority,
+        private static DistributedSettings CreateLocal(GitModule module, DistributedSettings? lowerPriority,
             SettingLevel settingLevel, bool allowCache = true)
         {
             ////if (module.IsBareRepository()
-            return new RepoDistSettings(lowerPriority,
+            return new DistributedSettings(lowerPriority,
                 GitExtSettingsCache.Create(Path.Combine(module.GitCommonDirectory, AppSettings.SettingsFileName), allowCache),
                 settingLevel);
         }
 
-        public static RepoDistSettings CreateLocal(GitModule module, bool allowCache = true)
+        public static DistributedSettings CreateLocal(GitModule module, bool allowCache = true)
         {
             return CreateLocal(module, null, SettingLevel.Local, allowCache);
         }
 
-        private static RepoDistSettings CreateDistributed(GitModule module, RepoDistSettings? lowerPriority, bool allowCache = true)
+        private static DistributedSettings CreateDistributed(GitModule module, DistributedSettings? lowerPriority, bool allowCache = true)
         {
-            return new RepoDistSettings(lowerPriority,
+            return new DistributedSettings(lowerPriority,
                 GitExtSettingsCache.Create(Path.Combine(module.WorkingDir, AppSettings.SettingsFileName), allowCache),
                 SettingLevel.Distributed);
         }
 
-        public static RepoDistSettings CreateDistributed(GitModule module, bool allowCache = true)
+        public static DistributedSettings CreateDistributed(GitModule module, bool allowCache = true)
         {
             return CreateDistributed(module, null, allowCache);
         }
 
-        public static RepoDistSettings CreateGlobal(bool allowCache = true)
+        public static DistributedSettings CreateGlobal(bool allowCache = true)
         {
-            return new RepoDistSettings(null, GitExtSettingsCache.Create(AppSettings.SettingsFilePath, allowCache),
+            return new DistributedSettings(null, GitExtSettingsCache.Create(AppSettings.SettingsFilePath, allowCache),
                 SettingLevel.Global);
         }
 

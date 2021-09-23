@@ -14,12 +14,12 @@ namespace GitCommands.ExternalLinks
         /// <summary>
         /// Loads external link definitions from the settings.
         /// </summary>
-        IReadOnlyList<ExternalLinkDefinition>? Load(RepoDistSettings settings);
+        IReadOnlyList<ExternalLinkDefinition>? Load(DistributedSettings settings);
 
         /// <summary>
         /// Saves the provided external link definitions to the settings.
         /// </summary>
-        void Save(RepoDistSettings settings, IReadOnlyList<ExternalLinkDefinition> definitions);
+        void Save(DistributedSettings settings, IReadOnlyList<ExternalLinkDefinition> definitions);
     }
 
     public sealed class ExternalLinksStorage : IExternalLinksStorage
@@ -29,7 +29,7 @@ namespace GitCommands.ExternalLinks
         /// <summary>
         /// Loads external link definitions from the settings.
         /// </summary>
-        public IReadOnlyList<ExternalLinkDefinition>? Load(RepoDistSettings settings)
+        public IReadOnlyList<ExternalLinkDefinition>? Load(DistributedSettings settings)
         {
             var xml = settings.GetString(SettingName, null);
             return LoadFromXmlString(xml);
@@ -38,7 +38,7 @@ namespace GitCommands.ExternalLinks
         /// <summary>
         /// Saves the provided external link definitions to the settings.
         /// </summary>
-        public void Save(RepoDistSettings settings, IReadOnlyList<ExternalLinkDefinition> definitions)
+        public void Save(DistributedSettings settings, IReadOnlyList<ExternalLinkDefinition> definitions)
         {
             try
             {

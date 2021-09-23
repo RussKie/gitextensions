@@ -203,7 +203,7 @@ namespace GitUI.SpellChecker
             }
         }
 
-        protected RepoDistSettings Settings => Module.EffectiveSettings ?? AppSettings.SettingsContainer;
+        protected DistributedSettings Settings => Module.EffectiveSettings ?? AppSettings.SettingsContainer;
 
         public void SelectAll()
         {

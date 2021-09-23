@@ -103,7 +103,7 @@ namespace GitUI.CommandsDialogs
             DialogResult result = DialogResult.None;
 
             using FormSettings form = new(uiCommands, initialPage);
-            AppSettings.UsingContainer(form._commonLogic.RepoDistSettingsSet.GlobalSettings, () =>
+            AppSettings.UsingContainer(form._commonLogic.DistributedSettingsSet.GlobalSettings, () =>
             {
                 result = form.ShowDialog(owner);
             });
@@ -242,7 +242,7 @@ namespace GitUI.CommandsDialogs
                 }
 
                 _commonLogic.ConfigFileSettingsSet.EffectiveSettings.Save();
-                _commonLogic.RepoDistSettingsSet.EffectiveSettings.Save();
+                _commonLogic.DistributedSettingsSet.EffectiveSettings.Save();
 
                 if (EnvUtils.RunningOnWindows())
                 {

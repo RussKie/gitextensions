@@ -4,16 +4,16 @@ using Microsoft;
 
 namespace GitUI.CommandsDialogs.SettingsDialog
 {
-    public class RepoDistSettingsPage : SettingsPageWithHeader, IRepoDistSettingsPage
+    public class DistributedSettingsPage : SettingsPageWithHeader, IRepoDistSettingsPage
     {
-        protected RepoDistSettingsSet? RepoDistSettingsSet => CommonLogic.RepoDistSettingsSet;
-        protected RepoDistSettings? CurrentSettings { get; private set; }
+        protected DistributedSettingsSet? DistributedSettingsSet => CommonLogic.DistributedSettingsSet;
+        protected DistributedSettings? CurrentSettings { get; private set; }
 
         protected override void Init(ISettingsPageHost pageHost)
         {
             base.Init(pageHost);
 
-            CurrentSettings = RepoDistSettingsSet?.EffectiveSettings;
+            CurrentSettings = DistributedSettingsSet?.EffectiveSettings;
         }
 
         protected override ISettingsSource GetCurrentSettings()
@@ -25,37 +25,37 @@ namespace GitUI.CommandsDialogs.SettingsDialog
 
         public void SetEffectiveSettings()
         {
-            if (RepoDistSettingsSet is not null)
+            if (DistributedSettingsSet is not null)
             {
-                SetCurrentSettings(RepoDistSettingsSet.EffectiveSettings);
+                SetCurrentSettings(DistributedSettingsSet.EffectiveSettings);
             }
         }
 
         public void SetLocalSettings()
         {
-            if (RepoDistSettingsSet is not null)
+            if (DistributedSettingsSet is not null)
             {
-                SetCurrentSettings(RepoDistSettingsSet.LocalSettings);
+                SetCurrentSettings(DistributedSettingsSet.LocalSettings);
             }
         }
 
         public override void SetGlobalSettings()
         {
-            if (RepoDistSettingsSet is not null)
+            if (DistributedSettingsSet is not null)
             {
-                SetCurrentSettings(RepoDistSettingsSet.GlobalSettings);
+                SetCurrentSettings(DistributedSettingsSet.GlobalSettings);
             }
         }
 
         public void SetRepoDistSettings()
         {
-            if (RepoDistSettingsSet is not null)
+            if (DistributedSettingsSet is not null)
             {
-                SetCurrentSettings(RepoDistSettingsSet.RepoDistSettings);
+                SetCurrentSettings(DistributedSettingsSet.RepoDistSettings);
             }
         }
 
-        private void SetCurrentSettings(RepoDistSettings settings)
+        private void SetCurrentSettings(DistributedSettings settings)
         {
             if (CurrentSettings is not null)
             {

@@ -4,7 +4,7 @@ using GitUIPluginInterfaces.Settings;
 
 namespace GitUI.CommandsDialogs.SettingsDialog.Pages
 {
-    public partial class DetailedSettingsPage : RepoDistSettingsPage
+    public partial class DetailedSettingsPage : DistributedSettingsPage
     {
         public DetailedSettingsPage()
         {
