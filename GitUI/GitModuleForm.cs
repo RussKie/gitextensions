@@ -42,7 +42,9 @@ namespace GitUI
             {
                 var oldCommands = _uiCommands;
                 _uiCommands = value ?? throw new ArgumentNullException(nameof(value));
-                UICommandsChanged?.Invoke(this, new GitUICommandsChangedEventArgs(oldCommands));
+                OnUICommandsChanged(new GitUICommandsChangedEventArgs(oldCommands));
+
+                ScriptManager.Initialize(value.Module.EffectiveSettings);
             }
         }
 
@@ -63,7 +65,16 @@ namespace GitUI
         protected GitModuleForm(GitUICommands? commands, bool enablePositionRestore)
             : base(enablePositionRestore)
         {
-            _uiCommands = commands;
+            if (commands is null && _uiCommands is null)
+            {
+                // In some cases we may want to initialise a form without a module, e.g. a process dialog that executes a git command
+                // which is comletely self contained.
+            }
+            else
+            {
+                UICommands = commands;
+            }
+
             DiagnosticsClient.TrackPageView(GetType().FullName);
         }
 
@@ -74,7 +85,7 @@ namespace GitUI
 
         protected override CommandStatus ExecuteCommand(int command)
         {
-            var result = ScriptRunner.ExecuteScriptCommand(this, Module, command, UICommands, RevisionGridControl);
+            var result = ScriptManager.RunScript(command, this, RevisionGridControl);
 
             if (!result.Executed)
             {
@@ -82,6 +93,11 @@ namespace GitUI
             }
 
             return result;
+        }
+
+        protected virtual void OnUICommandsChanged(GitUICommandsChangedEventArgs e)
+        {
+            UICommandsChanged?.Invoke(this, e);
         }
     }
 }

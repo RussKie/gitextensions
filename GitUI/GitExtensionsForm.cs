@@ -5,7 +5,9 @@ using System.Linq;
 using System.Windows.Forms;
 using GitExtUtils.GitUI;
 using GitUI.Interops.DwmApi;
+using GitUI.Script;
 using GitUI.Theming;
+using GitUIPluginInterfaces;
 using ResourceManager;
 
 namespace GitUI
@@ -58,6 +60,8 @@ namespace GitUI
                 TaskbarProgress.Clear();
             }
         }
+
+        public IScriptsManager ScriptManager => ManagedExtensibility.GetExport<IScriptsManager>().Value;
 
         public virtual void CancelButtonClick(object sender, EventArgs e)
         {

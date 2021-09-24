@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if BLA
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -10,7 +11,7 @@ using GitCommands;
 
 namespace GitUI.Script
 {
-    public static class ScriptManager
+    public static class ScriptManager1
     {
         internal const int MinimumUserScriptID = 9000;
         private static readonly XmlSerializer _serializer = new(typeof(BindingList<ScriptInfo>));
@@ -200,3 +201,4 @@ namespace GitUI.Script
         }
     }
 }
+#endif

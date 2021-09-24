@@ -18,6 +18,7 @@ using GitCommands.Config;
 using GitCommands.Git;
 using GitCommands.Git.Commands;
 using GitCommands.Gpg;
+using GitCommands.Settings;
 using GitCommands.Submodules;
 using GitCommands.UserRepositoryHistory;
 using GitCommands.Utils;
@@ -27,6 +28,7 @@ using GitExtUtils.GitUI.Theming;
 using GitUI.BranchTreePanel;
 using GitUI.CommandsDialogs.BrowseDialog;
 using GitUI.CommandsDialogs.BrowseDialog.DashboardControl;
+using GitUI.CommandsDialogs.SettingsDialog;
 using GitUI.CommandsDialogs.WorktreeDialog;
 using GitUI.HelperDialogs;
 using GitUI.Hotkey;
@@ -244,20 +246,9 @@ namespace GitUI.CommandsDialogs
 
             HotkeysEnabled = true;
             Hotkeys = HotkeySettingsManager.LoadHotkeys(HotkeySettingsName);
-            UICommandsChanged += (a, e) =>
-            {
-                var oldCommands = e.OldCommands;
-                RefreshDefaultPullAction();
 
-                if (oldCommands is not null)
-                {
-                    oldCommands.PostRepositoryChanged -= UICommands_PostRepositoryChanged;
-                    oldCommands.BrowseRepo = null;
-                }
-
-                UICommands.PostRepositoryChanged += UICommands_PostRepositoryChanged;
-                UICommands.BrowseRepo = this;
-            };
+            UICommands.PostRepositoryChanged += UICommands_PostRepositoryChanged;
+            UICommands.PostSettings += UICommands_PostSettings;
 
             pullToolStripMenuItem1.Tag = AppSettings.PullAction.None;
             mergeToolStripMenuItem.Tag = AppSettings.PullAction.Merge;
@@ -549,6 +540,33 @@ namespace GitUI.CommandsDialogs
             }
         }
 
+        protected override void OnUICommandsChanged(GitUICommandsChangedEventArgs e)
+        {
+            var oldCommands = e.OldCommands;
+            RefreshDefaultPullAction();
+
+            if (oldCommands is not null)
+            {
+                oldCommands.PostRepositoryChanged -= UICommands_PostRepositoryChanged;
+                oldCommands.PostSettings -= UICommands_PostSettings;
+                oldCommands.BrowseRepo = null;
+            }
+
+            UICommands.PostRepositoryChanged += UICommands_PostRepositoryChanged;
+            UICommands.PostSettings += UICommands_PostSettings;
+            UICommands.BrowseRepo = this;
+
+            base.OnUICommandsChanged(e);
+        }
+
+        private void UICommands_PostSettings(object? sender, GitUIPostActionEventArgs e)
+        {
+            if (e.ActionDone)
+            {
+                ScriptManager.Initialize(Module.EffectiveSettings);
+            }
+        }
+
         private void FillNextPullActionAsDefaultToolStripMenuItems()
         {
             var setDefaultPullActionDropDown = (ToolStripDropDownMenu)setDefaultPullButtonActionToolStripMenuItem.DropDown;
@@ -648,14 +666,10 @@ namespace GitUI.CommandsDialogs
         {
             if (disposing)
             {
-                // ReSharper disable ConstantConditionalAccessQualifier - these can be null if run from under the TranslationApp
-
                 _formBrowseMenus?.Dispose();
                 components?.Dispose();
                 _gitStatusMonitor?.Dispose();
                 _windowsJumpListManager?.Dispose();
-
-                // ReSharper restore ConstantConditionalAccessQualifier
             }
 
             base.Dispose(disposing);
@@ -1147,53 +1161,6 @@ namespace GitUI.CommandsDialogs
                 // TODO: add more
             }
 
-            void LoadUserMenu()
-            {
-                var scripts = ScriptManager.GetScripts()
-                    .Where(script => script.Enabled && script.OnEvent == ScriptEvent.ShowInUserMenuBar)
-                    .ToList();
-
-                for (int i = ToolStripScripts.Items.Count - 1; i >= 0; i--)
-                {
-                    if (ToolStripScripts.Items[i].Tag as string == "userscript")
-                    {
-                        ToolStripScripts.Items.RemoveAt(i);
-                    }
-                }
-
-                if (scripts.Count == 0)
-                {
-                    ToolStripScripts.GripStyle = ToolStripGripStyle.Hidden;
-                    return;
-                }
-
-                ToolStripScripts.GripStyle = ToolStripGripStyle.Visible;
-                foreach (var script in scripts)
-                {
-                    ToolStripButton button = new()
-                    {
-                        // store scriptname
-                        Text = script.Name,
-                        Tag = "userscript",
-                        Enabled = true,
-                        Visible = true,
-                        Image = script.GetIcon(),
-                        DisplayStyle = ToolStripItemDisplayStyle.ImageAndText
-                    };
-
-                    button.Click += delegate
-                    {
-                        if (ScriptRunner.RunScript(this, Module, script.Name, UICommands, RevisionGrid).NeedsGridRefresh)
-                        {
-                            RevisionGrid.RefreshRevisions();
-                        }
-                    };
-
-                    // add to toolstrip
-                    ToolStripScripts.Items.Add(button);
-                }
-            }
-
             void ShowRevisions()
             {
                 if (RevisionGrid.IndexWatcher.IndexChanged)
@@ -1203,6 +1170,59 @@ namespace GitUI.CommandsDialogs
 
                 RevisionGrid.IndexWatcher.Reset();
             }
+        }
+
+        private void LoadUserMenu()
+        {
+            toolPanel.TopToolStripPanel.SuspendLayout();
+
+            var scripts = ScriptManager.GetScripts()
+                .Where(script => script.Enabled && script.OnEvent == ScriptEvent.ShowInUserMenuBar)
+                .ToList();
+
+            for (int i = ToolStripScripts.Items.Count - 1; i >= 0; i--)
+            {
+                if (ToolStripScripts.Items[i].Tag as string == "userscript")
+                {
+                    ToolStripScripts.Items.RemoveAt(i);
+                }
+            }
+
+            if (scripts.Count == 0)
+            {
+                ToolStripScripts.GripStyle = ToolStripGripStyle.Hidden;
+                toolPanel.TopToolStripPanel.ResumeLayout();
+                return;
+            }
+
+            ToolStripScripts.GripStyle = ToolStripGripStyle.Visible;
+            foreach (var script in scripts)
+            {
+                ToolStripButton button = new()
+                {
+                    // store scriptname
+                    Text = script.Name,
+                    Tag = "userscript",
+                    Enabled = true,
+                    Visible = true,
+                    Image = script.GetIcon(),
+                    DisplayStyle = ToolStripItemDisplayStyle.ImageAndText
+                };
+
+                button.Click += delegate
+                {
+                    IScriptsManager scriptsManager = ManagedExtensibility.GetExport<IScriptsManager>().Value;
+                    if (scriptsManager.RunScript(script.HotkeyCommandIdentifier, this, RevisionGrid).NeedsGridRefresh)
+                    {
+                        RevisionGrid.RefreshRevisions();
+                    }
+                };
+
+                // add to toolstrip
+                ToolStripScripts.Items.Add(button);
+            }
+
+            toolPanel.TopToolStripPanel.ResumeLayout(performLayout: true);
         }
 
         private void OnActivate()
@@ -2606,6 +2626,12 @@ namespace GitUI.CommandsDialogs
 
         private void RefreshDefaultPullAction()
         {
+            if (setDefaultPullButtonActionToolStripMenuItem is null)
+            {
+                // We may get called while instantiating the form
+                return;
+            }
+
             var defaultPullAction = AppSettings.DefaultPullAction;
 
             foreach (ToolStripMenuItem menuItem in setDefaultPullButtonActionToolStripMenuItem.DropDown.Items)

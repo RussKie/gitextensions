@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using GitCommands;
+using GitUI.Script;
+using GitUIPluginInterfaces;
 using ResourceManager;
 
 namespace GitUI
@@ -153,7 +155,8 @@ namespace GitUI
                     revisionGridControl = (FindForm() as GitModuleForm)?.RevisionGridControl;
                 }
 
-                return Script.ScriptRunner.ExecuteScriptCommand(this, Module, command, UICommands, revisionGridControl);
+                IScriptsManager scriptsManager = ManagedExtensibility.GetExport<IScriptsManager>().Value;
+                return scriptsManager.RunScript(command, FindForm() as GitModuleForm, revisionGridControl);
             }
         }
 

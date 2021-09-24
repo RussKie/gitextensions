@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using GitUI.Hotkey;
 using GitUI.Script;
+using GitUIPluginInterfaces;
 using ResourceManager;
 
 namespace GitUI.CommandsDialogs
@@ -22,7 +23,7 @@ namespace GitUI.CommandsDialogs
         /// <param name="contextMenu">The context menu to add user scripts too.</param>
         /// <param name="hostMenuItem">The menu item to which to add user scripts marked as <see cref="ScriptInfo.AddToRevisionGridContextMenu"/>.</param>
         /// <param name="scriptInvoker">The handler that handles user script invocation.</param>
-        public static void AddUserScripts(this ContextMenuStrip contextMenu, ToolStripMenuItem hostMenuItem, Action<string> scriptInvoker)
+        public static void AddUserScripts(this ContextMenuStrip contextMenu, ToolStripMenuItem hostMenuItem, Action<int> scriptInvoker)
         {
             contextMenu = contextMenu ?? throw new ArgumentNullException(nameof(contextMenu));
             hostMenuItem = hostMenuItem ?? throw new ArgumentNullException(nameof(hostMenuItem));
@@ -32,8 +33,8 @@ namespace GitUI.CommandsDialogs
 
             var lastIndex = contextMenu.Items.Count;
 
-            var scripts = ScriptManager.GetScripts()
-                .Where(x => x.Enabled);
+            IScriptsManager scriptsManager = ManagedExtensibility.GetExport<IScriptsManager>().Value;
+            var scripts = scriptsManager.GetScripts().Where(x => x.Enabled);
 
             foreach (var script in scripts)
             {
@@ -47,11 +48,8 @@ namespace GitUI.CommandsDialogs
 
                 item.Click += (s, e) =>
                 {
-                    string? scriptKey = script.Name;
-                    if (scriptKey is not null)
-                    {
-                        scriptInvoker(scriptKey);
-                    }
+                    int scriptId = script.HotkeyCommandIdentifier;
+                    scriptInvoker(scriptId);
                 };
 
                 if (script.AddToRevisionGridContextMenu)

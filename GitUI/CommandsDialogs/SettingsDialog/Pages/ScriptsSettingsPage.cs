@@ -165,11 +165,12 @@ Current Branch:
         protected override void SettingsToPage()
         {
             Validates.NotNull(CurrentSettings);
-            _scriptsManager = new DistributedScriptsManager(CurrentSettings);
+            _scriptsManager = new DistributedScriptsManager();
+            _scriptsManager.Initialize(CurrentSettings);
 
             _scripts.Clear();
 
-            foreach (var script in _scriptsManager.GetEffectiveSettings())
+            foreach (var script in _scriptsManager.GetScripts())
             {
                 _scripts.Add(script);
             }
