@@ -312,7 +312,7 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
 
                 listView1.Groups.AddRange(groups);
                 BindRepositories(recentRepositories, isFavourite: false);
-                BindRepositories(favouriteRepositories, isFavourite: true);
+                BindRepositories(favouriteRepositories.OrderBy(r => r.Caption).ToList(), isFavourite: true);
             }
             finally
             {
