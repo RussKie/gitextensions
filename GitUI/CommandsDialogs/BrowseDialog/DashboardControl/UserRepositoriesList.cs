@@ -386,11 +386,38 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
                 .ToList();
         }
 
-        private IEnumerable<Repository> GetRepositories()
+        private Dictionary<string, bool> GetCategories(SelectedRepositoryItem selectedRepositoryItem)
+        {
+            List<Repository> repositories = GetRepositories();
+
+            Dictionary<string, bool> categories = new();
+            foreach (var repository in repositories)
+            {
+                if (string.IsNullOrWhiteSpace(repository.Category))
+                {
+                    continue;
+                }
+
+                if (!categories.ContainsKey(repository.Category))
+                {
+                    categories[repository.Category] = false;
+                }
+
+                if (repository.Path == selectedRepositoryItem.Repository.Path)
+                {
+                    categories[repository.Category] = true;
+                }
+            }
+
+            return categories;
+        }
+
+        private List<Repository> GetRepositories()
         {
             return listView1.Items.Cast<ListViewItem>()
                 .Select(lvi => (Repository)lvi.Tag)
-                .Where(_ => _ is not null);
+                .Where(_ => _ is not null)
+                .ToList();
         }
 
         private static SelectedRepositoryItem? GetSelectedRepositoryItem(ToolStripItem? menuItem)
@@ -712,24 +739,29 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
 
             tsmiCategories.DropDownItems.Clear();
 
-            var categories = GetCategories();
-            if (categories.Count > 0)
-            {
-                tsmiCategories.DropDownItems.Add(tsmiCategoryNone);
-                tsmiCategories.DropDownItems.AddRange(categories.Select(category =>
-                {
-                    ToolStripMenuItem item = new(category) { Tag = category };
-                    item.Click += tsmiCategory_Click;
-                    return item;
-                }).ToArray<ToolStripItem>());
-                tsmiCategories.DropDownItems.Add(new ToolStripSeparator());
-            }
-
-            tsmiCategories.DropDownItems.Add(tsmiCategoryAdd);
-
             RepositoryContextAction(tsmiCategories, selectedRepositoryItem =>
             {
                 Validates.NotNull(selectedRepositoryItem.Repository);
+
+                Dictionary<string, bool> categories = GetCategories(selectedRepositoryItem);
+                if (categories.Count > 0)
+                {
+                    tsmiCategories.DropDownItems.Add(tsmiCategoryNone);
+
+                    tsmiCategories.DropDownItems.AddRange(
+                        categories
+                            .OrderBy(c => c.Key)
+                            .Select(c =>
+                            {
+                                ToolStripMenuItem item = new(c.Key) { Tag = c.Key };
+                                item.Checked = c.Value;
+                                item.Click += tsmiCategory_Click;
+                                return item;
+                            }).ToArray<ToolStripItem>());
+                    tsmiCategories.DropDownItems.Add(new ToolStripSeparator());
+                }
+
+                tsmiCategories.DropDownItems.Add(tsmiCategoryAdd);
 
                 foreach (ToolStripItem item in tsmiCategories.DropDownItems)
                 {
@@ -832,7 +864,7 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
 
         private void tsmiCategoryClear_Click(object sender, EventArgs e)
         {
-            var repositories = GetRepositories().ToList();
+            var repositories = GetRepositories();
             string question = string.Format(_clearRecentCategoryQuestion.Text, repositories.Count);
             if (!PromptUserConfirm(question, _clearRecentCategoryCaption.Text))
             {
