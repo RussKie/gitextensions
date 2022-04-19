@@ -35,20 +35,24 @@ namespace GitUI
         {
             if (item?.Item.IsStatusOnly ?? false)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 // Present error (e.g. parsing Git)
-                await fileViewer.ViewTextAsync(item.Item.Name, item.Item.ErrorMessage ?? "");
+                await fileViewer.ViewTextAsync(item.Item.Name, text: item.Item.ErrorMessage ?? "", cancellationToken);
                 return;
             }
 
             if (item?.Item is null || item.SecondRevision?.ObjectId is null)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 if (!string.IsNullOrWhiteSpace(defaultText))
                 {
-                    await fileViewer.ViewTextAsync(item?.Item?.Name, defaultText);
+                    await fileViewer.ViewTextAsync(item?.Item?.Name, defaultText, cancellationToken);
                     return;
                 }
 
-                await fileViewer.ClearAsync();
+                await fileViewer.ClearAsync(cancellationToken);
                 return;
             }
 
@@ -58,20 +62,24 @@ namespace GitUI
 
             if (item.Item.IsNew || firstId is null || (!item.Item.IsDeleted && FileHelper.IsImage(item.Item.Name)))
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 // View blob guid from revision, or file for worktree
-                await fileViewer.ViewGitItemAsync(item, openWithDiffTool);
+                await fileViewer.ViewGitItemAsync(item, openWithDiffTool, cancellationToken);
                 return;
             }
 
             if (item.Item.IsRangeDiff)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 // Git range-diff has cubic runtime complexity and can be slow and memory consuming,
                 // give an indication of what is going on
                 string range = item.BaseA is null || item.BaseB is null
                     ? $"{firstId}...{item.SecondRevision.ObjectId}"
                     : $"{item.BaseA}..{firstId} {item.BaseB}..{item.SecondRevision.ObjectId}";
 
-                await fileViewer.ViewTextAsync("git-range-diff.sh", $"git range-diff {range}");
+                await fileViewer.ViewTextAsync(fileName: "git-range-diff.sh", text: $"git range-diff {range}", cancellationToken);
 
                 string output = await fileViewer.Module.GetRangeDiffAsync(
                         firstId,
@@ -87,7 +95,7 @@ namespace GitUI
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await fileViewer.ViewRangeDiffAsync(filename, output ?? defaultText);
+                await fileViewer.ViewRangeDiffAsync(filename, output ?? defaultText, cancellationToken);
                 return;
             }
 
@@ -98,11 +106,11 @@ namespace GitUI
 
             if (item.Item.IsSubmodule)
             {
-                await fileViewer.ViewTextAsync(item.Item.Name, text: selectedPatch, openWithDifftool: openWithDiffTool);
+                await fileViewer.ViewTextAsync(item.Item.Name, text: selectedPatch, cancellationToken, openWithDiffTool: openWithDiffTool);
             }
             else
             {
-                await fileViewer.ViewPatchAsync(item, text: selectedPatch, openWithDifftool: openWithDiffTool);
+                await fileViewer.ViewPatchAsync(item, text: selectedPatch, openWithDiffTool, cancellationToken);
             }
 
             return;

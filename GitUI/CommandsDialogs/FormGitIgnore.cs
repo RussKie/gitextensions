@@ -218,9 +218,9 @@ namespace GitUI.CommandsDialogs
             _NO_TRANSLATE_GitIgnoreEdit.TextLoaded -= GitIgnoreFileLoaded;
             ThreadHelper.JoinableTaskFactory.RunAsync(
                 () => _NO_TRANSLATE_GitIgnoreEdit.ViewTextAsync(
-                    ExcludeFile,
-                    currentFileContent + Environment.NewLine +
-                    string.Join(Environment.NewLine, patternsToAdd) + Environment.NewLine + string.Empty));
+                    fileName: ExcludeFile,
+                    text: currentFileContent + Environment.NewLine + string.Join(Environment.NewLine, patternsToAdd) + Environment.NewLine + string.Empty,
+                    cancellationToken: default));
             _NO_TRANSLATE_GitIgnoreEdit.TextLoaded += GitIgnoreFileLoaded;
         }
 

@@ -240,7 +240,7 @@ namespace GitUI.CommandsDialogs
             if (_previewedItem.ObjectType == LostObjectType.Commit)
             {
                 ThreadHelper.JoinableTaskFactory.RunAsync(() =>
-                    fileViewer.ViewFixedPatchAsync("commit.patch", content, null))
+                    fileViewer.ViewFixedPatchAsync("commit.patch", content, openWithDifftool: null, cancellationToken: default))
                 .FileAndForget();
             }
             else
@@ -248,7 +248,7 @@ namespace GitUI.CommandsDialogs
                 ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
                 {
                     var filename = GuessFileTypeWithContent(content);
-                    await fileViewer.ViewTextAsync(filename, content, null);
+                    await fileViewer.ViewTextAsync(filename, content, cancellationToken: default);
                 }).FileAndForget();
             }
         }

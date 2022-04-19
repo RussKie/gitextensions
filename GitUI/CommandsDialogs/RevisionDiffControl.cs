@@ -106,7 +106,7 @@ namespace GitUI.CommandsDialogs
             DiffFiles.StoreNextIndexToSelect();
             ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
             {
-                await SetDiffsAsync(revisions);
+                await SetDiffsAsync(revisions, cancellationToken: _setDiffSequence.Next());
                 if (DiffFiles.SelectedItem is null)
                 {
                     DiffFiles.SelectStoredNextIndex();
@@ -238,7 +238,7 @@ namespace GitUI.CommandsDialogs
         {
             ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
             {
-                await SetDiffsAsync(revisions);
+                await SetDiffsAsync(revisions, cancellationToken: _setDiffSequence.Next());
 
                 // Select something by default, except range diff
                 if (DiffFiles.SelectedItem is null && !(DiffFiles.FirstGroupItems.Count() == 1 && DiffFiles.FirstGroupItems.FirstOrDefault().Item.IsRangeDiff))
@@ -263,14 +263,13 @@ namespace GitUI.CommandsDialogs
             }
         }
 
-        private async Task SetDiffsAsync(IReadOnlyList<GitRevision> revisions)
+        private async Task SetDiffsAsync(IReadOnlyList<GitRevision> revisions, CancellationToken cancellationToken)
         {
             Validates.NotNull(_revisionGrid);
-            CancellationToken cancellationToken = _setDiffSequence.Next();
 
             _viewChangesSequence.CancelCurrent();
             await this.SwitchToMainThreadAsync(cancellationToken);
-            await DiffText.ClearAsync();
+            await DiffText.ClearAsync(cancellationToken);
 
             FileStatusItem prevSelectedItem = DiffFiles.SelectedItem;
             FileStatusItem prevDiffItem = DiffFiles.FirstGroupItems.Contains(prevSelectedItem) ? prevSelectedItem : null;
@@ -475,6 +474,15 @@ namespace GitUI.CommandsDialogs
 
                 return (allFilesExist, allDirectoriesExist, allFilesOrUntrackedDirectoriesExist);
             }
+        }
+
+        protected override void OnUICommandsChanged(GitUICommandsChangedEventArgs e)
+        {
+            _customDiffToolsSequence.CancelCurrent();
+            _viewChangesSequence.CancelCurrent();
+            _setDiffSequence.CancelCurrent();
+
+            base.OnUICommandsChanged(e);
         }
 
         private void RequestRefresh()

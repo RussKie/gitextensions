@@ -123,8 +123,8 @@ namespace GitUI.Blame
 
             // Clear the contents of the viewer while loading
             BlameAuthor.ClearBlameGutter();
-            await BlameAuthor.ClearAsync();
-            await BlameFile.ClearAsync();
+            await BlameAuthor.ClearAsync(cancellationToken);
+            await BlameFile.ClearAsync(cancellationToken);
 
             await _blameLoader.LoadAsync(cancellationToken => _blame = Module.Blame(fileName, objectId.ToString(), encoding, cancellationToken: cancellationToken),
                 () => ProcessBlame(fileName, revision, children, controlToMask, line, cancellationToken));
@@ -310,10 +310,10 @@ namespace GitUI.Blame
             Validates.NotNull(_fileName);
 
             ThreadHelper.JoinableTaskFactory.RunAsync(
-                () => BlameAuthor.ViewTextAsync("committer.txt", gutter));
+                () => BlameAuthor.ViewTextAsync("committer.txt", gutter, cancellationToken));
             cancellationToken.ThrowIfCancellationRequested();
             ThreadHelper.JoinableTaskFactory.RunAsync(
-                () => BlameFile.ViewTextAsync(_fileName, body));
+                () => BlameFile.ViewTextAsync(_fileName, body, cancellationToken));
             cancellationToken.ThrowIfCancellationRequested();
 
             BlameFile.GoToLine(lineNumber);

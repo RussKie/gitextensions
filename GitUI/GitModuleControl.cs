@@ -9,24 +9,14 @@ using ResourceManager;
 
 namespace GitUI
 {
-    public sealed class GitUICommandsSourceEventArgs : EventArgs
-    {
-        public GitUICommandsSourceEventArgs(IGitUICommandsSource gitUiCommandsSource)
-        {
-            GitUICommandsSource = gitUiCommandsSource;
-        }
-
-        public IGitUICommandsSource GitUICommandsSource { get; }
-    }
-
     /// <summary>
     /// Base class for a <see cref="UserControl"/> requiring <see cref="GitModule"/> and <see cref="GitUICommands"/>.
     /// </summary>
     public class GitModuleControl : GitExtensionsControl
     {
         private readonly object _lock = new();
-
         private int _isDisposed;
+        private IGitUICommandsSource? _uiCommandsSource;
 
         /// <summary>
         /// Occurs after the <see cref="UICommandsSource"/> is set.
@@ -35,7 +25,9 @@ namespace GitUI
         [Browsable(false)]
         public event EventHandler<GitUICommandsSourceEventArgs>? UICommandsSourceSet;
 
-        private IGitUICommandsSource? _uiCommandsSource;
+        protected GitModuleControl()
+        {
+        }
 
         /// <summary>
         /// Gets a <see cref="IGitUICommandsSource"/> for this control.
@@ -78,6 +70,8 @@ namespace GitUI
 
                 _uiCommandsSource = value ?? throw new ArgumentException($"Can not assign null value to {nameof(UICommandsSource)}.");
                 OnUICommandsSourceSet(_uiCommandsSource);
+
+                _uiCommandsSource.UICommandsChanged += (s, e) => OnUICommandsChanged(e);
             }
         }
 
@@ -85,29 +79,10 @@ namespace GitUI
         [Browsable(false)]
         public GitUICommands UICommands => UICommandsSource.UICommands;
 
-        /// <summary>
-        /// Gets the UI commands, if they've initialised.
-        /// </summary>
-        /// <remarks>
-        /// <para>This method will not attempt to initialise the commands if they have not
-        /// yet been initialised.</para>
-        /// <para>By contrast, the <see cref="UICommands"/> property attempts to initialise
-        /// the value if not previously initialised.</para>
-        /// </remarks>
-        public bool TryGetUICommands([NotNullWhen(returnValue: true)] out GitUICommands? commands)
-        {
-            commands = _uiCommandsSource?.UICommands;
-            return commands is not null;
-        }
-
         /// <summary>Gets the <see cref="UICommands"/>' <see cref="GitModule"/> reference.</summary>
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         [Browsable(false)]
         public GitModule Module => UICommands.Module;
-
-        protected GitModuleControl()
-        {
-        }
 
         protected override void Dispose(bool disposing)
         {
@@ -161,6 +136,29 @@ namespace GitUI
         protected virtual void OnUICommandsSourceSet(IGitUICommandsSource source)
         {
             UICommandsSourceSet?.Invoke(this, new GitUICommandsSourceEventArgs(source));
+        }
+
+        /// <summary>
+        ///  Signals to the descendant controls whenever <see cref="UICommands"/> is changed.
+        ///  This is a good time to cancel ongoing background operations.
+        /// </summary>
+        protected virtual void OnUICommandsChanged(GitUICommandsChangedEventArgs e)
+        {
+        }
+
+        /// <summary>
+        /// Gets the UI commands, if they've initialised.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method will not attempt to initialise the commands if they have not
+        /// yet been initialised.</para>
+        /// <para>By contrast, the <see cref="UICommands"/> property attempts to initialise
+        /// the value if not previously initialised.</para>
+        /// </remarks>
+        public bool TryGetUICommands([NotNullWhen(returnValue: true)] out GitUICommands? commands)
+        {
+            commands = _uiCommandsSource?.UICommands;
+            return commands is not null;
         }
     }
 }

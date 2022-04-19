@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GitCommands;
@@ -153,7 +154,7 @@ See the changes in the commit form.");
                 tvGitTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(tvGitTree_AfterSelect);
                 tvGitTree.SelectedNode.EnsureVisible();
 
-                ThreadHelper.JoinableTaskFactory.RunAsync(() => ShowGitItemAsync(gitItem, line));
+                ThreadHelper.JoinableTaskFactory.RunAsync(() => ShowGitItemAsync(gitItem, line, cancellationToken: _viewBlameSequence.Next()));
             }
             else
             {
@@ -359,18 +360,25 @@ See the changes in the commit form.");
                 switch (gitItem.ObjectType)
                 {
                     case GitObjectType.Blob:
-                    {
-                        UICommands.StartFileHistoryDialog(this, gitItem.FileName, _revision);
-                        break;
-                    }
+                        {
+                            UICommands.StartFileHistoryDialog(this, gitItem.FileName, _revision);
+                            break;
+                        }
 
                     case GitObjectType.Commit:
-                    {
-                        SpawnCommitBrowser(gitItem);
-                        break;
-                    }
+                        {
+                            SpawnCommitBrowser(gitItem);
+                            break;
+                        }
                 }
             }
+        }
+
+        protected override void OnUICommandsChanged(GitUICommandsChangedEventArgs e)
+        {
+            _viewBlameSequence.CancelCurrent();
+
+            base.OnUICommandsChanged(e);
         }
 
         private string? SaveSelectedItemToTempFile()
@@ -406,10 +414,12 @@ See the changes in the commit form.");
 
             Task ViewItem()
             {
+                CancellationToken cancellationToken = _viewBlameSequence.Next();
+
                 // new selection, start show at line 1
                 return e.Node?.Tag is GitItem gitItem
-                    ? ShowGitItemAsync(gitItem, 1)
-                    : ClearOutputAsync();
+                    ? ShowGitItemAsync(gitItem, line: 1, cancellationToken)
+                    : ClearOutputAsync(cancellationToken);
             }
         }
 
@@ -419,7 +429,7 @@ See the changes in the commit form.");
         /// <param name="gitItem">The <see cref="GitItem"/> to show.</param>
         /// <param name="line">The line to show if Blame is selected, null to not change selection for existing files.</param>
         /// <returns>The Task from FileViewer or Blame.</returns>
-        private Task ShowGitItemAsync(GitItem gitItem, int? line)
+        private Task ShowGitItemAsync(GitItem gitItem, int? line, CancellationToken cancellationToken)
         {
             switch (gitItem.ObjectType)
             {
@@ -432,7 +442,7 @@ See the changes in the commit form.");
 
                         FileText.Visible = false;
                         BlameControl.Visible = true;
-                        return BlameControl.LoadBlameAsync(_revision, children: null, gitItem.FileName, _revisionGrid, controlToMask: null, FileText.Encoding, line, cancellationToken: _viewBlameSequence.Next());
+                        return BlameControl.LoadBlameAsync(_revision, children: null, gitItem.FileName, _revisionGrid, controlToMask: null, FileText.Encoding, line, cancellationToken: cancellationToken);
                     }
 
                 case GitObjectType.Commit:
@@ -441,11 +451,13 @@ See the changes in the commit form.");
                     }
 
                 default:
-                    return ClearOutputAsync();
+                    return ClearOutputAsync(cancellationToken);
             }
 
             Task ViewGitItemAsync(GitItem gitItem)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 GitItemStatus file = new(name: gitItem.FileName)
                 {
                     IsTracked = true,
@@ -455,15 +467,15 @@ See the changes in the commit form.");
 
                 BlameControl.Visible = false;
                 FileText.Visible = true;
-                return FileText.ViewGitItemAsync(file, gitItem.ObjectId);
+                return FileText.ViewGitItemAsync(file, gitItem.ObjectId, openWithDifftool: null, cancellationToken);
             }
         }
 
-        private Task ClearOutputAsync()
+        private Task ClearOutputAsync(CancellationToken cancellationToken)
         {
             BlameControl.Visible = false;
             FileText.Visible = true;
-            return FileText.ClearAsync();
+            return FileText.ClearAsync(cancellationToken);
         }
 
         private void tvGitTree_BeforeExpand(object sender, TreeViewCancelEventArgs e)
@@ -523,7 +535,7 @@ See the changes in the commit form.");
             AppSettings.RevisionFileTreeShowBlame = blameToolStripMenuItem1.Checked;
             int? line = FileText.Visible ? FileText.CurrentFileLine : null;
 
-            ThreadHelper.JoinableTaskFactory.RunAsync(() => ShowGitItemAsync(gitItem, line));
+            ThreadHelper.JoinableTaskFactory.RunAsync(() => ShowGitItemAsync(gitItem, line, cancellationToken: _viewBlameSequence.Next()));
         }
 
         private void copyFilenameToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
