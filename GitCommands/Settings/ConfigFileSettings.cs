@@ -70,15 +70,31 @@ namespace GitCommands.Settings
                 SettingLevel.SystemWide);
         }
 
-        public new string GetValue(string setting)
+        public new string GetValue(string setting) => GetString(setting, string.Empty);
+
+        public T? GetValue<T>(string setting) where T : struct => ConvertValue<T>(GetValue(setting), setting);
+
+        private T? ConvertValue<T>(string value, string setting) where T : struct
         {
-            return GetString(setting, string.Empty);
+            // Handle case where setting is not set
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return default;
+            }
+
+            Type targetType = typeof(T);
+            try
+            {
+                return (T)Convert.ChangeType(value, targetType);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Setting '{setting}': fail to convert value '{value}' into type '{targetType}'. Error: {ex}");
+                throw;
+            }
         }
 
-        public IReadOnlyList<string> GetValues(string setting)
-        {
-            return SettingsCache.GetValues(setting);
-        }
+        public IReadOnlyList<string> GetValues(string setting) => SettingsCache.GetValues(setting);
 
         public new void SetValue(string setting, string? value)
         {

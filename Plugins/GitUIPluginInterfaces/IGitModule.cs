@@ -125,7 +125,9 @@ namespace GitUIPluginInterfaces
         Task<IReadOnlyList<Remote>> GetRemotesAsync();
 
         string GetSetting(string setting);
+        T? GetSetting<T>(string setting) where T : struct;
         string GetEffectiveSetting(string setting);
+        T? GetEffectiveSetting<T>(string setting) where T : struct;
 
         /// <summary>
         /// Get the effective config setting from git.

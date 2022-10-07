@@ -2126,15 +2126,11 @@ namespace GitCommands
             return LocalConfigFile.GetValues(setting);
         }
 
-        public string GetSetting(string setting)
-        {
-            return LocalConfigFile.GetValue(setting);
-        }
+        public string GetSetting(string setting) => LocalConfigFile.GetValue(setting);
+        public T? GetSetting<T>(string setting) where T : struct => LocalConfigFile.GetValue<T>(setting);
 
-        public string GetEffectiveSetting(string setting)
-        {
-            return EffectiveConfigFile.GetValue(setting);
-        }
+        public string GetEffectiveSetting(string setting) => EffectiveConfigFile.GetValue(setting);
+        public T? GetEffectiveSetting<T>(string setting) where T : struct => EffectiveConfigFile.GetValue<T>(setting);
 
         public string? GetEffectiveGitSetting(string setting, bool cache = true)
         {
