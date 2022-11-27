@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using GitCommands;
-using GitCommands.Utils;
+﻿using GitCommands;
 using GitExtUtils.GitUI.Theming;
 using GitUI.Properties;
 using GitUI.Shells;
@@ -16,7 +14,7 @@ namespace GitUI.CommandsDialogs
 
         private void InitMenusAndToolbars(string? revFilter, string? pathFilter)
         {
-            commandsToolStripMenuItem.DropDownOpening += CommandsToolStripMenuItem_DropDownOpening;
+            mnuCommands.DropDownOpening += CommandsToolStripMenuItem_DropDownOpening;
 
             ////InitFilters();
 

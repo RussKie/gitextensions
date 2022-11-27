@@ -1,9 +1,6 @@
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing.Drawing2D;
 using System.Globalization;
-using System.Text;
 using ConEmu.WinForms;
 using GitCommands;
 using GitCommands.Config;
@@ -18,7 +15,6 @@ using GitExtUtils.GitUI;
 using GitExtUtils.GitUI.Theming;
 using GitUI.BranchTreePanel;
 using GitUI.CommandsDialogs.BrowseDialog;
-using GitUI.CommandsDialogs.BrowseDialog.DashboardControl;
 using GitUI.CommandsDialogs.WorktreeDialog;
 using GitUI.HelperDialogs;
 using GitUI.Hotkey;
@@ -33,8 +29,6 @@ using GitUIPluginInterfaces;
 using GitUIPluginInterfaces.RepositoryHosts;
 using Microsoft;
 using Microsoft.VisualStudio.Threading;
-using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Taskbar;
 using ResourceManager;
 
 namespace GitUI.CommandsDialogs
@@ -639,7 +633,7 @@ namespace GitUI.CommandsDialogs
 
         private void UpdatePluginMenu(bool validWorkingDir)
         {
-            foreach (ToolStripItem item in pluginsToolStripMenuItem.DropDownItems)
+            foreach (ToolStripItem item in mnuPlugins.DropDownItems)
             {
                 item.Enabled = !(item.Tag is IGitPluginForRepository) || validWorkingDir;
             }
@@ -648,7 +642,7 @@ namespace GitUI.CommandsDialogs
         private void RegisterPlugins()
         {
             const string PluginManagerName = "Plugin Manager";
-            var existingPluginMenus = pluginsToolStripMenuItem.DropDownItems.OfType<ToolStripMenuItem>().ToLookup(c => c.Tag);
+            var existingPluginMenus = mnuPlugins.DropDownItems.OfType<ToolStripMenuItem>().ToLookup(c => c.Tag);
 
             lock (PluginRegistry.Plugins)
             {
@@ -685,11 +679,11 @@ namespace GitUI.CommandsDialogs
                     if (plugin.Name == PluginManagerName)
                     {
                         // insert Plugin Manager below the separator
-                        pluginsToolStripMenuItem.DropDownItems.Insert(pluginsToolStripMenuItem.DropDownItems.Count - 1, item);
+                        mnuPlugins.DropDownItems.Insert(mnuPlugins.DropDownItems.Count - 1, item);
                     }
                     else
                     {
-                        pluginsToolStripMenuItem.DropDownItems.Insert(0, item);
+                        mnuPlugins.DropDownItems.Insert(0, item);
                     }
                 }
 
@@ -702,10 +696,10 @@ namespace GitUI.CommandsDialogs
             UICommands.RaisePostRegisterPlugin(this);
 
             // Show "Repository hosts" menu item when there is at least 1 repository host plugin loaded
-            _repositoryHostsToolStripMenuItem.Visible = PluginRegistry.GitHosters.Count > 0;
+            mnuRepositoryHosts.Visible = PluginRegistry.GitHosters.Count > 0;
             if (PluginRegistry.GitHosters.Count == 1)
             {
-                _repositoryHostsToolStripMenuItem.Text = PluginRegistry.GitHosters[0].Name;
+                mnuRepositoryHosts.Text = PluginRegistry.GitHosters[0].Name;
             }
 
             UpdatePluginMenu(Module.IsValidGitWorkingDir());
@@ -719,11 +713,11 @@ namespace GitUI.CommandsDialogs
         /// </summary>
         private void HideVariableMainMenuItems()
         {
-            repositoryToolStripMenuItem.Visible = false;
-            commandsToolStripMenuItem.Visible = false;
-            pluginsToolStripMenuItem.Visible = false;
+            mnuRepository.Visible = false;
+            mnuCommands.Visible = false;
+            mnuPlugins.Visible = false;
             refreshToolStripMenuItem.ShortcutKeys = Keys.None;
-            _repositoryHostsToolStripMenuItem.Visible = false;
+            mnuRepositoryHosts.Visible = false;
             _formBrowseMenus.RemoveRevisionGridMainMenuItems();
             mainMenuStrip.Refresh();
         }
@@ -759,9 +753,9 @@ namespace GitUI.CommandsDialogs
 
                 toolStripButtonPull.Enabled = validBrowseDir;
                 toolStripButtonPush.Enabled = validBrowseDir;
-                pluginsToolStripMenuItem.Visible = validBrowseDir;
-                repositoryToolStripMenuItem.Visible = validBrowseDir;
-                commandsToolStripMenuItem.Visible = validBrowseDir;
+                mnuPlugins.Visible = validBrowseDir;
+                mnuRepository.Visible = validBrowseDir;
+                mnuCommands.Visible = validBrowseDir;
                 toolStripFileExplorer.Enabled = validBrowseDir;
                 refreshToolStripMenuItem.ShortcutKeys = Keys.F5;
 
@@ -823,7 +817,7 @@ namespace GitUI.CommandsDialogs
                     _formBrowseMenus.AddMenuCommandSet(MainMenuItem.NavigateMenu, RevisionGrid.MenuCommands.NavigateMenuCommands);
                     _formBrowseMenus.AddMenuCommandSet(MainMenuItem.ViewMenu, RevisionGrid.MenuCommands.ViewMenuCommands);
 
-                    _formBrowseMenus.InsertRevisionGridMainMenuItems(repositoryToolStripMenuItem);
+                    _formBrowseMenus.InsertRevisionGridMainMenuItems(mnuRepository);
 
                     // Request all branches if side panel is shown
                     var aheadBehindData = _aheadBehindDataProvider?.GetData(MainSplitContainer.Panel1Collapsed ? RevisionGrid.CurrentBranch.Value : "");
