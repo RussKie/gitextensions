@@ -57,7 +57,19 @@ namespace GitUI.CommandsDialogs
                     return;
                 }
 
-                RefreshLeftPanel(e.ForceRefresh, e.GetRefs);
+                RefreshLeftPanel(e.GetRefs, e.GetStashRevs, e.ForceRefresh);
+            };
+
+            RevisionGrid.RevisionsLoaded += (sender, e) =>
+            {
+                if (sender is null || MainSplitContainer.Panel1Collapsed)
+                {
+                    // - the event is either not originated from the revision grid, or
+                    // - the left panel is hidden
+                    return;
+                }
+
+                repoObjectsTree.RefreshRevisionsLoaded();
             };
 
             RevisionGrid.SelectionChanged += (sender, e) =>

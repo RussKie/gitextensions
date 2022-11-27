@@ -628,9 +628,13 @@ namespace GitUI.CommandsDialogs
 
         #endregion
 
+        /// <summary>
+        /// Set the path filter.
+        /// </summary>
+        /// <param name="pathFilter">Zero or more quoted paths, separated by spaces.</param>
         public void SetPathFilter(string pathFilter)
         {
-            RevisionGrid.SetAndApplyPathFilter(pathFilter.QuoteNE());
+            RevisionGrid.SetAndApplyPathFilter(pathFilter);
         }
 
         private void UpdatePluginMenu(bool validWorkingDir)
@@ -821,7 +825,9 @@ namespace GitUI.CommandsDialogs
 
                     _formBrowseMenus.InsertRevisionGridMainMenuItems(repositoryToolStripMenuItem);
 
-                    toolStripButtonPush.DisplayAheadBehindInformation(RevisionGrid.CurrentBranch.Value);
+                    // Request all branches if side panel is shown
+                    var aheadBehindData = _aheadBehindDataProvider?.GetData(MainSplitContainer.Panel1Collapsed ? RevisionGrid.CurrentBranch.Value : "");
+                    toolStripButtonPush.DisplayAheadBehindInformation(aheadBehindData, RevisionGrid.CurrentBranch.Value);
 
                     ActiveControl = RevisionGrid;
                 }
@@ -1017,8 +1023,6 @@ namespace GitUI.CommandsDialogs
             };
 
             _NO_TRANSLATE_WorkingDir.DropDownItems.Add(mnuRecentReposSettings);
-
-            ToolStripFilters.PreventToolStripSplitButtonClosing((ToolStripSplitButton)sender);
             _NO_TRANSLATE_WorkingDir.DropDown.ResumeLayout();
         }
 
@@ -1120,17 +1124,9 @@ namespace GitUI.CommandsDialogs
             revisionGpgInfo1.DisplayGpgInfo(info);
         }
 
-        private void RefreshLeftPanel(bool forceRefresh, Func<RefsFilter, IReadOnlyList<IGitRef>> getRefs)
+        private void RefreshLeftPanel(Func<RefsFilter, IReadOnlyList<IGitRef>> getRefs, Lazy<IReadOnlyCollection<GitRevision>> getStashRevs, bool forceRefresh)
         {
-            // Apply filtering when:
-            // 1. don't show reflog, and
-            // 2. one of the following
-            //      a) show the current branch only, or
-            //      b) filter on specific branch
-            // (this check ignores other revision filters)
-            bool isFiltering = !AppSettings.ShowReflogReferences
-                            && (AppSettings.ShowCurrentBranchOnly || AppSettings.BranchFilterEnabled);
-            repoObjectsTree.Refresh(isFiltering, forceRefresh, getRefs);
+            repoObjectsTree.RefreshRevisionsLoading(getRefs, getStashRevs, forceRefresh, RevisionGrid.FilterIsApplied());
         }
 
         private void OpenToolStripMenuItemClick(object sender, EventArgs e)
@@ -1715,8 +1711,9 @@ namespace GitUI.CommandsDialogs
             branchSelect.DropDownItems.Add(new ToolStripSeparator());
             AddBranchesMenuItems();
 
-            ToolStripFilters.PreventToolStripSplitButtonClosing(sender as ToolStripSplitButton);
             branchSelect.DropDown.ResumeLayout();
+
+            return;
 
             void AddCheckoutBranchMenuItem()
             {
@@ -2328,11 +2325,6 @@ namespace GitUI.CommandsDialogs
             SetWorkingDir(path);
         }
 
-        private void toolStripButtonLevelUp_DropDownOpening(object sender, EventArgs e)
-        {
-            ToolStripFilters.PreventToolStripSplitButtonClosing(sender as ToolStripSplitButton);
-        }
-
         #region Submodules
 
         private ToolStripItem CreateSubmoduleMenuItem(SubmoduleInfo info, string textFormat = "{0}")
@@ -2546,11 +2538,6 @@ namespace GitUI.CommandsDialogs
             }
         }
 
-        private void toolStripButtonPull_DropDownOpened(object sender, EventArgs e)
-        {
-            ToolStripFilters.PreventToolStripSplitButtonClosing(sender as ToolStripSplitButton);
-        }
-
         /// <summary>
         /// Adds a tab with console interface to Git over the current working copy. Recreates the terminal on tab activation if user exits the shell.
         /// </summary>
@@ -2685,7 +2672,15 @@ namespace GitUI.CommandsDialogs
 
             if (!MainSplitContainer.Panel1Collapsed)
             {
-                RefreshLeftPanel(forceRefresh: true, new FilteredGitRefsProvider(UICommands.GitModule).GetRefs);
+                // Refresh the side panel, update visibility of objects separately
+                // Get the "main" stash commit, including the reflog selector
+                Lazy<IReadOnlyCollection<GitRevision>> getStashRevs = new(() =>
+                    !AppSettings.ShowStashes
+                    ? Array.Empty<GitRevision>()
+                    : new RevisionReader(new(UICommands.GitModule.WorkingDir), hasReflogSelector: true).GetStashes(CancellationToken.None));
+
+                RefreshLeftPanel(new FilteredGitRefsProvider(UICommands.GitModule).GetRefs, getStashRevs, forceRefresh: true);
+                repoObjectsTree.RefreshRevisionsLoaded();
             }
         }
 
@@ -2811,11 +2806,6 @@ namespace GitUI.CommandsDialogs
             {
                 RefreshRevisions();
             }
-        }
-
-        private void toolStripSplitStash_DropDownOpened(object sender, EventArgs e)
-        {
-            ToolStripFilters.PreventToolStripSplitButtonClosing(sender as ToolStripSplitButton);
         }
 
         private void undoLastCommitToolStripMenuItem_Click(object sender, EventArgs e)
