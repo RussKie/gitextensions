@@ -67,8 +67,6 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
             InitializeComponent();
             InitializeComplete();
 
-            mnuTop.DropDownItems.Clear();
-
             _lvgRecentRepositories = new ListViewGroup(_groupRecentRepositories.Text, HorizontalAlignment.Left)
             {
                 Name = string.Empty,
@@ -671,16 +669,6 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
             }
         }
 
-        private void listView1_MouseMove(object sender, MouseEventArgs e)
-        {
-            HoveredItem = listView1.GetItemAt(e.X, e.Y);
-        }
-
-        private void listView1_MouseLeave(object sender, EventArgs e)
-        {
-            HoveredItem = null;
-        }
-
         private void listView1_GotFocus(object sender, EventArgs e)
         {
             if (listView1.Items.Count > 0 && listView1.SelectedItems.Count == 0)
@@ -704,28 +692,14 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
             }
         }
 
-        private void mnuConfigure_Click(object sender, EventArgs e)
+        private void listView1_MouseMove(object sender, MouseEventArgs e)
         {
-            using FormRecentReposSettings frm = new();
-            var result = frm.ShowDialog(this);
-            if (result == DialogResult.OK)
-            {
-                ShowRecentRepositories();
-            }
+            HoveredItem = listView1.GetItemAt(e.X, e.Y);
         }
 
-        private void RecentRepositoriesList_Load(object sender, EventArgs e)
+        private void listView1_MouseLeave(object sender, EventArgs e)
         {
-            if (!(Parent.FindForm() is FormBrowse form))
-            {
-                return;
-            }
-
-            var menus = new ToolStripItem[] { mnuConfigure };
-            var menuStrip = form.FindDescendantOfType<MenuStrip>(p => p.Name == "mainMenuStrip");
-            Validates.NotNull(menuStrip);
-            var dashboardMenu = (ToolStripMenuItem)menuStrip.Items.Cast<ToolStripItem>().SingleOrDefault(p => p.Name == "dashboardToolStripMenuItem");
-            dashboardMenu?.DropDownItems.AddRange(menus);
+            HoveredItem = null;
         }
 
         private void tsmiCategories_DropDownOpening(object sender, EventArgs e)

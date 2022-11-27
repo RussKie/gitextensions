@@ -4168,7 +4168,839 @@ Do you want to continue?</source>
       </trans-unit>
     </body>
   </file>
-  <file datatype="plaintext" original="FormBrowseRepoSettingsPage" source-language="en" target-language="ru">
+    <file datatype="plaintext" original="FormShell" source-language="en" target-language="ru">
+        <body>
+            <trans-unit id="$this.Text">
+                <source>Git Extensions</source>
+                <target>Git Extensions</target>
+
+            </trans-unit>
+            <trans-unit id="CommitInfoTabPage.Text">
+                <source>Commit</source>
+                <target>Коммит</target>
+
+            </trans-unit>
+            <trans-unit id="DiffTabPage.Text">
+                <source>Diff</source>
+                <target>Изменения</target>
+
+            </trans-unit>
+            <trans-unit id="EditSettings.ToolTipText">
+                <source>Settings</source>
+                <target>Настройки</target>
+
+            </trans-unit>
+            <trans-unit id="GpgInfoTabPage.Text">
+                <source>GPG</source>
+                <target>GPG</target>
+
+            </trans-unit>
+            <trans-unit id="PuTTYToolStripMenuItem.Text">
+                <source>PuTTY</source>
+                <target>PuTTY</target>
+
+            </trans-unit>
+            <trans-unit id="RefreshButton.ToolTipText">
+                <source>Refresh</source>
+                <target>Обновить</target>
+
+            </trans-unit>
+            <trans-unit id="ToolStripFilters.Text">
+                <source>Filters</source>
+                <target>Фильтры</target>
+
+            </trans-unit>
+            <trans-unit id="ToolStripMain.Text">
+                <source>Standard</source>
+                <target>Стандартный</target>
+
+            </trans-unit>
+            <trans-unit id="ToolStripScripts.Text">
+                <source>Scripts</source>
+                <target>Скрипты</target>
+
+            </trans-unit>
+            <trans-unit id="TreeTabPage.Text">
+                <source>File tree</source>
+                <target>Дерево файлов</target>
+
+            </trans-unit>
+            <trans-unit id="_addUpstreamRemoteToolStripMenuItem.Text">
+                <source>Add upstream remote</source>
+                <target>Добавить внешний репозиторий</target>
+
+            </trans-unit>
+            <trans-unit id="_buildReportTabCaption.Text">
+                <source>Build Report</source>
+                <target>Отчет сборки</target>
+
+            </trans-unit>
+            <trans-unit id="_commitButtonText.Text">
+                <source>Commit</source>
+                <target>Коммит</target>
+
+            </trans-unit>
+            <trans-unit id="_configureWorkingDirMenu.Text">
+                <source>Configure this menu</source>
+                <target>Настроить этот список</target>
+
+            </trans-unit>
+            <trans-unit id="_consoleTabCaption.Text">
+                <source>Console</source>
+                <target>Консоль</target>
+
+            </trans-unit>
+            <trans-unit id="_createPullRequestsToolStripMenuItem.Text">
+                <source>Create pull requests...</source>
+                <target>Создать запрос на слияние...</target>
+
+            </trans-unit>
+            <trans-unit id="_forkCloneRepositoryToolStripMenuItem.Text">
+                <source>Fork/Clone repository...</source>
+                <target>Ответвиться/клонировать репозиторий...</target>
+
+            </trans-unit>
+            <trans-unit id="_goToSuperProject.Text">
+                <source>Go to superproject</source>
+                <target>Перейти в суперпроект</target>
+
+            </trans-unit>
+            <trans-unit id="_indexLockCantDelete.Text">
+                <source>Failed to delete index.lock</source>
+                <target>Не удалось удалить index.lock</target>
+
+            </trans-unit>
+            <trans-unit id="_loading.Text">
+                <source>Loading...</source>
+                <target>Загрузка...</target>
+
+            </trans-unit>
+            <trans-unit id="_noReposHostFound.Text">
+                <source>Could not find any relevant repository hosts for the currently open repository.</source>
+                <target>Не удалось найти соответствующий хостинг репозиториев для текущего открытого репозитория.</target>
+
+            </trans-unit>
+            <trans-unit id="_noReposHostPluginLoaded.Text">
+                <source>No repository host plugin loaded.</source>
+                <target>Не загружено плагинов хостинга репозиториев.</target>
+
+            </trans-unit>
+            <trans-unit id="_noSubmodulesPresent.Text">
+                <source>No submodules</source>
+                <target>Нет субмодулей</target>
+
+            </trans-unit>
+            <trans-unit id="_noWorkingFolderText.Text">
+                <source>No working directory</source>
+                <target>Нет рабочего каталога</target>
+
+            </trans-unit>
+            <trans-unit id="_pullFetch.Text">
+                <source>Fetch</source>
+                <target>Забрать</target>
+
+            </trans-unit>
+            <trans-unit id="_pullFetchAll.Text">
+                <source>Fetch all</source>
+                <target>Забрать все</target>
+
+            </trans-unit>
+            <trans-unit id="_pullFetchPruneAll.Text">
+                <source>Fetch and prune all</source>
+                <target>Забрать и удалить всё</target>
+
+            </trans-unit>
+            <trans-unit id="_pullMerge.Text">
+                <source>Pull - merge</source>
+                <target>Получить - слияние</target>
+
+            </trans-unit>
+            <trans-unit id="_pullOpenDialog.Text">
+                <source>Open pull dialog</source>
+                <target>Открыть диалог получения изменений</target>
+
+            </trans-unit>
+            <trans-unit id="_pullRebase.Text">
+                <source>Pull - rebase</source>
+                <target>Получить - переместить</target>
+
+            </trans-unit>
+            <trans-unit id="_repositoryHostsToolStripMenuItem.Text">
+                <source>(Repository hosts)</source>
+                <target>(Хостинг репозиториев)</target>
+
+            </trans-unit>
+            <trans-unit id="_superprojectModuleFormat.Text">
+                <source>Superproject: {0}</source>
+                <target>Суперпроект: {0}</target>
+
+            </trans-unit>
+            <trans-unit id="_topProjectModuleFormat.Text">
+                <source>Top project: {0}</source>
+                <target>Верхний проект: {0}</target>
+
+            </trans-unit>
+            <trans-unit id="_undoLastCommitCaption.Text">
+                <source>Undo last commit</source>
+                <target>Отменить последний коммит</target>
+
+            </trans-unit>
+            <trans-unit id="_undoLastCommitText.Text">
+                <source>
+                    You will still be able to find all the commit's changes in the staging area
+
+                    Do you want to continue?
+                </source>
+                <target>
+                    Вы все еще можете найти все изменения коммита в области подготовки
+
+                    Хотите продолжить?
+                </target>
+
+            </trans-unit>
+            <trans-unit id="_updateCurrentSubmodule.Text">
+                <source>Update current submodule</source>
+                <target>Обновить текущий субмодуль</target>
+
+            </trans-unit>
+            <trans-unit id="_viewPullRequestsToolStripMenuItem.Text">
+                <source>View pull requests...</source>
+                <target>Обзор запросов...</target>
+
+            </trans-unit>
+            <trans-unit id="aboutToolStripMenuItem.Text">
+                <source>About</source>
+                <target>О программе</target>
+
+            </trans-unit>
+            <trans-unit id="applyPatchToolStripMenuItem.Text">
+                <source>Apply patch...</source>
+                <target>Применить патч...</target>
+
+            </trans-unit>
+            <trans-unit id="archiveToolStripMenuItem.Text">
+                <source>Archive revision...</source>
+                <target>Архивировать ревизию...</target>
+
+            </trans-unit>
+            <trans-unit id="bisectToolStripMenuItem.Text">
+                <source>Bisect...</source>
+                <target>Bisect...</target>
+
+            </trans-unit>
+            <trans-unit id="branchSelect.Text">
+                <source>Branch</source>
+                <target>Ветка</target>
+
+            </trans-unit>
+            <trans-unit id="branchSelect.ToolTipText">
+                <source>Change current branch</source>
+                <target>Изменить текущую ветку</target>
+
+            </trans-unit>
+            <trans-unit id="branchToolStripMenuItem.Text">
+                <source>Create branch...</source>
+                <target>Создать ветку...</target>
+
+            </trans-unit>
+            <trans-unit id="changelogToolStripMenuItem.Text">
+                <source>Changelog</source>
+                <target>Изменения</target>
+
+            </trans-unit>
+            <trans-unit id="checkForUpdatesToolStripMenuItem.Text">
+                <source>Check for updates</source>
+                <target>Проверить обновления</target>
+
+            </trans-unit>
+            <trans-unit id="checkoutBranchToolStripMenuItem.Text">
+                <source>Checkout branch...</source>
+                <target>Переключиться на ветку...</target>
+
+            </trans-unit>
+            <trans-unit id="checkoutToolStripMenuItem.Text">
+                <source>Checkout revision...</source>
+                <target>Переключиться на ревизию...</target>
+
+            </trans-unit>
+            <trans-unit id="cherryPickToolStripMenuItem.Text">
+                <source>Cherry pick...</source>
+                <target>Забрать коммит...</target>
+
+            </trans-unit>
+            <trans-unit id="cleanupToolStripMenuItem.Text">
+                <source>Clean working directory...</source>
+                <target>Очистить рабочий каталог...</target>
+
+            </trans-unit>
+            <trans-unit id="cloneToolStripMenuItem.Text">
+                <source>Clone repository...</source>
+                <target>Клонировать репозиторий...</target>
+
+            </trans-unit>
+            <trans-unit id="closeToolStripMenuItem.Text">
+                <source>Close (go to Dashboard)</source>
+                <target>Закрыть (открыть главную панель)</target>
+
+            </trans-unit>
+            <trans-unit id="commandsToolStripMenuItem.Text">
+                <source>&amp;Commands</source>
+                <target>&amp;Команды</target>
+
+            </trans-unit>
+            <trans-unit id="commitInfoBelowMenuItem.Text">
+                <source>Commit info below graph</source>
+                <target>Информация о коммите под графом</target>
+
+            </trans-unit>
+            <trans-unit id="commitInfoLeftwardMenuItem.Text">
+                <source>Commit info left of graph</source>
+                <target>Информация о коммите слева от графа</target>
+
+            </trans-unit>
+            <trans-unit id="commitInfoRightwardMenuItem.Text">
+                <source>Commit info right of graph</source>
+                <target>Информация о коммите справа от графа</target>
+
+            </trans-unit>
+            <trans-unit id="commitToolStripMenuItem.Text">
+                <source>Commit...</source>
+                <target>Зафиксировать...</target>
+
+            </trans-unit>
+            <trans-unit id="compressGitDatabaseToolStripMenuItem.Text">
+                <source>Compress git database</source>
+                <target>Сжать базу git</target>
+
+            </trans-unit>
+            <trans-unit id="createAStashToolStripMenuItem.Text">
+                <source>Create a stash...</source>
+                <target>Создать заначку...</target>
+
+            </trans-unit>
+            <trans-unit id="createWorktreeToolStripMenuItem.Text">
+                <source>Create a worktree...</source>
+                <target>Создать рабочее дерево...</target>
+
+            </trans-unit>
+            <trans-unit id="dashboardToolStripMenuItem.Text">
+                <source>&amp;Dashboard</source>
+                <target>&amp;Главная панель</target>
+
+            </trans-unit>
+            <trans-unit id="deleteBranchToolStripMenuItem.Text">
+                <source>Delete branch...</source>
+                <target>Удалить ветку...</target>
+
+            </trans-unit>
+            <trans-unit id="deleteIndexLockToolStripMenuItem.Text">
+                <source>Delete index.lock</source>
+                <target>Удалить index.lock</target>
+
+            </trans-unit>
+            <trans-unit id="deleteTagToolStripMenuItem.Text">
+                <source>Delete tag...</source>
+                <target>Удалить метку...</target>
+
+            </trans-unit>
+            <trans-unit id="donateToolStripMenuItem.Text">
+                <source>Donate</source>
+                <target>Пожертвовать</target>
+
+            </trans-unit>
+            <trans-unit id="editGitAttributesToolStripMenuItem.Text">
+                <source>Edit .gitattributes</source>
+                <target>Редактировать .gitattributes</target>
+
+            </trans-unit>
+            <trans-unit id="editLocalGitConfigToolStripMenuItem.Text">
+                <source>Edit .git/config</source>
+                <target>Редактировать .git/config</target>
+
+            </trans-unit>
+            <trans-unit id="editgitignoreToolStripMenuItem1.Text">
+                <source>Edit .gitignore</source>
+                <target>Редактировать .gitignore</target>
+
+            </trans-unit>
+            <trans-unit id="editgitinfoexcludeToolStripMenuItem.Text">
+                <source>Edit .git/info/exclude</source>
+                <target>Редактировать .git/info/exclude</target>
+
+            </trans-unit>
+            <trans-unit id="editmailmapToolStripMenuItem.Text">
+                <source>Edit .mailmap</source>
+                <target>Редактировать .mailmap</target>
+
+            </trans-unit>
+            <trans-unit id="exitToolStripMenuItem.Text">
+                <source>Exit</source>
+                <target>Выход</target>
+
+            </trans-unit>
+            <trans-unit id="fetchAllToolStripMenuItem.Text">
+                <source>Fetch all</source>
+                <target>Забрать все</target>
+
+            </trans-unit>
+            <trans-unit id="fetchAllToolStripMenuItem.ToolTipText">
+                <source>Fetch branches and tags from all remote repositories</source>
+                <target>Получение ветвей и тегов из всех удаленных репозиториев</target>
+
+            </trans-unit>
+            <trans-unit id="fetchPruneAllToolStripMenuItem.Text">
+                <source>Fetch and prune all</source>
+                <target>Забрать и удалить всё</target>
+
+            </trans-unit>
+            <trans-unit id="fetchPruneAllToolStripMenuItem.ToolTipText">
+                <source>Fetch branches and tags from all remote repositories also prune deleted refs</source>
+                <target>Забрать ветки и теги из всех удаленных репозиториев, а также очистить удаленные ссылки</target>
+
+            </trans-unit>
+            <trans-unit id="fetchToolStripMenuItem.Text">
+                <source>Fetch</source>
+                <target>Забрать</target>
+
+            </trans-unit>
+            <trans-unit id="fetchToolStripMenuItem.ToolTipText">
+                <source>Fetch branches and tags</source>
+                <target>Извлечение ветвей и тегов</target>
+
+            </trans-unit>
+            <trans-unit id="fileExplorerToolStripMenuItem.Text">
+                <source>File Explorer</source>
+                <target>Открыть в проводнике</target>
+
+            </trans-unit>
+            <trans-unit id="fileToolStripMenuItem.Text">
+                <source>&amp;Start</source>
+                <target>&amp;Начало</target>
+
+            </trans-unit>
+            <trans-unit id="formatPatchToolStripMenuItem.Text">
+                <source>Format patch...</source>
+                <target>Сформировать патч...</target>
+
+            </trans-unit>
+            <trans-unit id="generateOrImportKeyToolStripMenuItem.Text">
+                <source>Generate or import key</source>
+                <target>Генерировать или импортировать ключ</target>
+
+            </trans-unit>
+            <trans-unit id="gitBashToolStripMenuItem.Text">
+                <source>Git bash</source>
+                <target>Git bash</target>
+
+            </trans-unit>
+            <trans-unit id="gitGUIToolStripMenuItem.Text">
+                <source>Git GUI</source>
+                <target>Git GUI</target>
+
+            </trans-unit>
+            <trans-unit id="gitMaintenanceToolStripMenuItem.Text">
+                <source>Git maintenance</source>
+                <target>Обслуживание Git</target>
+
+            </trans-unit>
+            <trans-unit id="gitcommandLogToolStripMenuItem.Text">
+                <source>Git command log</source>
+                <target>Журнал команд Git</target>
+
+            </trans-unit>
+            <trans-unit id="helpToolStripMenuItem.Text">
+                <source>&amp;Help</source>
+                <target>&amp;Справка</target>
+
+            </trans-unit>
+            <trans-unit id="initNewRepositoryToolStripMenuItem.Text">
+                <source>Create new repository...</source>
+                <target>Создать новый репозиторий...</target>
+
+            </trans-unit>
+            <trans-unit id="kGitToolStripMenuItem.Text">
+                <source>GitK</source>
+                <target>GitK</target>
+
+            </trans-unit>
+            <trans-unit id="manageRemoteRepositoriesToolStripMenuItem1.Text">
+                <source>Remote repositories...</source>
+                <target>Внешние репозитории...</target>
+
+            </trans-unit>
+            <trans-unit id="manageStashesToolStripMenuItem.Text">
+                <source>Manage stashes...</source>
+                <target>Управлять спрятанными изменениями...</target>
+
+            </trans-unit>
+            <trans-unit id="manageStashesToolStripMenuItem.ToolTipText">
+                <source>Manage stashes</source>
+                <target>Управление спрятанными изменениями</target>
+
+            </trans-unit>
+            <trans-unit id="manageSubmodulesToolStripMenuItem.Text">
+                <source>Manage submodules...</source>
+                <target>Управление субмодулями...</target>
+
+            </trans-unit>
+            <trans-unit id="manageWorktreeToolStripMenuItem.Text">
+                <source>Manage worktrees...</source>
+                <target>Управление рабочими деревьями</target>
+
+            </trans-unit>
+            <trans-unit id="menuCommitInfoPosition.ToolTipText">
+                <source>Commit info position</source>
+                <target>Расположение информации о коммите</target>
+
+            </trans-unit>
+            <trans-unit id="menuitemSparse.Text">
+                <source>Sparse Working Copy</source>
+                <target>Разреженная рабочая копия</target>
+
+            </trans-unit>
+            <trans-unit id="mergeBranchToolStripMenuItem.Text">
+                <source>Merge branches...</source>
+                <target>Объединить ветки...</target>
+
+            </trans-unit>
+            <trans-unit id="mergeToolStripMenuItem.Text">
+                <source>Pull - merge</source>
+                <target>Получить - слияние</target>
+
+            </trans-unit>
+            <trans-unit id="navigateToolStripMenuItem.Text">
+                <source>Navigate</source>
+                <target>Навигация</target>
+
+            </trans-unit>
+            <trans-unit id="openToolStripMenuItem.Text">
+                <source>Open...</source>
+                <target>Открыть...</target>
+
+            </trans-unit>
+            <trans-unit id="patchToolStripMenuItem.Text">
+                <source>View patch file...</source>
+                <target>Просмотреть файл патч...</target>
+
+            </trans-unit>
+            <trans-unit id="pluginSettingsToolStripMenuItem.Text">
+                <source>Plugin Settings</source>
+                <target>Настройки плагинов</target>
+
+            </trans-unit>
+            <trans-unit id="pluginsToolStripMenuItem.Text">
+                <source>&amp;Plugins</source>
+                <target>&amp;Плагины</target>
+
+            </trans-unit>
+            <trans-unit id="pullToolStripMenuItem.Text">
+                <source>Pull/Fetch...</source>
+                <target>Получить/Забрать</target>
+
+            </trans-unit>
+            <trans-unit id="pullToolStripMenuItem1.Text">
+                <source>Open pull dialog...</source>
+                <target>Открыть диалог получения изменений...</target>
+
+            </trans-unit>
+            <trans-unit id="pushToolStripMenuItem.Text">
+                <source>Push...</source>
+                <target>Отправить...</target>
+
+            </trans-unit>
+            <trans-unit id="rebaseToolStripMenuItem.Text">
+                <source>Rebase...</source>
+                <target>Переместить ветку...</target>
+
+            </trans-unit>
+            <trans-unit id="rebaseToolStripMenuItem1.Text">
+                <source>Pull - rebase</source>
+                <target>Получить - переместить</target>
+
+            </trans-unit>
+            <trans-unit id="recoverLostObjectsToolStripMenuItem.Text">
+                <source>Recover lost objects...</source>
+                <target>Восстановить потерянные объекты...</target>
+
+            </trans-unit>
+            <trans-unit id="refreshDashboardToolStripMenuItem.Text">
+                <source>&amp;Refresh</source>
+                <target>&amp;Обновить</target>
+
+            </trans-unit>
+            <trans-unit id="refreshToolStripMenuItem.Text">
+                <source>Refresh</source>
+                <target>Обновить</target>
+
+            </trans-unit>
+            <trans-unit id="repoSettingsToolStripMenuItem.Text">
+                <source>Repository settings</source>
+                <target>Настройки репозитория</target>
+
+            </trans-unit>
+            <trans-unit id="reportAnIssueToolStripMenuItem.Text">
+                <source>Report an issue</source>
+                <target>Сообщить о проблеме</target>
+
+            </trans-unit>
+            <trans-unit id="repositoryToolStripMenuItem.Text">
+                <source>&amp;Repository</source>
+                <target>&amp;Репозиторий</target>
+
+            </trans-unit>
+            <trans-unit id="resetToolStripMenuItem.Text">
+                <source>Reset changes...</source>
+                <target>Сбросить изменения...</target>
+
+            </trans-unit>
+            <trans-unit id="runMergetoolToolStripMenuItem.Text">
+                <source>Solve merge conflicts...</source>
+                <target>Разрешить конфликты слияния...</target>
+
+            </trans-unit>
+            <trans-unit id="setDefaultPullButtonActionToolStripMenuItem.Text">
+                <source>Set default Pull button action</source>
+                <target>Назначить действие кнопки Получить</target>
+
+            </trans-unit>
+            <trans-unit id="settingsToolStripMenuItem.Text">
+                <source>Settings</source>
+                <target>Настройки</target>
+
+            </trans-unit>
+            <trans-unit id="startAuthenticationAgentToolStripMenuItem.Text">
+                <source>Start authentication agent</source>
+                <target>Запустить агент аутентификации</target>
+
+            </trans-unit>
+            <trans-unit id="stashChangesToolStripMenuItem.Text">
+                <source>Stash</source>
+                <target>Спрятанные изменения</target>
+
+            </trans-unit>
+            <trans-unit id="stashChangesToolStripMenuItem.ToolTipText">
+                <source>Stash changes</source>
+                <target>Спрятать</target>
+
+            </trans-unit>
+            <trans-unit id="stashPopToolStripMenuItem.Text">
+                <source>Stash pop</source>
+                <target>Извлечь из спрятанных</target>
+
+            </trans-unit>
+            <trans-unit id="stashPopToolStripMenuItem.ToolTipText">
+                <source>Apply and drop single stash</source>
+                <target>Применить и выбросить одиночный спрятанные изменения</target>
+
+            </trans-unit>
+            <trans-unit id="stashToolStripMenuItem.Text">
+                <source>Manage stashes...</source>
+                <target>Управлять спрятанными изменениями...</target>
+
+            </trans-unit>
+            <trans-unit id="synchronizeAllSubmodulesToolStripMenuItem.Text">
+                <source>Synchronize all submodules</source>
+                <target>Синхронизировать все субмодули</target>
+
+            </trans-unit>
+            <trans-unit id="tagToolStripMenuItem.Text">
+                <source>Create tag...</source>
+                <target>Создать метку...</target>
+
+            </trans-unit>
+            <trans-unit id="toggleBranchTreePanel.ToolTipText">
+                <source>Toggle left panel</source>
+                <target>Переключить левую панель</target>
+
+            </trans-unit>
+            <trans-unit id="toggleSplitViewLayout.ToolTipText">
+                <source>Toggle split view layout</source>
+                <target>Переключить раскладку разделения экрана</target>
+
+            </trans-unit>
+            <trans-unit id="toolStripButtonCommit.Text">
+                <source>Commit</source>
+                <target>Коммит</target>
+
+            </trans-unit>
+            <trans-unit id="toolStripButtonLevelUp.ToolTipText">
+                <source>Submodules</source>
+                <target>Субмодули</target>
+
+            </trans-unit>
+            <trans-unit id="toolStripButtonPull.Text">
+                <source>Pull</source>
+                <target>Получить</target>
+
+            </trans-unit>
+            <trans-unit id="toolStripButtonPush.Text">
+                <source>Push</source>
+                <target>Отправить</target>
+
+            </trans-unit>
+            <trans-unit id="toolStripFileExplorer.ToolTipText">
+                <source>File Explorer</source>
+                <target>Дерево файлов</target>
+
+            </trans-unit>
+            <trans-unit id="toolStripLabel1.Text">
+                <source>Branches:</source>
+                <target>Ветки:</target>
+
+            </trans-unit>
+            <trans-unit id="toolStripLabel1.ToolTipText">
+                <source>Branch filter</source>
+                <target>Фильтр веток</target>
+
+            </trans-unit>
+            <trans-unit id="toolStripMenuItemReflog.Text">
+                <source>Show reflog...</source>
+                <target>Показать reflog...</target>
+
+            </trans-unit>
+            <trans-unit id="toolStripMenuItemWorktrees.Text">
+                <source>Worktrees</source>
+                <target>Рабочие деревья</target>
+
+            </trans-unit>
+            <trans-unit id="toolStripSplitStash.ToolTipText">
+                <source>Manage stashes</source>
+                <target>Управление спрятанными изменениями</target>
+
+            </trans-unit>
+            <trans-unit id="toolbarsMenuItem.Text">
+                <source>Toolbars</source>
+                <target>Панели инструментов</target>
+
+            </trans-unit>
+            <trans-unit id="toolsToolStripMenuItem.Text">
+                <source>&amp;Tools</source>
+                <target>&amp;Инструменты</target>
+
+            </trans-unit>
+            <trans-unit id="translateToolStripMenuItem.Text">
+                <source>Translate</source>
+                <target>Перевести</target>
+
+            </trans-unit>
+            <trans-unit id="tsbtnAdvancedFilter.ToolTipText">
+                <source>Advanced filter</source>
+                <target>Расширенный фильтр</target>
+
+            </trans-unit>
+            <trans-unit id="tsddbtnBranchFilter.Text">
+                <source>Branch type</source>
+                <target>Тип ветки</target>
+
+            </trans-unit>
+            <trans-unit id="tsddbtnRevisionFilter.Text">
+                <source>Filter type</source>
+                <target>Тип фильтра</target>
+
+            </trans-unit>
+            <trans-unit id="tslblRevisionFilter.Text">
+                <source>Filter:</source>
+                <target>Фильтр:</target>
+
+            </trans-unit>
+            <trans-unit id="tslblRevisionFilter.ToolTipText">
+                <source>Text filter</source>
+                <target>Фильтра текста</target>
+
+            </trans-unit>
+            <trans-unit id="tsmiAuthorFilter.Text">
+                <source>Author</source>
+                <target>Автор</target>
+
+            </trans-unit>
+            <trans-unit id="tsmiBranchLocal.Text">
+                <source>Local</source>
+                <target>Локальный</target>
+
+            </trans-unit>
+            <trans-unit id="tsmiBranchRemote.Text">
+                <source>Remote</source>
+                <target>Внешний</target>
+
+            </trans-unit>
+            <trans-unit id="tsmiBranchTag.Text">
+                <source>Tag</source>
+                <target>Метка</target>
+
+            </trans-unit>
+            <trans-unit id="tsmiCommitFilter.Text">
+                <source>Commit message and hash</source>
+                <target>Сообщение коммита и хеша</target>
+
+            </trans-unit>
+            <trans-unit id="tsmiCommitterFilter.Text">
+                <source>Committer</source>
+                <target>Автор коммита</target>
+
+            </trans-unit>
+            <trans-unit id="tsmiDiffContainsFilter.Text">
+                <source>Diff contains (SLOW)</source>
+                <target>Показывать список изменений (МЕДЛЕННО)</target>
+
+            </trans-unit>
+            <trans-unit id="tsmiFavouriteRepositories.Text">
+                <source>Favourite Repositories</source>
+                <target>Избранные репозитории</target>
+
+            </trans-unit>
+            <trans-unit id="tsmiHash.Text">
+                <source>Hash</source>
+                <target>Хеш</target>
+
+            </trans-unit>
+            <trans-unit id="tsmiRecentRepositories.Text">
+                <source>Recent Repositories</source>
+                <target>Недавние репозитории</target>
+
+            </trans-unit>
+            <trans-unit id="tsmiRecentRepositoriesClear.Text">
+                <source>Clear List</source>
+                <target>Очистить список</target>
+
+            </trans-unit>
+            <trans-unit id="tsmiShowFirstParent.ToolTipText">
+                <source>Show first parents</source>
+                <target>Показать первых родителей</target>
+
+            </trans-unit>
+            <trans-unit id="tsmiTelemetryEnabled.Text">
+                <source>Yes, I allow telemetry</source>
+                <target>Да, я разрешаю сбор телеметрии</target>
+
+            </trans-unit>
+            <trans-unit id="undoLastCommitToolStripMenuItem.Text">
+                <source>Undo last commit</source>
+                <target>Отменить последний коммит</target>
+
+            </trans-unit>
+            <trans-unit id="updateAllSubmodulesToolStripMenuItem.Text">
+                <source>Update all submodules</source>
+                <target>Обновить все субмодули</target>
+
+            </trans-unit>
+            <trans-unit id="userManualToolStripMenuItem.Text">
+                <source>User Manual</source>
+                <target>Руководство пользователя</target>
+
+            </trans-unit>
+            <trans-unit id="userShell.ToolTipText">
+                <source>Git bash</source>
+                <target>Git bash</target>
+
+            </trans-unit>
+            <trans-unit id="viewToolStripMenuItem.Text">
+                <source>View</source>
+                <target>Показать</target>
+
+            </trans-unit>
+        </body>
+    </file>
+    <file datatype="plaintext" original="FormBrowseRepoSettingsPage" source-language="en" target-language="ru">
     <body>
       <trans-unit id="$this.Text">
         <source>Browse repository window</source>

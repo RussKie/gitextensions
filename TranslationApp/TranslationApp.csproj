@@ -4,6 +4,8 @@
     <OutputType>WinExe</OutputType>
     <StartupObject />
 
+    <NoWarn>$(NoWarn);NU1505;</NoWarn>
+
     <!-- To be removed when NRT annotations are complete -->
     <Nullable>annotations</Nullable>
   </PropertyGroup>

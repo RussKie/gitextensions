@@ -1,4 +1,5 @@
-﻿using GitCommands;
+﻿using System.Diagnostics;
+using GitCommands;
 using GitCommands.Git;
 using GitExtUtils.GitUI;
 using GitExtUtils.GitUI.Theming;
@@ -8,7 +9,7 @@ using ResourceManager;
 namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
 {
     [ThemeAware]
-    public partial class Dashboard : GitModuleControl
+    public partial class Dashboard : GitModuleControl, IMainMenuExtender
     {
         private readonly TranslationString _cloneFork = new("Clone {0} repository");
         private readonly TranslationString _cloneRepository = new("Clone repository");
@@ -186,6 +187,8 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
             handler?.Invoke(this, e);
         }
 
+        MenuStrip IMainMenuExtender.ControlMenu => menuStrip1;
+
         private void dashboard_ParentChanged(object sender, EventArgs e)
         {
             if (Parent is null)
@@ -195,6 +198,15 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
             }
 
             Visible = true;
+        }
+
+        private void mnuConfigure_Click(object sender, EventArgs e)
+        {
+            using FormRecentReposSettings frm = new();
+            if (frm.ShowDialog(this) == DialogResult.OK)
+            {
+                userRepositoriesList.ShowRecentRepositories();
+            }
         }
 
         private static void TranslateItem_Click(object sender, EventArgs e)
