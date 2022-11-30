@@ -205,31 +205,36 @@ namespace GitUI
 
             UICommands.PostRepositoryChanged += UICommands_PostRepositoryChanged;
 
-            toolPanel.ContentPanel.ControlAdded += (s, e) =>
-            {
-                if (e.Control is IMainMenuExtender mainMenuExtender)
-                {
-                    if (!ToolStripManager.Merge(mainMenuExtender.ControlMenu, mainMenuStrip))
-                    {
-                        Debug.Fail("Failed to merge the menu");
-                    }
-
-                    // HACK: the menu often fails to refresh itself until some kind of user action.
-                    mainMenuStrip.Refresh();
-                }
-            };
-            toolPanel.ContentPanel.ControlRemoved += (s, e) =>
-            {
-                if (e.Control is IMainMenuExtender mainMenuExtender)
-                {
-                    if (!ToolStripManager.RevertMerge(mainMenuStrip, mainMenuExtender.ControlMenu))
-                    {
-                        Debug.Fail("Failed to unmerge the menu");
-                    }
-                }
-            };
-
             InitializeComplete();
+        }
+
+        private void ControlAdd(Control control)
+        {
+            if (control is IMainMenuExtender mainMenuExtender)
+            {
+                if (!ToolStripManager.Merge(mainMenuExtender.ControlMenu, mainMenuStrip))
+                {
+                    Debug.Fail("Failed to merge the menu");
+                }
+
+                // HACK: the menu often fails to refresh itself until some kind of user action.
+                mainMenuStrip.Refresh();
+            }
+
+            toolPanel.ContentPanel.Controls.Add(control);
+        }
+
+        private void ControlRemove(Control control)
+        {
+            if (control is IMainMenuExtender mainMenuExtender)
+            {
+                if (!ToolStripManager.RevertMerge(mainMenuStrip, mainMenuExtender.ControlMenu))
+                {
+                    Debug.Fail("Failed to unmerge the menu");
+                }
+            }
+
+            toolPanel.ContentPanel.Controls.Remove(control);
         }
 
         private void DashboardClose()
@@ -239,7 +244,7 @@ namespace GitUI
                 return;
             }
 
-            toolPanel.ContentPanel.Controls.Remove(_dashboard);
+            ControlRemove(_dashboard);
 
             _dashboard.GitModuleChanged -= SetGitModule;
             _dashboard.Dispose();
@@ -259,7 +264,7 @@ namespace GitUI
                 _dashboard.GitModuleChanged += SetGitModule;
             }
 
-            toolPanel.ContentPanel.Controls.Add(_dashboard);
+            ControlAdd(_dashboard);
             DiagnosticsClient.TrackPageView("Dashboard");
 
             // Explicit call: Title is normally updated on RevisionGrid filter change
@@ -372,7 +377,7 @@ namespace GitUI
                 return;
             }
 
-            toolPanel.ContentPanel.Controls.Remove(_repoBrowser);
+            ControlRemove(_repoBrowser);
 
             _repoBrowser.Dispose();
             _repoBrowser = null;
@@ -391,8 +396,12 @@ namespace GitUI
                 };
             }
 
-            toolPanel.ContentPanel.Controls.Add(_repoBrowser);
+            ControlAdd(_repoBrowser);
+
             DiagnosticsClient.TrackPageView("Revision graph");
+
+            UICommands = new(gitModule);
+            _repoBrowser.SetWorkingDir(gitModule.WorkingDir);
         }
 
         private void RepositorySwitch(GitModule gitModule)
@@ -407,7 +416,7 @@ namespace GitUI
                 return;
             }
 
-            UICommands = new GitUICommands(gitModule);
+            UICommands = new(gitModule);
             _repoBrowser.SetWorkingDir(gitModule.WorkingDir);
         }
 

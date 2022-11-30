@@ -33,7 +33,7 @@ using ResourceManager;
 
 namespace GitUI.CommandsDialogs
 {
-    public sealed partial class RepoBrowser : GitModuleControl, IBrowseRepo
+    public sealed partial class RepoBrowser : GitModuleControl, IBrowseRepo, IMainMenuExtender
     {
         #region Mnemonics
         /*
@@ -397,6 +397,8 @@ namespace GitUI.CommandsDialogs
             }
         }
 
+        MenuStrip IMainMenuExtender.ControlMenu => mainMenuStrip;
+
         protected override void OnRuntimeLoad()
         {
             base.OnRuntimeLoad();
@@ -445,9 +447,6 @@ namespace GitUI.CommandsDialogs
             SetSplitterPositions();
 
             base.OnLoad(e);
-
-            // All app init is done, make all repo related similar to switching repos
-            SetGitModule(this, new GitModuleEventArgs(new GitModule(Module.WorkingDir)));
         }
 
         ////protected override void OnActivated(EventArgs e)
@@ -1609,13 +1608,12 @@ namespace GitUI.CommandsDialogs
         private void SetGitModule(object sender, GitModuleEventArgs e)
         {
             var module = e.GitModule;
-            HideVariableMainMenuItems();
+            ////HideVariableMainMenuItems();
             PluginRegistry.Unregister(UICommands);
             RevisionGrid.OnRepositoryChanged();
             ////_gitStatusMonitor.InvalidateGitWorkingDirectoryStatus();
             _submoduleStatusProvider.Init();
 
-            ////UICommands = new GitUICommands(module);
             if (Module.IsValidGitWorkingDir())
             {
                 RevisionGrid.SuspendRefreshRevisions();
@@ -1655,7 +1653,7 @@ namespace GitUI.CommandsDialogs
                 Debugger.Break();
             }
 
-            RegisterPlugins();
+            ////RegisterPlugins();
         }
 
         private void FileExplorerToolStripMenuItemClick(object sender, EventArgs e)

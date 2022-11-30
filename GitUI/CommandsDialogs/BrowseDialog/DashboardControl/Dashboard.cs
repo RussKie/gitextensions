@@ -45,6 +45,8 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
             userRepositoriesList.HeaderHeight = pnlLogo.Height;
         }
 
+        MenuStrip IMainMenuExtender.ControlMenu => menuStrip1;
+
         protected override void OnVisibleChanged(EventArgs e)
         {
             base.OnVisibleChanged(e);
@@ -186,8 +188,6 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
             var handler = GitModuleChanged;
             handler?.Invoke(this, e);
         }
-
-        MenuStrip IMainMenuExtender.ControlMenu => menuStrip1;
 
         private void dashboard_ParentChanged(object sender, EventArgs e)
         {
