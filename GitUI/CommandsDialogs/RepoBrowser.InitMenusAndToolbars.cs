@@ -1,4 +1,5 @@
-﻿using GitCommands;
+﻿using System.Diagnostics;
+using GitCommands;
 using GitExtUtils.GitUI.Theming;
 using GitUI.Properties;
 using GitUI.Shells;
@@ -16,15 +17,18 @@ namespace GitUI.CommandsDialogs
         {
             mnuCommands.DropDownOpening += CommandsToolStripMenuItem_DropDownOpening;
 
-            ////InitFilters();
+            InitFilters();
 
-            ////toolPanel.TopToolStripPanel.MouseClick += (s, e) =>
-            ////{
-            ////    if (e.Button == MouseButtons.Right)
-            ////    {
-            ////        _formBrowseMenus.ShowToolStripContextMenu(Cursor.Position);
-            ////    }
-            ////};
+            var toolPanel = Parent.Controls.Cast<ToolStripContainer>().FirstOrDefault();
+            Debug.Assert(toolPanel is not null, "Boo");
+
+            toolPanel.TopToolStripPanel.MouseClick += (s, e) =>
+            {
+                if (e.Button == MouseButtons.Right)
+                {
+                    _formBrowseMenus.ShowToolStripContextMenu(Cursor.Position);
+                }
+            };
 
             ////new ToolStripItem[]
             ////{
@@ -63,7 +67,7 @@ namespace GitUI.CommandsDialogs
             BackColor = SystemColors.Window;
             ForeColor = toolForeColor;
             mainMenuStrip.ForeColor = toolForeColor;
-            ////InitToolStripStyles(toolForeColor, Color.Transparent);
+            InitToolStripStyles(toolForeColor, Color.Transparent);
 
             UpdateCommitButtonAndGetBrush(status: null, AppSettings.ShowGitStatusInBrowseToolbar);
 
@@ -72,73 +76,73 @@ namespace GitUI.CommandsDialogs
 
             FillUserShells(defaultShell: BashShell.ShellName);
 
-            ////WorkaroundToolbarLocationBug();
+            WorkaroundToolbarLocationBug();
 
             return;
 
-////            void InitToolStripStyles(Color toolForeColor, Color toolBackColor)
-////            {
-////                toolPanel.TopToolStripPanel.BackColor = toolBackColor;
-////                toolPanel.TopToolStripPanel.ForeColor = toolForeColor;
+            void InitToolStripStyles(Color toolForeColor, Color toolBackColor)
+            {
+                toolPanel.TopToolStripPanel.BackColor = toolBackColor;
+                toolPanel.TopToolStripPanel.ForeColor = toolForeColor;
 
-////                mainMenuStrip.BackColor = toolBackColor;
+                mainMenuStrip.BackColor = toolBackColor;
 
-////                ToolStripMain.BackColor = toolBackColor;
-////                ToolStripMain.ForeColor = toolForeColor;
+                ToolStripMain.BackColor = toolBackColor;
+                ToolStripMain.ForeColor = toolForeColor;
 
-////                ToolStripFilters.BackColor = toolBackColor;
-////                ToolStripFilters.ForeColor = toolForeColor;
-////                ToolStripFilters.InitToolStripStyles(toolForeColor, toolBackColor);
+                ToolStripFilters.BackColor = toolBackColor;
+                ToolStripFilters.ForeColor = toolForeColor;
+                ToolStripFilters.InitToolStripStyles(toolForeColor, toolBackColor);
 
-////                ToolStripScripts.BackColor = toolBackColor;
-////                ToolStripScripts.ForeColor = toolForeColor;
-////            }
+                ToolStripScripts.BackColor = toolBackColor;
+                ToolStripScripts.ForeColor = toolForeColor;
+            }
 
-////            void InitFilters()
-////            {
-////                // ToolStripFilters.RefreshRevisionFunction() is init in UICommands_PostRepositoryChanged
+            void InitFilters()
+            {
+                // ToolStripFilters.RefreshRevisionFunction() is init in UICommands_PostRepositoryChanged
 
-////                if (!string.IsNullOrWhiteSpace(revFilter))
-////                {
-////                    ToolStripFilters.SetRevisionFilter(revFilter);
-////                }
+                if (!string.IsNullOrWhiteSpace(revFilter))
+                {
+                    ToolStripFilters.SetRevisionFilter(revFilter);
+                }
 
-////                if (!string.IsNullOrWhiteSpace(pathFilter))
-////                {
-////                    SetPathFilter(pathFilter);
-////                }
-////            }
+                if (!string.IsNullOrWhiteSpace(pathFilter))
+                {
+                    SetPathFilter(pathFilter);
+                }
+            }
 
-////            void WorkaroundToolbarLocationBug()
-////            {
-////                // Layout engine bug (?) which may change the order of toolbars
-////                // if the 1st one becomes longer than the 2nd toolbar's Location.X
-////                // the layout engine will be place the 2nd toolbar first
+            void WorkaroundToolbarLocationBug()
+            {
+                // Layout engine bug (?) which may change the order of toolbars
+                // if the 1st one becomes longer than the 2nd toolbar's Location.X
+                // the layout engine will be place the 2nd toolbar first
 
-////                // 1. Clear all toolbars
-////                toolPanel.TopToolStripPanel.Controls.Clear();
+                // 1. Clear all toolbars
+                toolPanel.TopToolStripPanel.Controls.Clear();
 
-////                // 2. Add all the toolbars back in a reverse order, every added toolbar pushing existing ones to the right
-////                ToolStrip[] toolStrips = new[] { ToolStripScripts, ToolStripFilters, ToolStripMain };
-////                foreach (ToolStrip toolStrip in toolStrips)
-////                {
-////                    toolPanel.TopToolStripPanel.Controls.Add(toolStrip);
-////                }
+                // 2. Add all the toolbars back in a reverse order, every added toolbar pushing existing ones to the right
+                ToolStrip[] toolStrips = new[] { ToolStripScripts, ToolStripFilters, ToolStripMain };
+                foreach (ToolStrip toolStrip in toolStrips)
+                {
+                    toolPanel.TopToolStripPanel.Controls.Add(toolStrip);
+                }
 
-////#if DEBUG
-////                // 3. Assert all toolbars on the same row
-////                foreach (ToolStrip toolStrip in toolStrips)
-////                {
-////                    Debug.Assert(toolStrip.Top == 0, $"{toolStrip.Name} must be placed on the 1st row");
-////                }
+#if DEBUG
+                // 3. Assert all toolbars on the same row
+                foreach (ToolStrip toolStrip in toolStrips)
+                {
+                    Debug.Assert(toolStrip.Top == 0, $"{toolStrip.Name} must be placed on the 1st row");
+                }
 
-////                // 4. Assert the correct order of toolbars
-////                for (int i = toolStrips.Length - 1; i > 0; i--)
-////                {
-////                    Debug.Assert(toolStrips[i].Left < toolStrips[i - 1].Left, $"{toolStrips[i - 1].Name} must be placed before {toolStrips[i].Name}");
-////                }
-////#endif
-////            }
+                // 4. Assert the correct order of toolbars
+                for (int i = toolStrips.Length - 1; i > 0; i--)
+                {
+                    Debug.Assert(toolStrips[i].Left < toolStrips[i - 1].Left, $"{toolStrips[i - 1].Name} must be placed before {toolStrips[i].Name}");
+                }
+#endif
+            }
         }
 
         private void FillNextPullActionAsDefaultToolStripMenuItems()

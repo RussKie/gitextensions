@@ -143,6 +143,7 @@ namespace GitUI.CommandsDialogs
             this.gitRevisionBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.ToolStripFilters = new GitUI.UserControls.FilterToolBar();
             this.ToolStripScripts = new GitUI.ToolStripEx();
+            this.toolPanel = new System.Windows.Forms.ToolStripContainer();
             toolStripSeparator14 = new System.Windows.Forms.ToolStripSeparator();
             toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.ToolStripMain.SuspendLayout();
@@ -163,6 +164,9 @@ namespace GitUI.CommandsDialogs
             this.mainMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gitItemBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gitRevisionBindingSource)).BeginInit();
+            this.toolPanel.ContentPanel.SuspendLayout();
+            this.toolPanel.TopToolStripPanel.SuspendLayout();
+            this.toolPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStripSeparator14
@@ -1274,6 +1278,33 @@ namespace GitUI.CommandsDialogs
             this.pluginSettingsToolStripMenuItem.Text = "Plugin &Settings";
             this.pluginSettingsToolStripMenuItem.Click += new System.EventHandler(this.PluginSettingsToolStripMenuItemClick);
             // 
+            // toolPanel
+            // 
+            this.toolPanel.BottomToolStripPanelVisible = false;
+            // 
+            // toolPanel.ContentPanel
+            // 
+            this.toolPanel.ContentPanel.Controls.Add(this.MainSplitContainer);
+            this.toolPanel.ContentPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.toolPanel.ContentPanel.Padding = new System.Windows.Forms.Padding(6);
+            this.toolPanel.ContentPanel.Size = new System.Drawing.Size(1846, 1023);
+            this.toolPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.toolPanel.LeftToolStripPanelVisible = false;
+            this.toolPanel.Location = new System.Drawing.Point(0, 24);
+            this.toolPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.toolPanel.Name = "toolPanel";
+            this.toolPanel.Padding = new System.Windows.Forms.Padding(0);
+            this.toolPanel.TopToolStripPanel.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.toolPanel.RightToolStripPanelVisible = false;
+            this.toolPanel.Size = new System.Drawing.Size(923, 527);
+            this.toolPanel.TabIndex = 1;
+            // 
+            // toolPanel.TopToolStripPanel
+            // 
+            this.toolPanel.TopToolStripPanel.Controls.Add(this.ToolStripMain);
+            this.toolPanel.TopToolStripPanel.Controls.Add(this.ToolStripFilters);
+            this.toolPanel.TopToolStripPanel.Controls.Add(this.ToolStripScripts);
+            // 
             // mainMenuStrip
             // 
             this.mainMenuStrip.ClickThrough = true;
@@ -1324,12 +1355,14 @@ namespace GitUI.CommandsDialogs
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
             this.ClientSize = new System.Drawing.Size(923, 573);
-            this.Controls.Add(this.ToolStripScripts);
-            this.Controls.Add(this.ToolStripFilters);
-            this.Controls.Add(this.ToolStripMain);
-            this.Controls.Add(this.MainSplitContainer);
+            this.Controls.Add(this.toolPanel);
             this.Controls.Add(this.mainMenuStrip);
             this.Name = "RepoBrowser";
+            this.toolPanel.ContentPanel.ResumeLayout(false);
+            this.toolPanel.TopToolStripPanel.ResumeLayout(false);
+            this.toolPanel.TopToolStripPanel.PerformLayout();
+            this.toolPanel.ResumeLayout(false);
+            this.toolPanel.PerformLayout();
             this.ToolStripMain.ResumeLayout(false);
             this.ToolStripMain.PerformLayout();
             this.MainSplitContainer.Panel1.ResumeLayout(false);
@@ -1377,6 +1410,7 @@ namespace GitUI.CommandsDialogs
         private RevisionDiffControl revisionDiff;
         private RevisionGpgInfoControl revisionGpgInfo1;
 
+        private ToolStripContainer toolPanel;
         private MenuStripEx mainMenuStrip;
         private ToolStripEx ToolStripMain;
         private GitUI.UserControls.FilterToolBar ToolStripFilters;
