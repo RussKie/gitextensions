@@ -19,9 +19,6 @@ namespace GitUI.CommandsDialogs
 
             InitFilters();
 
-            var toolPanel = Parent.Controls.Cast<ToolStripContainer>().FirstOrDefault();
-            Debug.Assert(toolPanel is not null, "Boo");
-
             toolPanel.TopToolStripPanel.MouseClick += (s, e) =>
             {
                 if (e.Button == MouseButtons.Right)

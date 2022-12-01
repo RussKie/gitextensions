@@ -207,7 +207,7 @@ namespace GitUI.CommandsDialogs
             this.userShell,
             this.EditSettings});
             this.ToolStripMain.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.ToolStripMain.Location = new System.Drawing.Point(0, 0);
+            this.ToolStripMain.Location = new System.Drawing.Point(3, 0);
             this.ToolStripMain.Name = "ToolStripMain";
             this.ToolStripMain.Padding = new System.Windows.Forms.Padding(0);
             this.ToolStripMain.Size = new System.Drawing.Size(575, 25);
@@ -525,7 +525,7 @@ namespace GitUI.CommandsDialogs
             // 
             this.MainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainSplitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
-            this.MainSplitContainer.Location = new System.Drawing.Point(0, 27);
+            this.MainSplitContainer.Location = new System.Drawing.Point(6, 6);
             this.MainSplitContainer.Margin = new System.Windows.Forms.Padding(0);
             this.MainSplitContainer.Name = "MainSplitContainer";
             // 
@@ -538,7 +538,7 @@ namespace GitUI.CommandsDialogs
             // MainSplitContainer.Panel2
             // 
             this.MainSplitContainer.Panel2.Controls.Add(this.RightSplitContainer);
-            this.MainSplitContainer.Size = new System.Drawing.Size(923, 546);
+            this.MainSplitContainer.Size = new System.Drawing.Size(916, 487);
             this.MainSplitContainer.SplitterDistance = 192;
             this.MainSplitContainer.SplitterWidth = 6;
             this.MainSplitContainer.TabIndex = 1;
@@ -550,7 +550,7 @@ namespace GitUI.CommandsDialogs
             this.repoObjectsTree.Margin = new System.Windows.Forms.Padding(0);
             this.repoObjectsTree.MinimumSize = new System.Drawing.Size(190, 0);
             this.repoObjectsTree.Name = "repoObjectsTree";
-            this.repoObjectsTree.Size = new System.Drawing.Size(190, 544);
+            this.repoObjectsTree.Size = new System.Drawing.Size(190, 485);
             this.repoObjectsTree.TabIndex = 0;
             // 
             // RightSplitContainer
@@ -569,8 +569,8 @@ namespace GitUI.CommandsDialogs
             // 
             this.RightSplitContainer.Panel2.Controls.Add(this.CommitInfoTabControl);
             this.RightSplitContainer.Panel2MinSize = 0;
-            this.RightSplitContainer.Size = new System.Drawing.Size(725, 546);
-            this.RightSplitContainer.SplitterDistance = 227;
+            this.RightSplitContainer.Size = new System.Drawing.Size(718, 487);
+            this.RightSplitContainer.SplitterDistance = 202;
             this.RightSplitContainer.SplitterWidth = 6;
             this.RightSplitContainer.TabIndex = 1;
             this.RightSplitContainer.TabStop = false;
@@ -591,8 +591,8 @@ namespace GitUI.CommandsDialogs
             // RevisionsSplitContainer.Panel2
             // 
             this.RevisionsSplitContainer.Panel2.Padding = new System.Windows.Forms.Padding(1);
-            this.RevisionsSplitContainer.Size = new System.Drawing.Size(725, 227);
-            this.RevisionsSplitContainer.SplitterDistance = 423;
+            this.RevisionsSplitContainer.Size = new System.Drawing.Size(718, 202);
+            this.RevisionsSplitContainer.SplitterDistance = 414;
             this.RevisionsSplitContainer.SplitterWidth = 6;
             this.RevisionsSplitContainer.TabIndex = 0;
             // 
@@ -604,7 +604,7 @@ namespace GitUI.CommandsDialogs
             this.RevisionGridContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RevisionGridContainer.Location = new System.Drawing.Point(1, 1);
             this.RevisionGridContainer.Name = "RevisionGridContainer";
-            this.RevisionGridContainer.Size = new System.Drawing.Size(421, 225);
+            this.RevisionGridContainer.Size = new System.Drawing.Size(412, 200);
             this.RevisionGridContainer.TabIndex = 2;
             // 
             // RevisionGrid
@@ -612,7 +612,7 @@ namespace GitUI.CommandsDialogs
             this.RevisionGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             this.RevisionGrid.Location = new System.Drawing.Point(0, 66);
             this.RevisionGrid.Name = "RevisionGrid";
-            this.RevisionGrid.Size = new System.Drawing.Size(421, 159);
+            this.RevisionGrid.Size = new System.Drawing.Size(412, 134);
             this.RevisionGrid.TabIndex = 2;
             // 
             // notificationBarBisectInProgress
@@ -622,7 +622,7 @@ namespace GitUI.CommandsDialogs
             this.notificationBarBisectInProgress.Location = new System.Drawing.Point(0, 33);
             this.notificationBarBisectInProgress.MinimumSize = new System.Drawing.Size(0, 33);
             this.notificationBarBisectInProgress.Name = "notificationBarBisectInProgress";
-            this.notificationBarBisectInProgress.Size = new System.Drawing.Size(421, 33);
+            this.notificationBarBisectInProgress.Size = new System.Drawing.Size(412, 33);
             this.notificationBarBisectInProgress.TabIndex = 1;
             this.notificationBarBisectInProgress.Visible = false;
             // 
@@ -633,7 +633,7 @@ namespace GitUI.CommandsDialogs
             this.notificationBarGitActionInProgress.Location = new System.Drawing.Point(0, 0);
             this.notificationBarGitActionInProgress.MinimumSize = new System.Drawing.Size(0, 33);
             this.notificationBarGitActionInProgress.Name = "notificationBarGitActionInProgress";
-            this.notificationBarGitActionInProgress.Size = new System.Drawing.Size(421, 33);
+            this.notificationBarGitActionInProgress.Size = new System.Drawing.Size(412, 33);
             this.notificationBarGitActionInProgress.TabIndex = 0;
             this.notificationBarGitActionInProgress.Visible = false;
             // 
@@ -649,7 +649,7 @@ namespace GitUI.CommandsDialogs
             this.CommitInfoTabControl.Name = "CommitInfoTabControl";
             this.CommitInfoTabControl.Padding = new System.Drawing.Point(0, 0);
             this.CommitInfoTabControl.SelectedIndex = 0;
-            this.CommitInfoTabControl.Size = new System.Drawing.Size(725, 313);
+            this.CommitInfoTabControl.Size = new System.Drawing.Size(718, 279);
             this.CommitInfoTabControl.TabIndex = 0;
             this.CommitInfoTabControl.SelectedIndexChanged += new System.EventHandler(this.CommitInfoTabControl_SelectedIndexChanged);
             // 
@@ -659,7 +659,7 @@ namespace GitUI.CommandsDialogs
             this.CommitInfoTabPage.Location = new System.Drawing.Point(1, 23);
             this.CommitInfoTabPage.Margin = new System.Windows.Forms.Padding(0);
             this.CommitInfoTabPage.Name = "CommitInfoTabPage";
-            this.CommitInfoTabPage.Size = new System.Drawing.Size(723, 289);
+            this.CommitInfoTabPage.Size = new System.Drawing.Size(716, 255);
             this.CommitInfoTabPage.TabIndex = 2;
             this.CommitInfoTabPage.Text = "Commit";
             this.CommitInfoTabPage.UseVisualStyleBackColor = true;
@@ -700,10 +700,10 @@ namespace GitUI.CommandsDialogs
             // DiffTabPage
             // 
             this.DiffTabPage.Controls.Add(this.revisionDiff);
-            this.DiffTabPage.Location = new System.Drawing.Point(1, 21);
+            this.DiffTabPage.Location = new System.Drawing.Point(1, 23);
             this.DiffTabPage.Margin = new System.Windows.Forms.Padding(0);
             this.DiffTabPage.Name = "DiffTabPage";
-            this.DiffTabPage.Size = new System.Drawing.Size(646, 264);
+            this.DiffTabPage.Size = new System.Drawing.Size(723, 289);
             this.DiffTabPage.TabIndex = 1;
             this.DiffTabPage.Text = "Diff";
             this.DiffTabPage.UseVisualStyleBackColor = true;
@@ -723,7 +723,7 @@ namespace GitUI.CommandsDialogs
             this.GpgInfoTabPage.Location = new System.Drawing.Point(1, 23);
             this.GpgInfoTabPage.Margin = new System.Windows.Forms.Padding(0);
             this.GpgInfoTabPage.Name = "GpgInfoTabPage";
-            this.GpgInfoTabPage.Size = new System.Drawing.Size(723, 263);
+            this.GpgInfoTabPage.Size = new System.Drawing.Size(723, 289);
             this.GpgInfoTabPage.TabIndex = 3;
             this.GpgInfoTabPage.Text = "GPG";
             this.GpgInfoTabPage.UseVisualStyleBackColor = true;
@@ -735,7 +735,7 @@ namespace GitUI.CommandsDialogs
             this.revisionGpgInfo1.Margin = new System.Windows.Forms.Padding(0);
             this.revisionGpgInfo1.Name = "revisionGpgInfo1";
             this.revisionGpgInfo1.Padding = new System.Windows.Forms.Padding(6);
-            this.revisionGpgInfo1.Size = new System.Drawing.Size(723, 263);
+            this.revisionGpgInfo1.Size = new System.Drawing.Size(723, 289);
             this.revisionGpgInfo1.TabIndex = 0;
             // 
             // FilterToolTip
@@ -1278,33 +1278,6 @@ namespace GitUI.CommandsDialogs
             this.pluginSettingsToolStripMenuItem.Text = "Plugin &Settings";
             this.pluginSettingsToolStripMenuItem.Click += new System.EventHandler(this.PluginSettingsToolStripMenuItemClick);
             // 
-            // toolPanel
-            // 
-            this.toolPanel.BottomToolStripPanelVisible = false;
-            // 
-            // toolPanel.ContentPanel
-            // 
-            this.toolPanel.ContentPanel.Controls.Add(this.MainSplitContainer);
-            this.toolPanel.ContentPanel.Margin = new System.Windows.Forms.Padding(0);
-            this.toolPanel.ContentPanel.Padding = new System.Windows.Forms.Padding(6);
-            this.toolPanel.ContentPanel.Size = new System.Drawing.Size(1846, 1023);
-            this.toolPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.toolPanel.LeftToolStripPanelVisible = false;
-            this.toolPanel.Location = new System.Drawing.Point(0, 24);
-            this.toolPanel.Margin = new System.Windows.Forms.Padding(0);
-            this.toolPanel.Name = "toolPanel";
-            this.toolPanel.Padding = new System.Windows.Forms.Padding(0);
-            this.toolPanel.TopToolStripPanel.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.toolPanel.RightToolStripPanelVisible = false;
-            this.toolPanel.Size = new System.Drawing.Size(923, 527);
-            this.toolPanel.TabIndex = 1;
-            // 
-            // toolPanel.TopToolStripPanel
-            // 
-            this.toolPanel.TopToolStripPanel.Controls.Add(this.ToolStripMain);
-            this.toolPanel.TopToolStripPanel.Controls.Add(this.ToolStripFilters);
-            this.toolPanel.TopToolStripPanel.Controls.Add(this.ToolStripScripts);
-            // 
             // mainMenuStrip
             // 
             this.mainMenuStrip.ClickThrough = true;
@@ -1316,7 +1289,7 @@ namespace GitUI.CommandsDialogs
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
             this.mainMenuStrip.Padding = new System.Windows.Forms.Padding(4);
-            this.mainMenuStrip.Size = new System.Drawing.Size(923, 27);
+            this.mainMenuStrip.Size = new System.Drawing.Size(928, 27);
             this.mainMenuStrip.TabIndex = 0;
             // 
             // ToolStripFilters
@@ -1326,7 +1299,7 @@ namespace GitUI.CommandsDialogs
             this.ToolStripFilters.GripMargin = new System.Windows.Forms.Padding(0);
             this.ToolStripFilters.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.ToolStripFilters.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.ToolStripFilters.Location = new System.Drawing.Point(0, 0);
+            this.ToolStripFilters.Location = new System.Drawing.Point(3, 25);
             this.ToolStripFilters.Name = "ToolStripFilters";
             this.ToolStripFilters.Padding = new System.Windows.Forms.Padding(0);
             this.ToolStripFilters.Size = new System.Drawing.Size(551, 25);
@@ -1342,27 +1315,48 @@ namespace GitUI.CommandsDialogs
             this.ToolStripScripts.GripMargin = new System.Windows.Forms.Padding(0);
             this.ToolStripScripts.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.ToolStripScripts.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.ToolStripScripts.Location = new System.Drawing.Point(0, 0);
+            this.ToolStripScripts.Location = new System.Drawing.Point(554, 25);
             this.ToolStripScripts.Name = "ToolStripScripts";
             this.ToolStripScripts.Padding = new System.Windows.Forms.Padding(0);
-            this.ToolStripScripts.Size = new System.Drawing.Size(38, 25);
+            this.ToolStripScripts.Size = new System.Drawing.Size(107, 25);
             this.ToolStripScripts.TabIndex = 2;
             this.ToolStripScripts.Text = "Scripts";
+            // 
+            // toolPanel
+            // 
+            this.toolPanel.BottomToolStripPanelVisible = false;
+            // 
+            // toolPanel.ContentPanel
+            // 
+            this.toolPanel.ContentPanel.Controls.Add(this.MainSplitContainer);
+            this.toolPanel.ContentPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.toolPanel.ContentPanel.Padding = new System.Windows.Forms.Padding(6);
+            this.toolPanel.ContentPanel.Size = new System.Drawing.Size(928, 499);
+            this.toolPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.toolPanel.LeftToolStripPanelVisible = false;
+            this.toolPanel.Location = new System.Drawing.Point(0, 27);
+            this.toolPanel.Margin = new System.Windows.Forms.Padding(0);
+            this.toolPanel.Name = "toolPanel";
+            this.toolPanel.RightToolStripPanelVisible = false;
+            this.toolPanel.Size = new System.Drawing.Size(928, 549);
+            this.toolPanel.TabIndex = 1;
+            // 
+            // toolPanel.TopToolStripPanel
+            // 
+            this.toolPanel.TopToolStripPanel.Controls.Add(this.ToolStripScripts);
+            this.toolPanel.TopToolStripPanel.Controls.Add(this.ToolStripFilters);
+            this.toolPanel.TopToolStripPanel.Controls.Add(this.ToolStripMain);
+            this.toolPanel.TopToolStripPanel.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
             // 
             // RepoBrowser
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
-            this.ClientSize = new System.Drawing.Size(923, 573);
             this.Controls.Add(this.toolPanel);
             this.Controls.Add(this.mainMenuStrip);
             this.Name = "RepoBrowser";
-            this.toolPanel.ContentPanel.ResumeLayout(false);
-            this.toolPanel.TopToolStripPanel.ResumeLayout(false);
-            this.toolPanel.TopToolStripPanel.PerformLayout();
-            this.toolPanel.ResumeLayout(false);
-            this.toolPanel.PerformLayout();
+            this.Size = new System.Drawing.Size(928, 576);
             this.ToolStripMain.ResumeLayout(false);
             this.ToolStripMain.PerformLayout();
             this.MainSplitContainer.Panel1.ResumeLayout(false);
@@ -1383,6 +1377,11 @@ namespace GitUI.CommandsDialogs
             this.mainMenuStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gitItemBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gitRevisionBindingSource)).EndInit();
+            this.toolPanel.ContentPanel.ResumeLayout(false);
+            this.toolPanel.TopToolStripPanel.ResumeLayout(false);
+            this.toolPanel.TopToolStripPanel.PerformLayout();
+            this.toolPanel.ResumeLayout(false);
+            this.toolPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
