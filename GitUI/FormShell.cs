@@ -206,8 +206,6 @@ namespace GitUI
             SetShortcutKeyDisplayStringsFromHotkeySettings();
             RegisterMenuCommands();
 
-            UICommands.PostRepositoryChanged += UICommands_PostRepositoryChanged;
-
             InitializeComplete();
         }
 
@@ -440,73 +438,6 @@ namespace GitUI
         //        {
         //            PluginRegistry.Unregister(UICommands);
         //            base.OnClosed(e);
-        //        }
-
-        protected override void OnUICommandsChanged(GitUICommandsChangedEventArgs e)
-        {
-            var oldCommands = e.OldCommands;
-
-            if (oldCommands is not null)
-            {
-                oldCommands.PostRepositoryChanged -= UICommands_PostRepositoryChanged;
-            }
-
-            UICommands.PostRepositoryChanged += UICommands_PostRepositoryChanged;
-
-            base.OnUICommandsChanged(e);
-        }
-
-        private void UICommands_PostRepositoryChanged(object sender, GitUIEventArgs e)
-        {
-            // Note that this called in most FormBrowse context to "be sure"
-            // that the repo has not been updated externally.
-            //RefreshRevisions(e.GetRefs);
-        }
-
-        //        private void ShowDashboard()
-        //        {
-        //            toolPanel.SuspendLayout();
-        //            toolPanel.TopToolStripPanelVisible = false;
-        //            toolPanel.BottomToolStripPanelVisible = false;
-        //            toolPanel.LeftToolStripPanelVisible = false;
-        //            toolPanel.RightToolStripPanelVisible = false;
-        //            toolPanel.ResumeLayout();
-
-        //            MainSplitContainer.Visible = false;
-
-        //            if (_dashboard is null)
-        //            {
-        //                _dashboard = new Dashboard { Dock = DockStyle.Fill };
-        //                _dashboard.GitModuleChanged += SetGitModule;
-        //                toolPanel.ContentPanel.Controls.Add(_dashboard);
-        //            }
-
-        //            Text = _appTitleGenerator.Generate(branchName: TranslatedStrings.NoBranch);
-
-        //            _dashboard.RefreshContent();
-        //            _dashboard.Visible = true;
-        //            _dashboard.BringToFront();
-
-        //            DiagnosticsClient.TrackPageView("Dashboard");
-        //        }
-
-        //        private void HideDashboard()
-        //        {
-        //            MainSplitContainer.Visible = true;
-        //            if (!_dashboard?.Visible ?? true)
-        //            {
-        //                return;
-        //            }
-
-        //            _dashboard.Visible = false;
-        //            toolPanel.SuspendLayout();
-        //            toolPanel.TopToolStripPanelVisible = true;
-        //            toolPanel.BottomToolStripPanelVisible = true;
-        //            toolPanel.LeftToolStripPanelVisible = true;
-        //            toolPanel.RightToolStripPanelVisible = true;
-        //            toolPanel.ResumeLayout();
-
-        //            DiagnosticsClient.TrackPageView("Revision graph");
         //        }
 
         private void RegisterPlugins()
@@ -759,7 +690,6 @@ namespace GitUI
         {
             Module.RunGui();
         }
-
 
         private void GitcommandLogToolStripMenuItemClick(object sender, EventArgs e)
         {

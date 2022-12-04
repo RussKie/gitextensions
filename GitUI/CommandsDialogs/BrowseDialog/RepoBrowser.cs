@@ -704,23 +704,6 @@ namespace GitUI.CommandsDialogs
             UpdatePluginMenu(Module.IsValidGitWorkingDir());
         }
 
-        /////// <summary>
-        /////// to avoid showing menu items that should not be there during
-        /////// the transition from dashboard to repo browser and vice versa
-        ///////
-        /////// and reset hotkeys that are shared between mutual exclusive menu items.
-        /////// </summary>
-        ////private void HideVariableMainMenuItems()
-        ////{
-        ////    mnuRepository.Visible = false;
-        ////    mnuCommands.Visible = false;
-        ////    mnuPlugins.Visible = false;
-        ////    refreshToolStripMenuItem.ShortcutKeys = Keys.None;
-        ////    mnuRepositoryHosts.Visible = false;
-        ////    _formBrowseMenus.RemoveRevisionGridMainMenuItems();
-        ////    mainMenuStrip.Refresh();
-        ////}
-
         private void InternalInitialize()
         {
             using (WaitCursorScope.Enter())
@@ -1403,12 +1386,6 @@ namespace GitUI.CommandsDialogs
             {
                 fileTree.SwitchFocus(alreadyContainedFocus: false);
             }
-        }
-
-        private void ChangelogToolStripMenuItemClick(object sender, EventArgs e)
-        {
-            using FormChangeLog frm = new();
-            frm.ShowDialog(this);
         }
 
         private void ToolStripButtonPushClick(object sender, EventArgs e)
