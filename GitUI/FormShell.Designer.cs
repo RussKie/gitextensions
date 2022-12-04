@@ -56,11 +56,10 @@ namespace GitUI
             this.gitcommandLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.mainMenuStrip = new GitUI.MenuStripEx();
-            this.toolPanel = new System.Windows.Forms.ToolStripContainer();
+            this.pnlContent = new System.Windows.Forms.Panel();
             toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.mainMenuStrip.SuspendLayout();
-            this.toolPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStripMenuItem2
@@ -350,45 +349,31 @@ namespace GitUI
             this.mainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mainMenuStrip.Name = "mainMenuStrip";
             this.mainMenuStrip.Padding = new System.Windows.Forms.Padding(4);
-            this.mainMenuStrip.Size = new System.Drawing.Size(923, 27);
+            this.mainMenuStrip.Size = new System.Drawing.Size(760, 27);
             this.mainMenuStrip.TabIndex = 0;
             // 
-            // toolPanel
+            // pnlContent
             // 
-            this.toolPanel.BottomToolStripPanelVisible = false;
-            // 
-            // toolPanel.ContentPanel
-            // 
-            this.toolPanel.ContentPanel.Margin = new System.Windows.Forms.Padding(0);
-            this.toolPanel.ContentPanel.Padding = new System.Windows.Forms.Padding(6);
-            this.toolPanel.ContentPanel.Size = new System.Drawing.Size(923, 521);
-            this.toolPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.toolPanel.LeftToolStripPanelVisible = false;
-            this.toolPanel.Location = new System.Drawing.Point(0, 27);
-            this.toolPanel.Margin = new System.Windows.Forms.Padding(0);
-            this.toolPanel.Name = "toolPanel";
-            this.toolPanel.RightToolStripPanelVisible = false;
-            this.toolPanel.Size = new System.Drawing.Size(923, 546);
-            this.toolPanel.TabIndex = 1;
-            // 
-            // toolPanel.TopToolStripPanel
-            // 
-            this.toolPanel.TopToolStripPanel.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlContent.Location = new System.Drawing.Point(0, 27);
+            this.pnlContent.Margin = new System.Windows.Forms.Padding(0);
+            this.pnlContent.Name = "pnlContent";
+            this.pnlContent.Padding = new System.Windows.Forms.Padding(6);
+            this.pnlContent.Size = new System.Drawing.Size(760, 494);
+            this.pnlContent.TabIndex = 1;
             // 
             // FormShell
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
-            this.ClientSize = new System.Drawing.Size(923, 573);
-            this.Controls.Add(this.toolPanel);
+            this.ClientSize = new System.Drawing.Size(760, 521);
+            this.Controls.Add(this.pnlContent);
             this.Controls.Add(this.mainMenuStrip);
             this.Name = "FormShell";
             this.Text = "Git Extensions";
             this.mainMenuStrip.ResumeLayout(false);
             this.mainMenuStrip.PerformLayout();
-            this.toolPanel.ResumeLayout(false);
-            this.toolPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -396,7 +381,7 @@ namespace GitUI
 
         #endregion
 
-        private ToolStripContainer toolPanel;
+        private Panel pnlContent;
 
         private MenuStripEx mainMenuStrip;
         private ToolStripMenuItem fileToolStripMenuItem;

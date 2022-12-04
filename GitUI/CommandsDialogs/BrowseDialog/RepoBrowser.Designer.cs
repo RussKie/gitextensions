@@ -1374,7 +1374,6 @@ namespace GitUI.CommandsDialogs
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoValidate = System.Windows.Forms.AutoValidate.EnablePreventFocusChange;
             this.Controls.Add(this.toolPanel);
-            this.Controls.Add(this.mainMenuStrip);
             this.Name = "RepoBrowser";
             this.Size = new System.Drawing.Size(928, 576);
             this.ToolStripMain.ResumeLayout(false);

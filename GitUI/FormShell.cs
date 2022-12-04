@@ -197,6 +197,9 @@ namespace GitUI
             InitializeComponent();
             BackColor = OtherColors.BackgroundColor;
 
+            mainMenuStrip.ForeColor = SystemColors.WindowText;
+            mainMenuStrip.BackColor = Color.Transparent;
+
             HotkeysEnabled = true;
             Hotkeys = HotkeySettingsManager.LoadHotkeys(HotkeySettingsName);
 
@@ -221,7 +224,7 @@ namespace GitUI
                 mainMenuStrip.Refresh();
             }
 
-            toolPanel.ContentPanel.Controls.Add(control);
+            pnlContent.Controls.Add(control);
         }
 
         private void ControlRemove(Control control)
@@ -234,7 +237,7 @@ namespace GitUI
                 }
             }
 
-            toolPanel.ContentPanel.Controls.Remove(control);
+            pnlContent.Controls.Remove(control);
         }
 
         private void DashboardClose()
