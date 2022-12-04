@@ -16,6 +16,7 @@ using GitUI.Infrastructure.Telemetry;
 using GitUI.Shells;
 using GitUIPluginInterfaces;
 using Microsoft;
+using Microsoft.VisualStudio.Threading;
 using Microsoft.Win32;
 
 namespace GitUI
@@ -207,6 +208,12 @@ namespace GitUI
             RegisterMenuCommands();
 
             InitializeComplete();
+
+            ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
+            {
+                await TaskScheduler.Default;
+                PluginRegistry.Initialize();
+            }).FileAndForget();
         }
 
         private void ControlAdd(Control control)
@@ -369,15 +376,12 @@ namespace GitUI
 
         private void RepositoryClose()
         {
-            //            HideVariableMainMenuItems();
-            //            PluginRegistry.Unregister(UICommands);
-
-
             if (_repoBrowser is null)
             {
                 return;
             }
 
+            _repoBrowser.SetWorkingDir(path: null);
             ControlRemove(_repoBrowser);
 
             _repoBrowser.Dispose();

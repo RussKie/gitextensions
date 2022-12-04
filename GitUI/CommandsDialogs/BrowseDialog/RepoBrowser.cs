@@ -255,14 +255,6 @@ namespace GitUI.CommandsDialogs
 
             MainSplitContainer.SplitterDistance = DpiUtil.Scale(260);
 
-            ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
-            {
-                await TaskScheduler.Default;
-                ////PluginRegistry.Initialize();
-                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                ////RegisterPlugins();
-            }).FileAndForget();
-
             _formBrowseMenus = new(this, mainMenuStrip);
 
             RevisionGrid.SuspendRefreshRevisions();
@@ -1585,52 +1577,60 @@ namespace GitUI.CommandsDialogs
         private void SetGitModule(object sender, GitModuleEventArgs e)
         {
             var module = e.GitModule;
-            ////HideVariableMainMenuItems();
+
             PluginRegistry.Unregister(UICommands);
+
             RevisionGrid.OnRepositoryChanged();
             ////_gitStatusMonitor.InvalidateGitWorkingDirectoryStatus();
             _submoduleStatusProvider.Init();
 
-            if (Module.IsValidGitWorkingDir())
+            if (!Module.IsValidGitWorkingDir())
             {
-                RevisionGrid.SuspendRefreshRevisions();
-                var path = Module.WorkingDir;
-                ThreadHelper.JoinableTaskFactory.Run(() => RepositoryHistoryManager.Locals.AddAsMostRecentAsync(path));
-                AppSettings.RecentWorkingDir = path;
+                return;
+            }
 
-                ChangeTerminalActiveFolder(Module.WorkingDir);
+            ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
+            {
+                await TaskScheduler.Default;
+                while (!PluginRegistry.PluginsInitialized)
+                {
+                    await Task.Delay(250);
+                }
+
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                RegisterPlugins();
+            }).FileAndForget();
+
+            RevisionGrid.SuspendRefreshRevisions();
+            var path = Module.WorkingDir;
+            ThreadHelper.JoinableTaskFactory.Run(() => RepositoryHistoryManager.Locals.AddAsMostRecentAsync(path));
+            AppSettings.RecentWorkingDir = path;
+
+            ChangeTerminalActiveFolder(Module.WorkingDir);
 
 #if DEBUG
-                // Current encodings
-                Debug.WriteLine($"Encodings for {Module.WorkingDir}");
-                Debug.WriteLine($"Files content encoding: {Module.FilesEncoding.EncodingName}");
-                Debug.WriteLine($"Commit encoding: {Module.CommitEncoding.EncodingName}");
-                if (Module.LogOutputEncoding.CodePage != Module.CommitEncoding.CodePage)
-                {
-                    Debug.WriteLine($"Log output encoding: {Module.LogOutputEncoding.EncodingName}");
-                }
+            // Current encodings
+            Debug.WriteLine($"Encodings for {Module.WorkingDir}");
+            Debug.WriteLine($"Files content encoding: {Module.FilesEncoding.EncodingName}");
+            Debug.WriteLine($"Commit encoding: {Module.CommitEncoding.EncodingName}");
+            if (Module.LogOutputEncoding.CodePage != Module.CommitEncoding.CodePage)
+            {
+                Debug.WriteLine($"Log output encoding: {Module.LogOutputEncoding.EncodingName}");
+            }
 #endif
 
-                // Reset the filter when switching repos
+            // Reset the filter when switching repos
 
-                // If we're applying custom branch or revision filters - reset them
-                RevisionGrid.ResetAllFilters();
-                ToolStripFilters.ClearQuickFilters();
-                AppSettings.BranchFilterEnabled = AppSettings.BranchFilterEnabled;
-                revisionDiff.RepositoryChanged();
+            // If we're applying custom branch or revision filters - reset them
+            RevisionGrid.ResetAllFilters();
+            ToolStripFilters.ClearQuickFilters();
+            AppSettings.BranchFilterEnabled = AppSettings.BranchFilterEnabled;
+            revisionDiff.RepositoryChanged();
 
-                RevisionInfo.SetRevisionWithChildren(revision: null, children: Array.Empty<ObjectId>());
-                RevisionGrid.ResumeRefreshRevisions();
+            RevisionInfo.SetRevisionWithChildren(revision: null, children: Array.Empty<ObjectId>());
+            RevisionGrid.ResumeRefreshRevisions();
 
-                RefreshRevisions();
-            }
-            else
-            {
-                Debugger.Launch();
-                Debugger.Break();
-            }
-
-            ////RegisterPlugins();
+            RefreshRevisions();
         }
 
         private void FileExplorerToolStripMenuItemClick(object sender, EventArgs e)

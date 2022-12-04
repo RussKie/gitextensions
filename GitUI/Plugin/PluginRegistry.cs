@@ -11,6 +11,7 @@ namespace GitUI
 
         public static List<IRepositoryHostPlugin> GitHosters { get; } = new List<IRepositoryHostPlugin>();
 
+        public static bool PluginsInitialized { get; private set; }
         public static bool PluginsRegistered { get; private set; }
 
         /// <summary>
@@ -20,7 +21,7 @@ namespace GitUI
         {
             lock (Plugins)
             {
-                if (Plugins.Count > 0)
+                if (PluginsInitialized)
                 {
                     return;
                 }
@@ -46,6 +47,8 @@ namespace GitUI
                 {
                     // no-op
                 }
+
+                PluginsInitialized = true;
             }
         }
 
