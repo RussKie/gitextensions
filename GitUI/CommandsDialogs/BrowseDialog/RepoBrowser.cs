@@ -198,7 +198,7 @@ namespace GitUI.CommandsDialogs
 
         private readonly SplitterManager _splitterManager = new(new AppSettingsPath("FormBrowse"));
         ////private readonly GitStatusMonitor _gitStatusMonitor;
-        private readonly FormBrowseMenus _formBrowseMenus;
+        private readonly RepoBrowserMenus _formBrowseMenus;
         private readonly IFormBrowseController _controller;
         private readonly ICommitDataManager _commitDataManager;
         private readonly IAppTitleGenerator _appTitleGenerator;
@@ -263,7 +263,7 @@ namespace GitUI.CommandsDialogs
                 ////RegisterPlugins();
             }).FileAndForget();
 
-            _formBrowseMenus = new FormBrowseMenus(mainMenuStrip);
+            _formBrowseMenus = new(this, mainMenuStrip);
 
             RevisionGrid.SuspendRefreshRevisions();
 
@@ -704,22 +704,22 @@ namespace GitUI.CommandsDialogs
             UpdatePluginMenu(Module.IsValidGitWorkingDir());
         }
 
-        /// <summary>
-        /// to avoid showing menu items that should not be there during
-        /// the transition from dashboard to repo browser and vice versa
-        ///
-        /// and reset hotkeys that are shared between mutual exclusive menu items.
-        /// </summary>
-        private void HideVariableMainMenuItems()
-        {
-            mnuRepository.Visible = false;
-            mnuCommands.Visible = false;
-            mnuPlugins.Visible = false;
-            refreshToolStripMenuItem.ShortcutKeys = Keys.None;
-            mnuRepositoryHosts.Visible = false;
-            _formBrowseMenus.RemoveRevisionGridMainMenuItems();
-            mainMenuStrip.Refresh();
-        }
+        /////// <summary>
+        /////// to avoid showing menu items that should not be there during
+        /////// the transition from dashboard to repo browser and vice versa
+        ///////
+        /////// and reset hotkeys that are shared between mutual exclusive menu items.
+        /////// </summary>
+        ////private void HideVariableMainMenuItems()
+        ////{
+        ////    mnuRepository.Visible = false;
+        ////    mnuCommands.Visible = false;
+        ////    mnuPlugins.Visible = false;
+        ////    refreshToolStripMenuItem.ShortcutKeys = Keys.None;
+        ////    mnuRepositoryHosts.Visible = false;
+        ////    _formBrowseMenus.RemoveRevisionGridMainMenuItems();
+        ////    mainMenuStrip.Refresh();
+        ////}
 
         private void InternalInitialize()
         {

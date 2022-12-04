@@ -123,6 +123,7 @@ namespace GitUI.CommandsDialogs
                 ToolStrip[] toolStrips = new[] { ToolStripScripts, ToolStripFilters, ToolStripMain };
                 foreach (ToolStrip toolStrip in toolStrips)
                 {
+                    toolStrip.Top = 0;
                     toolPanel.TopToolStripPanel.Controls.Add(toolStrip);
                 }
 
