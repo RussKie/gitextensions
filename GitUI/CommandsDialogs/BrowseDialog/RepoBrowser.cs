@@ -239,12 +239,6 @@ namespace GitUI.CommandsDialogs
             _args = args;
             _isFileBlameHistory = args.IsFileBlameHistory;
 
-            if (_isFileBlameHistory)
-            {
-                // Blame was explicitly requested (otherwise start with last used)
-                AppSettings.RevisionFileTreeShowBlame = true;
-            }
-
             InitializeComponent();
             BackColor = OtherColors.BackgroundColor;
 
@@ -403,7 +397,10 @@ namespace GitUI.CommandsDialogs
             toolStripButtonPush.Initialize(_aheadBehindDataProvider);
             repoObjectsTree.Initialize(_aheadBehindDataProvider, filterRevisionGridBySpaceSeparatedRefs: ToolStripFilters.SetBranchFilter, RevisionGrid, RevisionGrid, RevisionGrid);
             revisionDiff.Bind(RevisionGrid, fileTree, RefreshGitStatusMonitor);
-            fileTree.Bind(RevisionGrid, RefreshGitStatusMonitor);
+
+            // Show blame by default if not started from command line
+            fileTree.Bind(RevisionGrid, RefreshGitStatusMonitor, _isFileBlameHistory);
+
             RevisionGrid.ResumeRefreshRevisions();
         }
 
@@ -537,6 +534,14 @@ namespace GitUI.CommandsDialogs
         {
             // Note that this called in most FormBrowse context to "be sure"
             // that the repo has not been updated externally.
+
+            // It can also be called from background tasks, e.g. from BackgroundFetchPlugin.
+            if (!ThreadHelper.JoinableTaskContext.IsOnMainThread)
+            {
+                Invoke(() => RefreshRevisions(e.GetRefs));
+                return;
+            }
+
             RefreshRevisions(e.GetRefs);
         }
 
