@@ -2,10 +2,12 @@
 #pragma warning disable SA1507
 #pragma warning disable SA1515
 
+using System;
+using System.ComponentModel.Design;
 using System.Diagnostics;
-using System.Windows.Forms;
 using GitCommands;
 using GitCommands.Git;
+using GitCommands.Gpg;
 using GitCommands.UserRepositoryHistory;
 using GitExtUtils.GitUI.Theming;
 using GitUI.CommandsDialogs;
@@ -21,7 +23,7 @@ using Microsoft.Win32;
 
 namespace GitUI
 {
-    public sealed partial class FormShell : GitModuleForm
+    public sealed partial class FormShell : GitModuleForm, IBrowseRepo
     {
         public static readonly string HotkeySettingsName = "Browse";
 
@@ -173,6 +175,8 @@ namespace GitUI
 
         //private UpdateTargets _selectedRevisionUpdatedTargets = UpdateTargets.None;
 
+        private ServiceContainer _serviceContainer = new();
+
         [Obsolete("For VS designer and translation test only. Do not remove.")]
         private FormShell()
         {
@@ -194,6 +198,11 @@ namespace GitUI
             SystemEvents.SessionEnding += (s, e) => SaveApplicationSettings();
 
             _formBrowseDiagnosticsReporter = new FormBrowseDiagnosticsReporter(this);
+
+            _serviceContainer.AddService<IBrowseRepo>(this);
+            _serviceContainer.AddService<IRepositoryCurrentBranchNameProvider>((c, t) => new RepositoryCurrentBranchNameProvider());
+            _serviceContainer.AddService<IInvalidRepositoryRemover>((c, t) => new InvalidRepositoryRemover());
+            _serviceContainer.AddService<IGitGpgController>((c, t) => new GitGpgController(() => Module));
 
             InitializeComponent();
             BackColor = OtherColors.BackgroundColor;
@@ -381,8 +390,8 @@ namespace GitUI
                 return;
             }
 
-            _repoBrowser.SetWorkingDir(path: null);
             ControlRemove(_repoBrowser);
+            UICommands = new(workingDir: null);
 
             _repoBrowser.Dispose();
             _repoBrowser = null;
@@ -390,11 +399,9 @@ namespace GitUI
 
         private void RepositoryOpen(GitModule gitModule)
         {
-            //            RegisterPlugins();
-
             if (_repoBrowser is null)
             {
-                _repoBrowser = new(_browseArguments)
+                _repoBrowser = new(_serviceContainer, _browseArguments)
                 {
                     Dock = DockStyle.Fill,
                     Visible = true
@@ -406,7 +413,6 @@ namespace GitUI
             DiagnosticsClient.TrackPageView("Revision graph");
 
             UICommands = new(gitModule);
-            _repoBrowser.SetWorkingDir(gitModule.WorkingDir);
         }
 
         private void RepositorySwitch(GitModule gitModule)
@@ -416,13 +422,12 @@ namespace GitUI
             // TODO: this likely must be executed at the beginning of InitializeView.
 
             string originalWorkingDir = Module.WorkingDir;
-            if (string.Equals(originalWorkingDir, Module.WorkingDir, StringComparison.Ordinal))
+            if (string.Equals(originalWorkingDir, gitModule.WorkingDir, StringComparison.Ordinal))
             {
                 return;
             }
 
             UICommands = new(gitModule);
-            _repoBrowser.SetWorkingDir(gitModule.WorkingDir);
         }
 
         //protected override void OnFormClosing(FormClosingEventArgs e)
@@ -443,78 +448,6 @@ namespace GitUI
         //            PluginRegistry.Unregister(UICommands);
         //            base.OnClosed(e);
         //        }
-
-        private void RegisterPlugins()
-        {
-            //const string PluginManagerName = "Plugin Manager";
-            //var existingPluginMenus = pluginsToolStripMenuItem.DropDownItems.OfType<ToolStripMenuItem>().ToLookup(c => c.Tag);
-
-            //lock (PluginRegistry.Plugins)
-            //{
-            //    var pluginEntries = PluginRegistry.Plugins
-            //        .OrderByDescending(entry => entry.Name, StringComparer.CurrentCultureIgnoreCase);
-
-            //    // pluginsToolStripMenuItem.DropDownItems menu already contains at least 2 items:
-            //    //    [1] Separator
-            //    //    [0] Plugin Settings
-            //    // insert all plugins except 'Plugin Manager' above the separator
-            //    foreach (var plugin in pluginEntries)
-            //    {
-            //        // don't add the plugin to the Plugins menu, if already added
-            //        if (existingPluginMenus.Contains(plugin))
-            //        {
-            //            continue;
-            //        }
-
-            //        ToolStripMenuItem item = new()
-            //        {
-            //            Text = plugin.Name,
-            //            Image = plugin.Icon,
-            //            Tag = plugin
-            //        };
-            //        item.Click += delegate
-            //        {
-            //            if (plugin.Execute(new GitUIEventArgs(this, UICommands)))
-            //            {
-            //                //_gitStatusMonitor.InvalidateGitWorkingDirectoryStatus();
-            //                //RefreshRevisions();
-            //            }
-            //        };
-
-            //        if (plugin.Name == PluginManagerName)
-            //        {
-            //            // insert Plugin Manager below the separator
-            //            pluginsToolStripMenuItem.DropDownItems.Insert(pluginsToolStripMenuItem.DropDownItems.Count - 1, item);
-            //        }
-            //        else
-            //        {
-            //            pluginsToolStripMenuItem.DropDownItems.Insert(0, item);
-            //        }
-            //    }
-
-            //    //if (_dashboard?.Visible ?? false)
-            //    //{
-            //    //    // now that plugins are registered, populate Git-host-plugin actions on Dashboard, like "Clone GitHub repository"
-            //    //    _dashboard.RefreshContent();
-            //    //}
-
-            //    mainMenuStrip?.Refresh();
-            //}
-
-            //// Allow the plugin to perform any self-registration actions
-            //PluginRegistry.Register(UICommands);
-
-            //UICommands.RaisePostRegisterPlugin(this);
-
-            //// Show "Repository hosts" menu item when there is at least 1 repository host plugin loaded
-            //_repositoryHostsToolStripMenuItem.Visible = PluginRegistry.GitHosters.Count > 0;
-            //if (PluginRegistry.GitHosters.Count == 1)
-            //{
-            //    _repositoryHostsToolStripMenuItem.Text = PluginRegistry.GitHosters[0].Name;
-            //}
-
-            //UpdatePluginMenu(Module.IsValidGitWorkingDir());
-        }
 
         //        private void InternalInitialize()
         //        {
@@ -1269,6 +1202,21 @@ namespace GitUI
         {
             FormUpdates updateForm = new(AppSettings.AppVersion);
             updateForm.SearchForUpdatesAndShow(Owner, true);
+        }
+
+        void IBrowseRepo.GoToRef(string refName, bool showNoRevisionMsg, bool toggleSelection)
+        {
+            throw new NotImplementedException();
+        }
+
+        void IBrowseRepo.SetWorkingDir(string? path, ObjectId? selectedId, ObjectId? firstId)
+        {
+            InitializeView(new(path));
+        }
+
+        IReadOnlyList<GitRevision> IBrowseRepo.GetSelectedRevisions()
+        {
+            throw new NotImplementedException();
         }
     }
 

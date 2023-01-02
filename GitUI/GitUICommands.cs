@@ -1140,7 +1140,7 @@ namespace GitUI
         /// <param name="args">The start up arguments.</param>
         public bool StartBrowseDialog(IWin32Window? owner, BrowseArguments? args = null)
         {
-            // FormBrowse form = new(this, args ?? new BrowseArguments());
+            ////sFormBrowse form = new(this, args ?? new BrowseArguments());
             FormShell form = new(this, args ?? new BrowseArguments());
 
             if (Application.MessageLoop)
