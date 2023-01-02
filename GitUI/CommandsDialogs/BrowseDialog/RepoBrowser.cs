@@ -449,13 +449,13 @@ namespace GitUI.CommandsDialogs
 
             source.UICommandsChanged += UICommandsSource_UICommandsChanged;
 
-            SetGitModule(this, new(source.UICommands.Module));
+            // TODO: work out how to not call this, and delegate everything to UICommandsSource_UICommandsChanged
+            OpenGitModule(this, new(source.UICommands.Module));
             return;
 
             void UICommandsSource_UICommandsChanged(object? sender, GitUICommandsChangedEventArgs e)
             {
                 var oldCommands = e.OldCommands;
-                RefreshDefaultPullAction();
 
                 if (oldCommands is not null)
                 {
@@ -464,7 +464,7 @@ namespace GitUI.CommandsDialogs
 
                 UICommands.PostRepositoryChanged += UICommands_PostRepositoryChanged;
 
-                SetGitModule(this, new(UICommands.Module));
+                OpenGitModule(this, new(UICommands.Module));
                 return;
 
                 void UICommands_PostRepositoryChanged(object sender, GitUIEventArgs e)
@@ -1595,7 +1595,7 @@ namespace GitUI.CommandsDialogs
             _browseRepo.SetWorkingDir(path);
         }
 
-        private void SetGitModule(object sender, GitModuleEventArgs e)
+        private void OpenGitModule(object sender, GitModuleEventArgs e)
         {
             var module = e.GitModule;
 
@@ -1746,7 +1746,8 @@ namespace GitUI.CommandsDialogs
         {
             if (PluginRegistry.GitHosters.Count > 0)
             {
-                UICommands.StartCloneForkFromHoster(this, PluginRegistry.GitHosters[0], SetGitModule);
+                // TODO: !!!
+                UICommands.StartCloneForkFromHoster(this, PluginRegistry.GitHosters[0], OpenGitModule);
                 RefreshRevisions();
             }
             else
