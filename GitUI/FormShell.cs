@@ -126,11 +126,8 @@ namespace GitUI
                 return;
             }
 
-            ControlRemove(_dashboard);
-
             _dashboard.GitModuleChanged -= SetGitModule;
-            _dashboard.Dispose();
-            _dashboard = null;
+            ControlRemove(_dashboard);
         }
 
         private void DashboardOpen()
@@ -143,10 +140,11 @@ namespace GitUI
                     Visible = true
                 };
                 _dashboard.RefreshContent();
-                _dashboard.GitModuleChanged += SetGitModule;
             }
 
             ControlAdd(_dashboard);
+            _dashboard.GitModuleChanged += SetGitModule;
+
             DiagnosticsClient.TrackPageView("Dashboard");
 
             // Explicit call: Title is normally updated on RevisionGrid filter change
@@ -171,7 +169,7 @@ namespace GitUI
             // respective message queues before we dispose these controls.
             BeginInvoke(() =>
             {
-                if (_dashboard is not null || (_repoBrowser is null && gitModule is not null && gitModule.IsValidGitWorkingDir()))
+                if (_dashboard?.Parent is not null || (_repoBrowser?.Parent is null && gitModule is not null && gitModule.IsValidGitWorkingDir()))
                 {
                     DashboardClose();
                     RepositoryOpen(gitModule);
@@ -242,9 +240,6 @@ namespace GitUI
 
             ControlRemove(_repoBrowser);
             UICommands = new(workingDir: null);
-
-            _repoBrowser.Dispose();
-            _repoBrowser = null;
         }
 
         private void RepositoryOpen(GitModule gitModule)
