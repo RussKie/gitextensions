@@ -181,41 +181,6 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
             toolStripSeparator11.Name = "toolStripSeparator11";
             toolStripSeparator11.Size = new System.Drawing.Size(225, 6);
             // 
-            // ToolStripMain
-            // 
-            this.ToolStripMain.ClickThrough = true;
-            this.ToolStripMain.Dock = System.Windows.Forms.DockStyle.None;
-            this.ToolStripMain.DrawBorder = false;
-            this.ToolStripMain.GripEnabled = false;
-            this.ToolStripMain.GripMargin = new System.Windows.Forms.Padding(0);
-            this.ToolStripMain.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.ToolStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.RefreshButton,
-            this.toolStripSeparator0,
-            this.toggleBranchTreePanel,
-            this.toggleSplitViewLayout,
-            this.menuCommitInfoPosition,
-            this.toolStripSeparator17,
-            this.toolStripButtonLevelUp,
-            this._NO_TRANSLATE_WorkingDir,
-            this.branchSelect,
-            this.toolStripSeparator1,
-            this.toolStripButtonPull,
-            this.toolStripButtonPush,
-            this.toolStripButtonCommit,
-            this.toolStripSplitStash,
-            this.toolStripSeparator2,
-            this.toolStripFileExplorer,
-            this.userShell,
-            this.EditSettings});
-            this.ToolStripMain.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.ToolStripMain.Location = new System.Drawing.Point(3, 0);
-            this.ToolStripMain.Name = "ToolStripMain";
-            this.ToolStripMain.Padding = new System.Windows.Forms.Padding(0);
-            this.ToolStripMain.Size = new System.Drawing.Size(575, 25);
-            this.ToolStripMain.TabIndex = 0;
-            this.ToolStripMain.Text = "Standard";
-            // 
             // RefreshButton
             // 
             this.RefreshButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -1296,33 +1261,48 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
             this.mainMenuStrip.Size = new System.Drawing.Size(928, 27);
             this.mainMenuStrip.TabIndex = 0;
             // 
+            // ToolStripMain
+            // 
+            this.ToolStripMain.DrawBorder = false;
+            this.ToolStripMain.GripEnabled = false;
+            this.ToolStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.RefreshButton,
+            this.toolStripSeparator0,
+            this.toggleBranchTreePanel,
+            this.toggleSplitViewLayout,
+            this.menuCommitInfoPosition,
+            this.toolStripSeparator17,
+            this.toolStripButtonLevelUp,
+            this._NO_TRANSLATE_WorkingDir,
+            this.branchSelect,
+            this.toolStripSeparator1,
+            this.toolStripButtonPull,
+            this.toolStripButtonPush,
+            this.toolStripButtonCommit,
+            this.toolStripSplitStash,
+            this.toolStripSeparator2,
+            this.toolStripFileExplorer,
+            this.userShell,
+            this.EditSettings});
+            this.ToolStripMain.Name = "ToolStripMain";
+            this.ToolStripMain.Padding = new System.Windows.Forms.Padding(0);
+            this.ToolStripMain.TabIndex = 0;
+            this.ToolStripMain.Text = "Standard";
+            // 
             // ToolStripFilters
             // 
-            this.ToolStripFilters.Dock = System.Windows.Forms.DockStyle.None;
             this.ToolStripFilters.GripEnabled = false;
-            this.ToolStripFilters.GripMargin = new System.Windows.Forms.Padding(0);
-            this.ToolStripFilters.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.ToolStripFilters.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.ToolStripFilters.Location = new System.Drawing.Point(3, 25);
             this.ToolStripFilters.Name = "ToolStripFilters";
             this.ToolStripFilters.Padding = new System.Windows.Forms.Padding(0);
-            this.ToolStripFilters.Size = new System.Drawing.Size(551, 25);
             this.ToolStripFilters.TabIndex = 1;
             this.ToolStripFilters.Text = "Filters";
             // 
             // ToolStripScripts
             // 
-            this.ToolStripScripts.ClickThrough = true;
-            this.ToolStripScripts.Dock = System.Windows.Forms.DockStyle.None;
             this.ToolStripScripts.DrawBorder = false;
             this.ToolStripScripts.GripEnabled = false;
-            this.ToolStripScripts.GripMargin = new System.Windows.Forms.Padding(0);
-            this.ToolStripScripts.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.ToolStripScripts.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.ToolStripScripts.Location = new System.Drawing.Point(561, 25);
             this.ToolStripScripts.Name = "ToolStripScripts";
             this.ToolStripScripts.Padding = new System.Windows.Forms.Padding(0);
-            this.ToolStripScripts.Size = new System.Drawing.Size(107, 25);
             this.ToolStripScripts.TabIndex = 2;
             this.ToolStripScripts.Text = "Scripts";
             // 
@@ -1338,7 +1318,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
             this.toolPanel.ContentPanel.Size = new System.Drawing.Size(928, 499);
             this.toolPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolPanel.LeftToolStripPanelVisible = false;
-            this.toolPanel.Location = new System.Drawing.Point(0, 27);
+            this.toolPanel.Location = new System.Drawing.Point(0, 0);
             this.toolPanel.Margin = new System.Windows.Forms.Padding(0);
             this.toolPanel.Name = "toolPanel";
             this.toolPanel.RightToolStripPanelVisible = false;
