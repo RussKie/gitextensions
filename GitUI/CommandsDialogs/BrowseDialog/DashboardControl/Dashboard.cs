@@ -8,7 +8,7 @@ using ResourceManager;
 namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
 {
     [ThemeAware]
-    public partial class Dashboard : GitModuleControl
+    public partial class Dashboard : GitModuleControl, IMainMenuExtender
     {
         private readonly TranslationString _cloneFork = new("Clone {0} repository");
         private readonly TranslationString _cloneRepository = new("Clone repository");
@@ -43,6 +43,8 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
             pnlLogo.Padding = DpiUtil.Scale(pnlLogo.Padding);
             userRepositoriesList.HeaderHeight = pnlLogo.Height;
         }
+
+        MenuStrip IMainMenuExtender.ControlMenu => menuStrip1;
 
         protected override void OnVisibleChanged(EventArgs e)
         {
@@ -195,6 +197,15 @@ namespace GitUI.CommandsDialogs.BrowseDialog.DashboardControl
             }
 
             Visible = true;
+        }
+
+        private void mnuConfigure_Click(object sender, EventArgs e)
+        {
+            using FormRecentReposSettings frm = new();
+            if (frm.ShowDialog(this) == DialogResult.OK)
+            {
+                userRepositoriesList.ShowRecentRepositories();
+            }
         }
 
         private static void TranslateItem_Click(object sender, EventArgs e)

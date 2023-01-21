@@ -76,18 +76,37 @@ namespace GitUI
 
         private void ControlAdd(Control control)
         {
-            pnlContent.Controls.Add(control);
+            if (control is IMainMenuExtender mainMenuExtender)
+            {
+                if (!ToolStripManager.Merge(mainMenuExtender.ControlMenu, mainMenuStrip))
+                {
+                    Debug.Fail("Failed to merge the menu");
+                }
+
+                // HACK: the menu often fails to refresh itself until some kind of user action.
+                mainMenuStrip.Refresh();
+            }
 
             control.DragDrop += control_DragDrop;
             control.DragEnter += control_DragEnter;
+
+            pnlContent.Controls.Add(control);
         }
 
         private void ControlRemove(Control control)
         {
-            pnlContent.Controls.Remove(control);
+            if (control is IMainMenuExtender mainMenuExtender)
+            {
+                if (!ToolStripManager.RevertMerge(mainMenuStrip, mainMenuExtender.ControlMenu))
+                {
+                    Debug.Fail("Failed to unmerge the menu");
+                }
+            }
 
             control.DragDrop -= control_DragDrop;
             control.DragEnter -= control_DragEnter;
+
+            pnlContent.Controls.Remove(control);
         }
 
         private void DashboardClose()
@@ -177,7 +196,16 @@ namespace GitUI
         {
             base.OnRuntimeLoad(e);
 
-            InitializeView(Module);
+#pragma warning disable VSTHRD101 // Avoid unsupported async delegates
+            BeginInvoke(async () =>
+            {
+                // HACK: for some strange reason the main menu disappears, and requires a mouse hover
+                // for it to appear agaon. With this everything works just find. No time to debug Windows Forms code.
+                await Task.Delay(10);
+
+                InitializeView(Module);
+            });
+#pragma warning restore VSTHRD101 // Avoid unsupported async delegates
 
             using (WaitCursorScope.Enter())
             {
