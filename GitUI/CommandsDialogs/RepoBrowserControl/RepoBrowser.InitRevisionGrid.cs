@@ -2,9 +2,9 @@
 using GitUI.Properties;
 using GitUIPluginInterfaces;
 
-namespace GitUI.CommandsDialogs
+namespace GitUI.CommandsDialogs.RepoBrowserControl
 {
-    partial class FormBrowse
+    partial class RepoBrowser
     {
         // This file is dedicated to init logic for FormBrowse revisiong grid control
 
