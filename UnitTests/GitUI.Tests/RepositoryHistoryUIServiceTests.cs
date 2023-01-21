@@ -22,7 +22,11 @@ namespace GitUITests
             _repositoryCurrentBranchNameProvider = Substitute.For<IRepositoryCurrentBranchNameProvider>();
             _invalidRepositoryRemover = Substitute.For<IInvalidRepositoryRemover>();
 
-            _service = new RepositoryHistoryUIService(_repositoryCurrentBranchNameProvider, _invalidRepositoryRemover);
+            IServiceProvider serviceProvider = Substitute.For<IServiceProvider>();
+            serviceProvider.GetService(typeof(IRepositoryCurrentBranchNameProvider)).Returns(_repositoryCurrentBranchNameProvider);
+            serviceProvider.GetService(typeof(IInvalidRepositoryRemover)).Returns(_invalidRepositoryRemover);
+
+            _service = new RepositoryHistoryUIService(serviceProvider);
         }
 
         [Test]

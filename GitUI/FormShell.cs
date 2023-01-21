@@ -2,9 +2,11 @@
 #pragma warning disable SA1507
 #pragma warning disable SA1515
 
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using GitCommands;
 using GitCommands.Git;
+using GitCommands.Gpg;
 using GitExtUtils.GitUI.Theming;
 using GitUI.CommandsDialogs;
 using GitUI.CommandsDialogs.BrowseDialog;
@@ -21,6 +23,8 @@ namespace GitUI
     public sealed partial class FormShell : GitModuleForm, IBrowseRepo
     {
         public static readonly string HotkeySettingsName = "Browse";
+
+        private ServiceContainer _serviceContainer = new();
 
         private readonly DiagnosticsReporter _diagnosticsReporter;
         private readonly BrowseArguments? _browseArguments;
@@ -52,6 +56,12 @@ namespace GitUI
 
             _diagnosticsReporter = new(this);
 
+            _serviceContainer.AddService<IBrowseRepo>(this);
+            _serviceContainer.AddService<IRepositoryCurrentBranchNameProvider>((c, t) => new RepositoryCurrentBranchNameProvider());
+            _serviceContainer.AddService<IInvalidRepositoryRemover>((c, t) => new InvalidRepositoryRemover());
+            _serviceContainer.AddService<IGitGpgController>((c, t) => new GitGpgController(() => Module));
+            _serviceContainer.AddService<IGpgInfoProvider>((c, t) => new GpgInfoProvider(c.GetService<IGitGpgController>()));
+
             InitializeComponent();
             BackColor = OtherColors.BackgroundColor;
 
@@ -61,9 +71,9 @@ namespace GitUI
             HotkeysEnabled = true;
             Hotkeys = HotkeySettingsManager.LoadHotkeys(HotkeySettingsName);
 
-            fileToolStripMenuItem.Initialize(() => UICommands);
-            helpToolStripMenuItem.Initialize(() => UICommands);
-            toolsToolStripMenuItem.Initialize(() => UICommands);
+            fileToolStripMenuItem.Initialize(_serviceContainer, () => UICommands);
+            helpToolStripMenuItem.Initialize(_serviceContainer, () => UICommands);
+            toolsToolStripMenuItem.Initialize(_serviceContainer, () => UICommands);
 
             InitializeComplete();
 
@@ -241,7 +251,7 @@ namespace GitUI
         {
             if (_repoBrowser is null)
             {
-                _repoBrowser = new(new(""), _browseArguments)
+                _repoBrowser = new(_serviceContainer, _browseArguments)
                 {
                     Dock = DockStyle.Fill,
                     Visible = true

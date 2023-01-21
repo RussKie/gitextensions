@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing.Drawing2D;
@@ -215,7 +216,7 @@ namespace GitUI.CommandsDialogs
         private readonly DiagnosticsReporter _diagnosticsReporter;
         private BuildReportTabPageExtension? _buildReportTabPageExtension;
         private readonly ShellProvider _shellProvider = new();
-        private readonly RepositoryHistoryUIService _repositoryHistoryUIService = new();
+        private readonly RepositoryHistoryUIService _repositoryHistoryUIService;
         private ConEmuControl? _terminal;
         private Dashboard? _dashboard;
         private bool _isFileBlameHistory;
@@ -251,9 +252,16 @@ namespace GitUI.CommandsDialogs
             _isFileBlameHistory = args.IsFileBlameHistory;
             InitializeComponent();
 
-            fileToolStripMenuItem.Initialize(() => UICommands);
-            helpToolStripMenuItem.Initialize(() => UICommands);
-            toolsToolStripMenuItem.Initialize(() => UICommands);
+            // HACK:
+            ServiceContainer serviceContainer = new();
+            serviceContainer.AddService<IRepositoryCurrentBranchNameProvider>((c, t) => new RepositoryCurrentBranchNameProvider());
+            serviceContainer.AddService<IInvalidRepositoryRemover>((c, t) => new InvalidRepositoryRemover());
+
+            _repositoryHistoryUIService = new(serviceContainer);
+
+            fileToolStripMenuItem.Initialize(serviceContainer, () => UICommands);
+            helpToolStripMenuItem.Initialize(serviceContainer, () => UICommands);
+            toolsToolStripMenuItem.Initialize(serviceContainer, () => UICommands);
 
             BackColor = OtherColors.BackgroundColor;
 

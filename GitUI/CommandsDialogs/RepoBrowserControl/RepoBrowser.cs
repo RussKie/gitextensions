@@ -198,6 +198,8 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
         #endregion
 
         private readonly BrowseArguments _args;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IBrowseRepo _browseRepo;
 
         private readonly SplitterManager _splitterManager = new(new AppSettingsPath("FormBrowse"));
         ////private readonly GitStatusMonitor _gitStatusMonitor;
@@ -211,7 +213,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
         private List<ToolStripItem>? _currentSubmoduleMenuItems;
         private BuildReportTabPageExtension? _buildReportTabPageExtension;
         private readonly ShellProvider _shellProvider = new();
-        private readonly RepositoryHistoryUIService _repositoryHistoryUIService = new();
+        private readonly RepositoryHistoryUIService _repositoryHistoryUIService;
         private ConEmuControl? _terminal;
         private bool _isFileBlameHistory;
         private bool _fileBlameHistorySidePanelStartupState;
@@ -234,12 +236,17 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
         /// <summary>
         /// Open Browse - main GUI including dashboard.
         /// </summary>
-        /// <param name="commands">The commands in the current form.</param>
+        /// <param name="serviceProvider">The service provider.</param>
         /// <param name="args">The start up arguments.</param>
-        public RepoBrowser(GitUICommands commands, BrowseArguments args)
+        public RepoBrowser(IServiceProvider serviceProvider, BrowseArguments args)
         {
-            _args = args;
+            _serviceProvider = serviceProvider;
 
+            _browseRepo = serviceProvider.GetService<IBrowseRepo>();
+            _gpgInfoProvider = serviceProvider.GetService<IGpgInfoProvider>();
+            _repositoryHistoryUIService = new(serviceProvider);
+
+            _args = args;
             _isFileBlameHistory = args.IsFileBlameHistory;
             InitializeComponent();
 
@@ -264,7 +271,6 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
             HotkeysEnabled = true;
             Hotkeys = HotkeySettingsManager.LoadHotkeys(HotkeySettingsName);
 
-            _gpgInfoProvider = new GpgInfoProvider(new GitGpgController(() => Module));
             _commitDataManager = new CommitDataManager(() => Module);
 
             _submoduleStatusProvider = SubmoduleStatusProvider.Default;
@@ -978,8 +984,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
             GitModule? module = FormOpenDirectory.OpenModule(this, Module);
             if (module is not null)
             {
-                ////SetGitModule(this, new GitModuleEventArgs(module));
-                SetWorkingDir(module.WorkingDir);
+                _browseRepo.SetWorkingDir(module.WorkingDir);
             }
         }
         #endregion
@@ -1437,7 +1442,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
             RevisionGrid.SelectedId = selectedId;
             RevisionGrid.FirstId = firstId;
 
-            OpenGitModule(this, new GitModuleEventArgs(new GitModule(path)));
+            _browseRepo.SetWorkingDir(path);
         }
 
         private void OpenGitModule(object sender, GitModuleEventArgs e)
@@ -2377,7 +2382,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
         {
             if (Module.SuperprojectModule is not null)
             {
-                OpenGitModule(this, new GitModuleEventArgs(Module.SuperprojectModule));
+                _browseRepo.SetWorkingDir(Module.SuperprojectModule.WorkingDir);
             }
             else
             {

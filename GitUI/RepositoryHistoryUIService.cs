@@ -13,15 +13,10 @@ namespace GitUI
 
         public event EventHandler<GitModuleEventArgs> GitModuleChanged;
 
-        internal RepositoryHistoryUIService(IRepositoryCurrentBranchNameProvider repositoryCurrentBranchNameProvider, IInvalidRepositoryRemover invalidRepositoryRemover)
+        public RepositoryHistoryUIService(IServiceProvider serviceProvider)
         {
-            _repositoryCurrentBranchNameProvider = repositoryCurrentBranchNameProvider;
-            _invalidRepositoryRemover = invalidRepositoryRemover;
-        }
-
-        public RepositoryHistoryUIService()
-            : this(new RepositoryCurrentBranchNameProvider(), new InvalidRepositoryRemover())
-        {
+            _repositoryCurrentBranchNameProvider = serviceProvider.GetService<IRepositoryCurrentBranchNameProvider>();
+            _invalidRepositoryRemover = serviceProvider.GetService<IInvalidRepositoryRemover>();
         }
 
         private static Form? OwnerForm

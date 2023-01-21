@@ -8,7 +8,7 @@ namespace GitUI.CommandsDialogs.Menus
 {
     internal partial class StartToolStripMenuItem : ToolStripMenuItemEx
     {
-        private readonly RepositoryHistoryUIService _repositoryHistoryUIService = new();
+        private RepositoryHistoryUIService _repositoryHistoryUIService = null!;
 
         public event EventHandler<GitModuleEventArgs> GitModuleChanged;
         public event EventHandler RecentRepositoriesCleared;
@@ -16,8 +16,6 @@ namespace GitUI.CommandsDialogs.Menus
         public StartToolStripMenuItem()
         {
             InitializeComponent();
-
-            _repositoryHistoryUIService.GitModuleChanged += repositoryHistoryUIService_GitModuleChanged;
         }
 
         internal ToolStripMenuItem OpenRepositoryMenuItem => openToolStripMenuItem;
@@ -37,6 +35,14 @@ namespace GitUI.CommandsDialogs.Menus
             }
 
             base.Dispose(disposing);
+        }
+
+        protected override void OnInitialized(IServiceProvider serviceProvider)
+        {
+            _repositoryHistoryUIService = new(serviceProvider);
+            _repositoryHistoryUIService.GitModuleChanged += repositoryHistoryUIService_GitModuleChanged;
+
+            base.OnInitialized(serviceProvider);
         }
 
         public override void RefreshShortcutKeys(IEnumerable<HotkeyCommand>? hotkeys)
