@@ -205,7 +205,7 @@ namespace GitUI.CommandsDialogs
         private readonly SplitterManager _splitterManager = new(new AppSettingsPath("FormBrowse"));
         private readonly GitStatusMonitor _gitStatusMonitor;
         private readonly FormBrowseMenus _formBrowseMenus;
-        private readonly IFormBrowseController _controller;
+        private readonly IGpgInfoProvider _controller;
         private readonly ICommitDataManager _commitDataManager;
         private readonly IAppTitleGenerator _appTitleGenerator;
         private readonly IAheadBehindDataProvider? _aheadBehindDataProvider;
@@ -295,7 +295,7 @@ namespace GitUI.CommandsDialogs
             UICommands.PostRepositoryChanged += UICommands_PostRepositoryChanged;
             UICommands.BrowseRepo = this;
 
-            _controller = new FormBrowseController(new GitGpgController(() => Module));
+            _controller = new GpgInfoProvider(new GitGpgController(() => Module));
             _commitDataManager = new CommitDataManager(() => Module);
 
             _submoduleStatusProvider = SubmoduleStatusProvider.Default;
