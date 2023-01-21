@@ -38,6 +38,8 @@ namespace GitUI.CommandsDialogs.Menus
         public override void RefreshState(bool bareRepository)
         {
             gitGUIToolStripMenuItem.Enabled = !bareRepository;
+            kGitToolStripMenuItem.Enabled = !bareRepository;
+            gitBashToolStripMenuItem.Enabled = !bareRepository;
 
             base.RefreshState(bareRepository);
         }
