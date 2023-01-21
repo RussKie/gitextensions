@@ -273,13 +273,6 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
             _submoduleStatusProvider.StatusUpdating += SubmoduleStatusProvider_StatusUpdating;
             _submoduleStatusProvider.StatusUpdated += SubmoduleStatusProvider_StatusUpdated;
 
-            foreach (var control in this.FindDescendants())
-            {
-                control.AllowDrop = true;
-                control.DragEnter += FormBrowse_DragEnter;
-                control.DragDrop += FormBrowse_DragDrop;
-            }
-
             _aheadBehindDataProvider = new AheadBehindDataProvider(() => Module.GitExecutable);
 
             // Application is init, the repo related operations are triggered in OnLoad()
@@ -486,19 +479,6 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
         }
 
         /* TODO:
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            SaveApplicationSettings();
-
-            foreach (var control in this.FindDescendants())
-            {
-                control.DragEnter -= FormBrowse_DragEnter;
-                control.DragDrop -= FormBrowse_DragDrop;
-            }
-
-            base.OnFormClosing(e);
-        }
-
         protected override void OnClosing(CancelEventArgs e)
         {
             // Restore state at startup if file history mode, ignore the forced setting
@@ -674,16 +654,6 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
         {
             using (WaitCursorScope.Enter())
             {
-                /* TODO: move to the shell
-                // check for updates
-                if (AppSettings.CheckForUpdates && AppSettings.LastUpdateCheck.AddDays(7) < DateTime.Now)
-                {
-                    AppSettings.LastUpdateCheck = DateTime.Now;
-                    FormUpdates updateForm = new(AppSettings.AppVersion);
-                    updateForm.SearchForUpdatesAndShow(ownerWindow: this, alwaysShow: false);
-                }
-                */
-
                 bool hasWorkingDir = !string.IsNullOrEmpty(Module.WorkingDir);
 
                 bool bareRepository = Module.IsBareRepository();
@@ -2705,11 +2675,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
             public FilterToolBar ToolStripFilters => _control.ToolStripFilters;
         }
 
-        private void FormBrowse_DragDrop(object sender, DragEventArgs e)
-        {
-            HandleDrop(e);
-        }
-
+        /* TODO:
         private void HandleDrop(DragEventArgs e)
         {
             if (TreeTabPage.Parent is null)
@@ -2752,15 +2718,6 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
 
             bool IsFileExistingInRepo([NotNullWhen(returnValue: true)] string? path) => IsPathExists(path) && path.StartsWith(Module.WorkingDir, StringComparison.InvariantCultureIgnoreCase);
         }
-
-        private void FormBrowse_DragEnter(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop)
-                || e.Data.GetDataPresent(DataFormats.Text)
-                || e.Data.GetDataPresent(DataFormats.UnicodeText))
-            {
-                e.Effect = DragDropEffects.Move;
-            }
-        }
+        */
     }
 }

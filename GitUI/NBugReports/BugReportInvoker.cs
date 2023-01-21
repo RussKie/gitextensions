@@ -7,6 +7,7 @@ using BugReporter.Serialization;
 using GitCommands;
 using GitExtUtils;
 using GitUI.CommandsDialogs;
+using GitUIPluginInterfaces;
 
 namespace GitUI.NBugReports
 {
@@ -284,9 +285,9 @@ namespace GitUI.NBugReports
 
             static void ShowGitRepo(Form? ownerForm, string? workingDir)
             {
-                if (ownerForm is FormBrowse formBrowse)
+                if (ownerForm is IBrowseRepo repoBrowser)
                 {
-                    formBrowse.Invoke(() => formBrowse.SetWorkingDir(workingDir));
+                    ownerForm.Invoke(() => repoBrowser.SetWorkingDir(workingDir));
                 }
             }
         }
