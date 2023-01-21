@@ -1,19 +1,17 @@
-﻿using GitCommands;
-using GitCommands.Gpg;
-using GitUIPluginInterfaces;
+﻿using GitUIPluginInterfaces;
 
-namespace GitUI.CommandsDialogs
+namespace GitCommands.Gpg
 {
-    public interface IFormBrowseController
+    public interface IGpgInfoProvider
     {
         Task<GpgInfo?> LoadGpgInfoAsync(GitRevision? revision);
     }
 
-    public class FormBrowseController : IFormBrowseController
+    public class GpgInfoProvider : IGpgInfoProvider
     {
         private readonly IGitGpgController _gitGpgController;
 
-        public FormBrowseController(IGitGpgController gitGpgController)
+        public GpgInfoProvider(IGitGpgController gitGpgController)
         {
             _gitGpgController = gitGpgController;
         }

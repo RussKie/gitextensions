@@ -1,6 +1,4 @@
-using GitCommands.Gpg;
-
-namespace GitUI.CommandsDialogs
+namespace GitCommands.Gpg
 {
     public class GpgInfo
     {

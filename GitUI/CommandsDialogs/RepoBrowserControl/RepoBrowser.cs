@@ -202,7 +202,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
         private readonly SplitterManager _splitterManager = new(new AppSettingsPath("FormBrowse"));
         ////private readonly GitStatusMonitor _gitStatusMonitor;
         private readonly FormBrowseMenus _formBrowseMenus;
-        private readonly IFormBrowseController _controller;
+        private readonly IGpgInfoProvider _gpgInfoProvider;
         private readonly ICommitDataManager _commitDataManager;
         private readonly IAppTitleGenerator _appTitleGenerator;
         private readonly IAheadBehindDataProvider? _aheadBehindDataProvider;
@@ -266,7 +266,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
             HotkeysEnabled = true;
             Hotkeys = HotkeySettingsManager.LoadHotkeys(HotkeySettingsName);
 
-            _controller = new FormBrowseController(new GitGpgController(() => Module));
+            _gpgInfoProvider = new GpgInfoProvider(new GitGpgController(() => Module));
             _commitDataManager = new CommitDataManager(() => Module);
 
             _submoduleStatusProvider = SubmoduleStatusProvider.Default;
@@ -1050,7 +1050,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
                 return;
             }
 
-            var info = await _controller.LoadGpgInfoAsync(revision);
+            var info = await _gpgInfoProvider.LoadGpgInfoAsync(revision);
             revisionGpgInfo1.DisplayGpgInfo(info);
         }
 

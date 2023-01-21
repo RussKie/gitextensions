@@ -9,7 +9,7 @@ namespace GitUITests.CommandsDialogs
     [TestFixture]
     public sealed class FormBrowseControllerTests
     {
-        private FormBrowseController _controller;
+        private GpgInfoProvider _controller;
         private IGitGpgController _gitGpgController;
 
         [SetUp]
@@ -17,7 +17,7 @@ namespace GitUITests.CommandsDialogs
         {
             _gitGpgController = Substitute.For<IGitGpgController>();
 
-            _controller = new FormBrowseController(_gitGpgController);
+            _controller = new GpgInfoProvider(_gitGpgController);
         }
     }
 }
