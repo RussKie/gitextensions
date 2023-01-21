@@ -198,6 +198,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
         #endregion
 
         private readonly BrowseArguments _args;
+        private readonly IBrowseRepo _browseRepo;
 
         private readonly SplitterManager _splitterManager = new(new AppSettingsPath("FormBrowse"));
         ////private readonly GitStatusMonitor _gitStatusMonitor;
@@ -211,7 +212,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
         private List<ToolStripItem>? _currentSubmoduleMenuItems;
         private BuildReportTabPageExtension? _buildReportTabPageExtension;
         private readonly ShellProvider _shellProvider = new();
-        private readonly RepositoryHistoryUIService _repositoryHistoryUIService = new();
+        private readonly RepositoryHistoryUIService _repositoryHistoryUIService;
         private ConEmuControl? _terminal;
         private bool _isFileBlameHistory;
         private bool _fileBlameHistorySidePanelStartupState;
@@ -234,23 +235,25 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
         /// <summary>
         /// Open Browse - main GUI including dashboard.
         /// </summary>
-        /// <param name="commands">The commands in the current form.</param>
+        /// <param name="serviceProvider">The service provider.</param>
         /// <param name="args">The start up arguments.</param>
-        public RepoBrowser(GitUICommands commands, BrowseArguments args)
+        public RepoBrowser(IServiceProvider serviceProvider, BrowseArguments args)
         {
+            _browseRepo = serviceProvider.GetService<IBrowseRepo>();
+            _gpgInfoProvider = serviceProvider.GetService<IGpgInfoProvider>();
+            _repositoryHistoryUIService = serviceProvider.GetService<RepositoryHistoryUIService>();
+            _repositoryHistoryUIService.GitModuleChanged += GitModuleChanged;
+            _appTitleGenerator = serviceProvider.GetService<IAppTitleGenerator>();
+            _windowsJumpListManager = serviceProvider.GetService<IWindowsJumpListManager>();
+
             _args = args;
-
             _isFileBlameHistory = args.IsFileBlameHistory;
-            InitializeComponent();
 
-            _repositoryHistoryUIService.GitModuleChanged += OpenGitModule;
+            InitializeComponent();
 
             BackColor = OtherColors.BackgroundColor;
 
             WorkaroundPaddingIncreaseBug();
-
-            _appTitleGenerator = ManagedExtensibility.GetExport<IAppTitleGenerator>().Value;
-            _windowsJumpListManager = ManagedExtensibility.GetExport<IWindowsJumpListManager>().Value;
 
             MainSplitContainer.SplitterDistance = DpiUtil.Scale(260);
 
@@ -266,7 +269,6 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
             HotkeysEnabled = true;
             Hotkeys = HotkeySettingsManager.LoadHotkeys(HotkeySettingsName);
 
-            _gpgInfoProvider = new GpgInfoProvider(new GitGpgController(() => Module));
             _commitDataManager = new CommitDataManager(() => Module);
 
             _submoduleStatusProvider = SubmoduleStatusProvider.Default;
@@ -386,7 +388,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
         {
             if (disposing)
             {
-                _repositoryHistoryUIService.GitModuleChanged -= OpenGitModule;
+                _repositoryHistoryUIService.GitModuleChanged -= GitModuleChanged;
 
                 _formBrowseMenus?.Dispose();
                 components?.Dispose();
@@ -445,8 +447,8 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
 
             source.UICommandsChanged += UICommandsSource_UICommandsChanged;
 
-            // TODO: work out how to not call this, and delegate everything to UICommandsSource_UICommandsChanged
-            OpenGitModule(this, new(source.UICommands.Module));
+            InitializeView();
+
             return;
 
             void UICommandsSource_UICommandsChanged(object? sender, GitUICommandsChangedEventArgs e)
@@ -460,7 +462,8 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
 
                 UICommands.PostRepositoryChanged += UICommands_PostRepositoryChanged;
 
-                OpenGitModule(this, new(UICommands.Module));
+                InitializeView();
+
                 return;
 
                 void UICommands_PostRepositoryChanged(object sender, GitUIEventArgs e)
@@ -965,8 +968,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
             GitModule? module = FormOpenDirectory.OpenModule(this, Module);
             if (module is not null)
             {
-                ////SetGitModule(this, new GitModuleEventArgs(module));
-                SetWorkingDir(module.WorkingDir);
+                CloseOrSwitchRepository(module.WorkingDir);
             }
         }
         #endregion
@@ -1409,27 +1411,31 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
             UICommands.StartRepoSettingsDialog(this);
         }
 
-        private void CloseToolStripMenuItemClick(object sender, EventArgs e)
-        {
-            SetWorkingDir("");
-        }
+        private void CloseToolStripMenuItemClick(object sender, EventArgs e) => CloseOrSwitchRepository();
 
         private void CleanupToolStripMenuItemClick(object sender, EventArgs e)
         {
             UICommands.StartCleanupRepositoryDialog(this);
         }
 
-        public void SetWorkingDir(string? path, ObjectId? selectedId = null, ObjectId? firstId = null)
-        {
-            RevisionGrid.SelectedId = selectedId;
-            RevisionGrid.FirstId = firstId;
+        private void GitModuleChanged(object sender, GitModuleEventArgs e) => CloseOrSwitchRepository(e.GitModule?.WorkingDir);
 
-            OpenGitModule(this, new GitModuleEventArgs(new GitModule(path)));
-        }
-
-        private void OpenGitModule(object sender, GitModuleEventArgs e)
+        /// <summary>
+        ///  Resets the current view and the requests the shell to either close the current repository
+        ///  (if <paramref name="newWorkingDir"/> is <see langword="null"/> or <see cref="string.Empty"/>),
+        ///  or switch to the new repository.
+        /// </summary>
+        /// <param name="newWorkingDir">
+        ///  The repository to open. If it is <see langword="null"/> or <see cref="string.Empty"/> the current view
+        ///  will get closed.
+        /// </param>
+        private void CloseOrSwitchRepository(string? newWorkingDir = null)
         {
-            var module = e.GitModule;
+            string originalWorkingDir = Module.WorkingDir;
+            if (string.Equals(originalWorkingDir, newWorkingDir, StringComparison.Ordinal))
+            {
+                return;
+            }
 
             PluginRegistry.Unregister(UICommands);
 
@@ -1437,6 +1443,14 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
             ////_gitStatusMonitor.InvalidateGitWorkingDirectoryStatus();
             _submoduleStatusProvider.Init();
 
+            // TODO: clear/reset the controls' state
+
+            // Notify the shell to switch or to close.
+            _browseRepo.SetWorkingDir(newWorkingDir ?? string.Empty);
+        }
+
+        private void InitializeView()
+        {
             if (!Module.IsValidGitWorkingDir())
             {
                 return;
@@ -1595,7 +1609,8 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
         {
             if (PluginRegistry.GitHosters.Count > 0)
             {
-                UICommands.StartCloneForkFromHoster(this, PluginRegistry.GitHosters[0], OpenGitModule);
+                // TODO:
+                UICommands.StartCloneForkFromHoster(this, PluginRegistry.GitHosters[0], GitModuleChanged);
                 RefreshRevisions();
             }
             else
@@ -1829,7 +1844,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
                 case Command.QuickFetch: QuickFetch(); break;
                 case Command.QuickPull: DoPull(pullAction: AppSettings.PullAction.Merge, isSilent: true); break;
                 case Command.QuickPush: UICommands.StartPushDialog(this, true); break;
-                case Command.CloseRepository: SetWorkingDir(""); break;
+                case Command.CloseRepository: CloseOrSwitchRepository(); break;
                 case Command.Stash: UICommands.StashSave(this, AppSettings.IncludeUntrackedFilesInManualStash); break;
                 case Command.StashStaged: UICommands.StashStaged(this); break;
                 case Command.StashPop: UICommands.StashPop(this); break;
@@ -2156,7 +2171,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
                 return;
             }
 
-            SetWorkingDir(path);
+            CloseOrSwitchRepository(path);
         }
 
         #region Submodules
@@ -2364,7 +2379,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
         {
             if (Module.SuperprojectModule is not null)
             {
-                OpenGitModule(this, new GitModuleEventArgs(Module.SuperprojectModule));
+                CloseOrSwitchRepository(Module.SuperprojectModule.WorkingDir);
             }
             else
             {

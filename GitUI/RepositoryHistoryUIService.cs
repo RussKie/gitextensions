@@ -19,11 +19,6 @@ namespace GitUI
             _invalidRepositoryRemover = invalidRepositoryRemover;
         }
 
-        public RepositoryHistoryUIService()
-            : this(new RepositoryCurrentBranchNameProvider(), new InvalidRepositoryRemover())
-        {
-        }
-
         private static Form? OwnerForm
             => Form.ActiveForm ?? (Application.OpenForms.Count > 0 ? Application.OpenForms[0] : null);
 

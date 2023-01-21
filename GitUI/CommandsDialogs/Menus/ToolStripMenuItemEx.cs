@@ -24,11 +24,13 @@ namespace GitUI.CommandsDialogs.Menus
         ///  Initializes the menu item.
         /// </summary>
         /// <param name="getUICommands">The method that returns the current instance of UI commands.</param>
-        public void Initialize(Func<GitUICommands> getUICommands)
+        public void Initialize(IServiceProvider serviceProvider, Func<GitUICommands> getUICommands)
         {
             Translator.Translate(this, AppSettings.CurrentTranslation);
 
             _getUICommands = getUICommands;
+
+            OnInitialized(serviceProvider);
         }
 
         /// <summary>
@@ -40,6 +42,13 @@ namespace GitUI.CommandsDialogs.Menus
         protected static string GetShortcutKey(IEnumerable<HotkeyCommand>? hotkeys, int commandCode)
         {
             return (hotkeys?.FirstOrDefault(h => h.CommandCode == commandCode)?.KeyData ?? Keys.None).ToShortcutKeyDisplayString();
+        }
+
+        /// <summary>
+        ///  An extension point for custom initialization logic.
+        /// </summary>
+        protected virtual void OnInitialized(IServiceProvider serviceProvider)
+        {
         }
 
         /// <summary>

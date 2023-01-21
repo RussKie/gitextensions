@@ -2,9 +2,14 @@
 #pragma warning disable SA1507
 #pragma warning disable SA1515
 
+using System;
+using System.ComponentModel.Design;
 using System.Diagnostics;
+using System.IO.Abstractions;
 using GitCommands;
 using GitCommands.Git;
+using GitCommands.Gpg;
+using GitCommands.UserRepositoryHistory;
 using GitExtUtils.GitUI.Theming;
 using GitUI.CommandsDialogs;
 using GitUI.CommandsDialogs.BrowseDialog;
@@ -21,6 +26,8 @@ namespace GitUI
     public sealed partial class FormShell : GitModuleForm, IBrowseRepo
     {
         public static readonly string HotkeySettingsName = "Browse";
+
+        private ServiceContainer _serviceContainer = new();
 
         private readonly DiagnosticsReporter _diagnosticsReporter;
         private readonly BrowseArguments? _browseArguments;
@@ -52,6 +59,8 @@ namespace GitUI
 
             _diagnosticsReporter = new(this);
 
+            RegisterServices();
+
             InitializeComponent();
             BackColor = OtherColors.BackgroundColor;
 
@@ -61,9 +70,9 @@ namespace GitUI
             HotkeysEnabled = true;
             Hotkeys = HotkeySettingsManager.LoadHotkeys(HotkeySettingsName);
 
-            fileToolStripMenuItem.Initialize(() => UICommands);
-            helpToolStripMenuItem.Initialize(() => UICommands);
-            toolsToolStripMenuItem.Initialize(() => UICommands);
+            fileToolStripMenuItem.Initialize(_serviceContainer, () => UICommands);
+            helpToolStripMenuItem.Initialize(_serviceContainer, () => UICommands);
+            toolsToolStripMenuItem.Initialize(_serviceContainer, () => UICommands);
 
             InitializeComplete();
 
@@ -132,13 +141,12 @@ namespace GitUI
                 _dashboard.RefreshContent();
             }
 
+            Text = _serviceContainer.GetService<IAppTitleGenerator>().Generate();
+
             ControlAdd(_dashboard);
             _dashboard.GitModuleChanged += SetGitModule;
 
             DiagnosticsClient.TrackPageView("Dashboard");
-
-            // Explicit call: Title is normally updated on RevisionGrid filter change
-            ////Text = _appTitleGenerator.Generate();
         }
 
         protected override void Dispose(bool disposing)
@@ -221,6 +229,28 @@ namespace GitUI
             _diagnosticsReporter.Report();
         }
 
+        private void RegisterServices()
+        {
+            RepositoryCurrentBranchNameProvider repositoryCurrentBranchNameProvider = new();
+            InvalidRepositoryRemover invalidRepositoryRemover = new();
+
+            _serviceContainer.AddService<IBrowseRepo>(this);
+            _serviceContainer.AddService<IRepositoryCurrentBranchNameProvider>((c, t) => repositoryCurrentBranchNameProvider);
+            _serviceContainer.AddService<IInvalidRepositoryRemover>((c, t) => invalidRepositoryRemover);
+            _serviceContainer.AddService<RepositoryHistoryUIService>((c, t) => new RepositoryHistoryUIService(repositoryCurrentBranchNameProvider, invalidRepositoryRemover));
+
+            _serviceContainer.AddService<IGitGpgController>((c, t) => new GitGpgController(() => Module));
+            _serviceContainer.AddService<IGpgInfoProvider>((c, t) => new GpgInfoProvider(c.GetService<IGitGpgController>()));
+
+
+            _serviceContainer.AddService<IFileSystem>((c, t) => new FileSystem());
+            _serviceContainer.AddService<IGitDirectoryResolver>((c, t) => new GitDirectoryResolver(c.GetService<IFileSystem>()));
+            _serviceContainer.AddService<IRepositoryDescriptionProvider>((c, t) => new RepositoryDescriptionProvider(c.GetService<IGitDirectoryResolver>()));
+            _serviceContainer.AddService<IAppTitleGenerator>((c, t) => new AppTitleGenerator(c.GetService<IRepositoryDescriptionProvider>()));
+
+            _serviceContainer.AddService<IWindowsJumpListManager>((c, t) => new WindowsJumpListManager(c.GetService<IRepositoryDescriptionProvider>()));
+        }
+
         private void RepositoryClose()
         {
             if (_repoBrowser is null)
@@ -228,7 +258,10 @@ namespace GitUI
                 return;
             }
 
+            _repoBrowser.TextChanged -= repoBrowser_TextChanged;
+
             ControlRemove(_repoBrowser);
+
             UICommands = new(workingDir: null);
         }
 
@@ -236,7 +269,7 @@ namespace GitUI
         {
             if (_repoBrowser is null)
             {
-                _repoBrowser = new(new(""), _browseArguments)
+                _repoBrowser = new(_serviceContainer, _browseArguments)
                 {
                     Dock = DockStyle.Fill,
                     Visible = true
@@ -244,6 +277,7 @@ namespace GitUI
             }
 
             ControlAdd(_repoBrowser);
+            _repoBrowser.TextChanged += repoBrowser_TextChanged;
 
             DiagnosticsClient.TrackPageView("Revision graph");
 
@@ -315,6 +349,11 @@ namespace GitUI
         private void fileToolStripMenuItem_RecentRepositoriesCleared(object sender, EventArgs e)
         {
             _dashboard?.RefreshContent();
+        }
+
+        private void repoBrowser_TextChanged(object? sender, EventArgs e)
+        {
+            Text = _repoBrowser.Text;
         }
 
         private void toolsToolStripMenuItem_SettingsChanged(object sender, CommandsDialogs.Menus.SettingsChangedEventArgs e)
