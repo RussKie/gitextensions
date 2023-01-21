@@ -62,7 +62,13 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Plugins
                 throw new ApplicationException();
             }
 
-            return _gitPlugin.HasSettings ? _gitPlugin.GetSettings() : Array.Empty<ISetting>();
+            IEnumerable<ISetting>? settings = null;
+            if (_gitPlugin.HasSettings)
+            {
+                settings = _gitPlugin.GetSettings();
+            }
+
+            return settings ?? Array.Empty<ISetting>();
         }
 
         public override SettingsPageReference PageReference
