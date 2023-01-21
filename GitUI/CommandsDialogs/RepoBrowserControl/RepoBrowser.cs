@@ -34,7 +34,7 @@ using ResourceManager;
 
 namespace GitUI.CommandsDialogs.RepoBrowserControl
 {
-    public sealed partial class RepoBrowser : GitModuleControl
+    public sealed partial class RepoBrowser : GitModuleControl, IMainMenuExtender
     {
         #region Mnemonics
         /*
@@ -377,6 +377,8 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
                 RevisionsSplitContainer.Panel2.Padding = new Padding(1);
             }
         }
+
+        MenuStrip IMainMenuExtender.ControlMenu => mainMenuStrip;
 
         protected override void Dispose(bool disposing)
         {

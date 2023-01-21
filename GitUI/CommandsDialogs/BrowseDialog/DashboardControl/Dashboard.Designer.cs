@@ -28,6 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+            System.Windows.Forms.ToolStripMenuItem mnuRefresh;
+            System.Windows.Forms.ToolStripMenuItem mnuConfigure;
             this.pnlLeft = new System.Windows.Forms.Panel();
             this.flpnlStart = new System.Windows.Forms.FlowLayoutPanel();
             this.flpnlContribute = new System.Windows.Forms.FlowLayoutPanel();
@@ -36,17 +39,44 @@
             this.pbLogo = new System.Windows.Forms.PictureBox();
             this.userRepositoriesList = new GitUI.CommandsDialogs.BrowseDialog.DashboardControl.UserRepositoriesList();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.mnuDashboard = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            mnuRefresh = new System.Windows.Forms.ToolStripMenuItem();
+            mnuConfigure = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlLeft.SuspendLayout();
             this.flpnlContribute.SuspendLayout();
             this.pnlLogo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbLogo)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new System.Drawing.Size(215, 6);
+            // 
+            // mnuRefresh
+            // 
+            mnuRefresh.Image = global::GitUI.Properties.Images.ReloadRevisions;
+            mnuRefresh.Name = "mnuRefresh";
+            mnuRefresh.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            mnuRefresh.Size = new System.Drawing.Size(218, 22);
+            mnuRefresh.Text = "&Refresh";
+            // 
+            // mnuConfigure
+            // 
+            mnuConfigure.Image = global::GitUI.Properties.Images.Settings;
+            mnuConfigure.Name = "mnuConfigure";
+            mnuConfigure.Size = new System.Drawing.Size(218, 22);
+            mnuConfigure.Text = "Recent repositories &settings";
+            mnuConfigure.Click += new System.EventHandler(this.mnuConfigure_Click);
             // 
             // pnlLeft
             // 
-            this.pnlLeft.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.pnlLeft.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlLeft.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(223)))), ((int)(((byte)(228)))), ((int)(((byte)(235)))));
             this.pnlLeft.Controls.Add(this.flpnlStart);
@@ -88,7 +118,7 @@
             // lblContribute
             // 
             this.lblContribute.AutoSize = true;
-            this.lblContribute.Font = new System.Drawing.Font("Segoe UI", 14.25F);
+            this.lblContribute.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.lblContribute.ForeColor = System.Drawing.SystemColors.GrayText;
             this.lblContribute.Location = new System.Drawing.Point(22, 20);
             this.lblContribute.Margin = new System.Windows.Forms.Padding(2, 0, 2, 8);
@@ -121,6 +151,7 @@
             // 
             // userRepositoriesList
             // 
+            this.userRepositoriesList.AllowDrop = true;
             this.userRepositoriesList.BranchNameColor = System.Drawing.SystemColors.HotTrack;
             this.userRepositoriesList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.userRepositoriesList.HeaderBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(183)))), ((int)(((byte)(226)))));
@@ -153,6 +184,29 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(686, 358);
             this.tableLayoutPanel1.TabIndex = 2;
             // 
+            // mnuDashboard
+            // 
+            this.mnuDashboard.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            mnuRefresh,
+            toolStripSeparator1,
+            mnuConfigure});
+            this.mnuDashboard.MergeAction = System.Windows.Forms.MergeAction.Insert;
+            this.mnuDashboard.MergeIndex = 1;
+            this.mnuDashboard.Name = "mnuDashboard";
+            this.mnuDashboard.Size = new System.Drawing.Size(76, 20);
+            this.mnuDashboard.Text = "&Dashboard";
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuDashboard});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(686, 24);
+            this.menuStrip1.TabIndex = 3;
+            this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.Visible = false;
+            // 
             // Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -160,6 +214,7 @@
             this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(243)))), ((int)(((byte)(253)))));
             this.Controls.Add(this.tableLayoutPanel1);
+            this.Controls.Add(this.menuStrip1);
             this.DoubleBuffered = true;
             this.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.Name = "Dashboard";
@@ -171,7 +226,10 @@
             this.pnlLogo.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbLogo)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -185,5 +243,7 @@
         private UserRepositoriesList userRepositoriesList;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.PictureBox pbLogo;
+        private System.Windows.Forms.ToolStripMenuItem mnuDashboard;
+        private System.Windows.Forms.MenuStrip menuStrip1;
     }
 }
