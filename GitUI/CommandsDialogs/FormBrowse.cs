@@ -212,7 +212,7 @@ namespace GitUI.CommandsDialogs
         private readonly IWindowsJumpListManager _windowsJumpListManager;
         private readonly ISubmoduleStatusProvider _submoduleStatusProvider;
         private List<ToolStripItem>? _currentSubmoduleMenuItems;
-        private readonly FormBrowseDiagnosticsReporter _formBrowseDiagnosticsReporter;
+        private readonly DiagnosticsReporter _diagnosticsReporter;
         private BuildReportTabPageExtension? _buildReportTabPageExtension;
         private readonly ShellProvider _shellProvider = new();
         private readonly RepositoryHistoryUIService _repositoryHistoryUIService = new();
@@ -264,7 +264,7 @@ namespace GitUI.CommandsDialogs
             _appTitleGenerator = ManagedExtensibility.GetExport<IAppTitleGenerator>().Value;
             _windowsJumpListManager = ManagedExtensibility.GetExport<IWindowsJumpListManager>().Value;
 
-            _formBrowseDiagnosticsReporter = new FormBrowseDiagnosticsReporter(this);
+            _diagnosticsReporter = new(this);
 
             MainSplitContainer.Visible = false;
             MainSplitContainer.SplitterDistance = DpiUtil.Scale(260);
@@ -458,7 +458,7 @@ namespace GitUI.CommandsDialogs
 
             base.OnLoad(e);
 
-            _formBrowseDiagnosticsReporter.Report();
+            _diagnosticsReporter.Report();
 
             // All app init is done, make all repo related similar to switching repos
             SetGitModule(this, new GitModuleEventArgs(new GitModule(Module.WorkingDir)));
