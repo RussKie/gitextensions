@@ -1,14 +1,13 @@
 ﻿using System.Diagnostics;
 using GitCommands;
-using GitCommands.Utils;
 using GitExtUtils.GitUI.Theming;
 using GitUI.Properties;
 using GitUI.Shells;
 using GitUI.UserControls;
 
-namespace GitUI.CommandsDialogs
+namespace GitUI.CommandsDialogs.RepoBrowserControl
 {
-    partial class FormBrowse
+    partial class RepoBrowser
     {
         // This file is dedicated to init logic for FormBrowse menus and toolbars
 
@@ -16,7 +15,7 @@ namespace GitUI.CommandsDialogs
 
         private void InitMenusAndToolbars(string? revFilter, string? pathFilter)
         {
-            commandsToolStripMenuItem.DropDownOpening += CommandsToolStripMenuItem_DropDownOpening;
+            mnuCommands.DropDownOpening += CommandsToolStripMenuItem_DropDownOpening;
 
             InitFilters();
 

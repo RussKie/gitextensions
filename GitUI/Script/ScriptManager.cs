@@ -49,11 +49,44 @@ namespace GitUI.Script
             return null;
         }
 
+        /*
+          TODO: Verify whether the following both methods can be unified with the following:
+
+            public static bool RunEventScriptsImpl<T>(T owner, ScriptEvent scriptEvent)
+                where T : IWin32Window, IGitUICommandsSource
+            {
+                foreach (var script in GetScripts().Where(scriptInfo => scriptInfo.Enabled && scriptInfo.OnEvent == scriptEvent))
+                {
+                    CommandStatus result = ScriptRunner.RunScript(owner, owner.UICommands.Module, script.Name, owner.UICommands, revisionGrid: null);
+                    if (!result.Executed)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+         */
+
+        public static bool RunEventScripts(GitModuleControl control, ScriptEvent scriptEvent)
+        {
+            foreach (var script in GetScripts().Where(scriptInfo => scriptInfo.Enabled && scriptInfo.OnEvent == scriptEvent))
+            {
+                CommandStatus result = ScriptRunner.RunScript(control.ParentForm, control.Module, script.Name, control.UICommands, revisionGrid: null);
+                if (!result.Executed)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public static bool RunEventScripts(GitModuleForm form, ScriptEvent scriptEvent)
         {
             foreach (var script in GetScripts().Where(scriptInfo => scriptInfo.Enabled && scriptInfo.OnEvent == scriptEvent))
             {
-                var result = ScriptRunner.RunScript(form, form.Module, script.Name, form.UICommands, revisionGrid: null);
+                CommandStatus result = ScriptRunner.RunScript(form, form.Module, script.Name, form.UICommands, revisionGrid: null);
                 if (!result.Executed)
                 {
                     return false;
