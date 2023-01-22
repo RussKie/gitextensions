@@ -240,6 +240,8 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
         /// <param name="args">The start up arguments.</param>
         public RepoBrowser(IServiceProvider serviceProvider, BrowseArguments args)
         {
+            Stopwatch sw = Stopwatch.StartNew();
+
             _serviceProvider = serviceProvider;
 
             _browseRepo = serviceProvider.GetService<IBrowseRepo>();
@@ -248,11 +250,24 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
 
             _args = args;
             _isFileBlameHistory = args.IsFileBlameHistory;
+
+            sw.Stop();
+            Trace.WriteLine($"RepoBrowser new(): {sw.ElapsedMilliseconds:#,##0}", "GE");
+            sw.Restart();
+
             InitializeComponent();
+
+            sw.Stop();
+            Trace.WriteLine($"RepoBrowser InitializeComponent: {sw.ElapsedMilliseconds:#,##0}", "GE");
+            sw.Restart();
 
             BackColor = OtherColors.BackgroundColor;
 
             WorkaroundPaddingIncreaseBug();
+
+            sw.Stop();
+            Trace.WriteLine($"RepoBrowser WorkaroundPaddingIncreaseBug: {sw.ElapsedMilliseconds:#,##0}", "GE");
+            sw.Restart();
 
             _appTitleGenerator = ManagedExtensibility.GetExport<IAppTitleGenerator>().Value;
             _windowsJumpListManager = ManagedExtensibility.GetExport<IWindowsJumpListManager>().Value;
@@ -266,7 +281,15 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
             ToolStripFilters.Bind(() => Module, RevisionGrid);
             InitMenusAndToolbars(args.RevFilter, args.PathFilter);
 
+            sw.Stop();
+            Trace.WriteLine($"RepoBrowser aux: {sw.ElapsedMilliseconds:#,##0}", "GE");
+            sw.Restart();
+
             InitializeComplete();
+
+            sw.Stop();
+            Trace.WriteLine($"RepoBrowser InitializeComplete: {sw.ElapsedMilliseconds:#,##0}", "GE");
+            sw.Restart();
 
             HotkeysEnabled = true;
             Hotkeys = HotkeySettingsManager.LoadHotkeys(HotkeySettingsName);
@@ -278,6 +301,9 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
             _submoduleStatusProvider.StatusUpdated += SubmoduleStatusProvider_StatusUpdated;
 
             _aheadBehindDataProvider = new AheadBehindDataProvider(() => Module.GitExecutable);
+
+            sw.Stop();
+            Trace.WriteLine($"RepoBrowser aux2: {sw.ElapsedMilliseconds:#,##0}", "GE");
 
             // Application is init, the repo related operations are triggered in OnLoad()
             return;
@@ -411,6 +437,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
         }
         */
 
+        /*
         protected override void OnLoad(EventArgs e)
         {
             _formBrowseMenus.CreateToolbarsMenus(ToolStripMain, ToolStripFilters, ToolStripScripts);
@@ -440,6 +467,7 @@ namespace GitUI.CommandsDialogs.RepoBrowserControl
 
             RevisionGrid.ResumeRefreshRevisions();
         }
+        */
 
         protected override void OnUICommandsSourceSet(IGitUICommandsSource source)
         {

@@ -132,6 +132,7 @@ namespace GitUI
 
         private void DashboardOpen()
         {
+            Stopwatch sw = Stopwatch.StartNew();
             if (_dashboard is null)
             {
                 _dashboard = new()
@@ -139,13 +140,29 @@ namespace GitUI
                     Dock = DockStyle.Fill,
                     Visible = true
                 };
+
+                sw.Stop();
+                Trace.WriteLine($"DashboardOpen new(): {sw.ElapsedMilliseconds:#,##0}", "GE");
+                sw.Restart();
+
                 _dashboard.RefreshContent();
+
+                sw.Stop();
+                Debug.WriteLine($"DashboardOpen RefreshContent: {sw.ElapsedMilliseconds:#,##0}", "GE");
+                sw.Restart();
             }
 
             ControlAdd(_dashboard);
             _dashboard.GitModuleChanged += SetGitModule;
 
+            sw.Stop();
+            Trace.WriteLine($"DashboardOpen ControlAdd: {sw.ElapsedMilliseconds:#,##0}", "GE");
+            sw.Restart();
+
             DiagnosticsClient.TrackPageView("Dashboard");
+
+            sw.Stop();
+            Trace.WriteLine($"DashboardOpen DiagnosticsClient: {sw.ElapsedMilliseconds:#,##0}", "GE");
 
             // Explicit call: Title is normally updated on RevisionGrid filter change
             ////Text = _appTitleGenerator.Generate();
@@ -244,6 +261,7 @@ namespace GitUI
 
         private void RepositoryOpen(GitModule gitModule)
         {
+            Stopwatch sw = Stopwatch.StartNew();
             if (_repoBrowser is null)
             {
                 _repoBrowser = new(_serviceContainer, _browseArguments)
@@ -251,13 +269,24 @@ namespace GitUI
                     Dock = DockStyle.Fill,
                     Visible = true
                 };
+
+                sw.Stop();
+                Trace.WriteLine($"RepositoryOpen new(): {sw.ElapsedMilliseconds:#,##0}", "GE");
+                sw.Restart();
             }
 
             ControlAdd(_repoBrowser);
 
+            sw.Stop();
+            Trace.WriteLine($"RepositoryOpen ControlAdd: {sw.ElapsedMilliseconds:#,##0}", "GE");
+            sw.Restart();
+
             DiagnosticsClient.TrackPageView("Revision graph");
 
-            UICommands = new(gitModule);
+            sw.Stop();
+            Trace.WriteLine($"RepositoryOpen DiagnosticsClient: {sw.ElapsedMilliseconds:#,##0}", "GE");
+
+            ////UICommands = new(gitModule);
         }
 
         private void RepositorySwitch(GitModule gitModule)
