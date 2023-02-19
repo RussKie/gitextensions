@@ -22,9 +22,9 @@ jobs:
     steps:
     - name: Set variables
       run: |
-          echo "ARTIFACTS_PATH=${{ github.workspace }}/artifacts/" >> $GITHUB_ENV
-          echo "LOGS_PATH=${{ github.workspace }}/artifacts/log/${{ env.BUILD_CONFIG }}/" >> $GITHUB_ENV
-          echo "BUILD_SCRIPT=${{ github.workspace }}/eng/cibuild.cmd" >> $GITHUB_ENV
+          echo "ARTIFACTS_PATH=${{ github.workspace }}/artifacts/" >> $env:GITHUB_ENV
+          echo "LOGS_PATH=${{ github.workspace }}/artifacts/log/${{ env.BUILD_CONFIG }}/" >> $env:GITHUB_ENV
+          echo "BUILD_SCRIPT=${{ github.workspace }}/eng/cibuild.cmd" >> $env:GITHUB_ENV
     - name: Print a greeting
       shell: pwsh
       run: |
