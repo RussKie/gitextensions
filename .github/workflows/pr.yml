@@ -1,0 +1,29 @@
+name: Basic validation
+run-name: Validation of pull-request by @${{ github.actor }}
+
+on: 
+  pull_request:
+    paths-ignore:
+    - .github/*
+    - docs/*
+    - eng/Version.Details.xml
+    - CODE-OF-CONDUCT.md
+    - LICENSE.TXT
+    - PATENTS.TXT
+    - README.md
+    - SECURITY.md
+    - THIRD-PARTY-NOTICES.TXT
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      BUILD_CONFIG: Release
+      ARTIFACTS_PATH: $GITHUB_WORKSPACE/artifacts/
+      LOGS_PATH: $ARTIFACTS_PATH/log/$BUILD_CONFIG/
+      BUILD_SCRIPT: $GITHUB_WORKSPACE/eng/cibuild.cmd
+    steps:
+    #- uses: actions/checkout@v2.0.0
+    - name: Print a greeting
+      run: |
+          echo $ARTIFACTS_PATH // $LOGS_PATH // $BUILD_SCRIPT
