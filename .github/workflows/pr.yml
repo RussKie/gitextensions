@@ -24,6 +24,11 @@ jobs:
       BUILD_SCRIPT: $GITHUB_WORKSPACE/eng/cibuild.cmd
     steps:
     #- uses: actions/checkout@v2.0.0
+    - name: Set variables
+      run: |
+          echo "ARTIFACTS_PATH=${{ github.workspace }}/artifacts/" >> $GITHUB_ENV
+          echo "LOGS_PATH=${{ env.ARTIFACTS_PATH }}/log/${{ env.BUILD_CONFIG }}/" >> $GITHUB_ENV
+          echo "BUILD_SCRIPT=$GITHUB_WORKSPACE/eng/cibuild.cmd" >> $GITHUB_ENV
     - name: Print a greeting
       run: |
           echo ${{ env.ARTIFACTS_PATH }} // ${{ env.LOGS_PATH }} // ${{ env.BUILD_SCRIPT }}
