@@ -26,4 +26,4 @@ jobs:
     #- uses: actions/checkout@v2.0.0
     - name: Print a greeting
       run: |
-          echo $ARTIFACTS_PATH // $LOGS_PATH // $BUILD_SCRIPT
+          echo ${{ env.ARTIFACTS_PATH }} // $LOGS_PATH // $BUILD_SCRIPT
