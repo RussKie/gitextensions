@@ -1,5 +1,5 @@
 name: Basic validation
-run-name: Validation of pull-request \#${{ github.event.number }} by @${{ github.actor }}
+run-name: 'Validation of pull-request #${{ github.event.number }} by @${{ github.actor }}'
 
 on: 
   pull_request:
@@ -16,7 +16,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest #windows-latest
     env:
       BUILD_CONFIG: Release
     steps:
@@ -24,10 +24,10 @@ jobs:
     - name: Set variables
       run: |
           echo "ARTIFACTS_PATH=${{ github.workspace }}/artifacts/" >> $GITHUB_ENV
-          echo "LOGS_PATH=$env:ARTIFACTS_PATH/log/${{ env.BUILD_CONFIG }}/" >> $GITHUB_ENV
+          echo "LOGS_PATH=${ARTIFACTS_PATH}/log/${{ env.BUILD_CONFIG }}/" >> $GITHUB_ENV
           echo "BUILD_SCRIPT=${{ github.workspace }}/eng/cibuild.cmd" >> $GITHUB_ENV
     - name: Print a greeting
       run: |
-          echo ${{ env.ARTIFACTS_PATH }} // ${{ env.LOGS_PATH }} // ${{ env.BUILD_SCRIPT }}
-          echo $ARTIFACTS_PATH // $LOGS_PATH // $BUILD_SCRIPT
-          echo $env:ARTIFACTS_PATH // $env:LOGS_PATH // $env:BUILD_SCRIPT
+          echo "${{ env.ARTIFACTS_PATH }} // ${{ env.LOGS_PATH }} // ${{ env.BUILD_SCRIPT }}"
+          echo "$ARTIFACTS_PATH // $LOGS_PATH // $BUILD_SCRIPT"
+          echo "$env:ARTIFACTS_PATH // $env:LOGS_PATH // $env:BUILD_SCRIPT"
