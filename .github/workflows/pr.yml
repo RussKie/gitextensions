@@ -1,5 +1,5 @@
 name: Basic validation
-run-name: Validation of pull-request by @${{ github.actor }}
+run-name: 'Validation of pull-request #${{ github.event.number }} by @${{ github.actor }}'
 
 on: 
   pull_request:
@@ -19,11 +19,15 @@ jobs:
     runs-on: windows-latest
     env:
       BUILD_CONFIG: Release
-      ARTIFACTS_PATH: $GITHUB_WORKSPACE/artifacts/
-      LOGS_PATH: $ARTIFACTS_PATH/log/$BUILD_CONFIG/
-      BUILD_SCRIPT: $GITHUB_WORKSPACE/eng/cibuild.cmd
     steps:
-    #- uses: actions/checkout@v2.0.0
-    - name: Print a greeting
+    - name: Set variables
       run: |
-          echo $ARTIFACTS_PATH // $LOGS_PATH // $BUILD_SCRIPT
+          echo "ARTIFACTS_PATH=${{ github.workspace }}/artifacts/" >> $env:GITHUB_ENV
+          echo "LOGS_PATH=${{ github.workspace }}/artifacts/log/${{ env.BUILD_CONFIG }}/" >> $env:GITHUB_ENV
+          echo "BUILD_SCRIPT=${{ github.workspace }}/eng/cibuild.cmd" >> $env:GITHUB_ENV
+    - name: Print a greeting
+      shell: pwsh
+      run: |
+          echo "${{ env.ARTIFACTS_PATH }} // ${{ env.LOGS_PATH }} // ${{ env.BUILD_SCRIPT }}"
+          echo "$env:ARTIFACTS_PATH // $env:LOGS_PATH // $env:BUILD_SCRIPT"
+          $env:BUILD_SCRIPT
