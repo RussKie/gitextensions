@@ -16,18 +16,18 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest #windows-latest
+    runs-on: windows-latest
     env:
       BUILD_CONFIG: Release
     steps:
-    #- uses: actions/checkout@v2.0.0
     - name: Set variables
       run: |
           echo "ARTIFACTS_PATH=${{ github.workspace }}/artifacts/" >> $GITHUB_ENV
-          echo "LOGS_PATH=${ARTIFACTS_PATH}/log/${{ env.BUILD_CONFIG }}/" >> $GITHUB_ENV
+          echo "LOGS_PATH=${{ github.workspace }}/artifacts/log/${{ env.BUILD_CONFIG }}/" >> $GITHUB_ENV
           echo "BUILD_SCRIPT=${{ github.workspace }}/eng/cibuild.cmd" >> $GITHUB_ENV
     - name: Print a greeting
+      shell: pwsh
       run: |
           echo "${{ env.ARTIFACTS_PATH }} // ${{ env.LOGS_PATH }} // ${{ env.BUILD_SCRIPT }}"
-          echo "$ARTIFACTS_PATH // $LOGS_PATH // $BUILD_SCRIPT"
           echo "$env:ARTIFACTS_PATH // $env:LOGS_PATH // $env:BUILD_SCRIPT"
+          $env:BUILD_SCRIPT
