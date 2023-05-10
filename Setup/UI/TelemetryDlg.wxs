@@ -1,28 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Fragment>
 
     <!-- Run the script that toggles telemetry as per the user's settings -->
     <Property Id="POWERSHELLEXE">
-      <RegistrySearch Id="POWERSHELLEXE"
-          Type="raw"
-          Root="HKLM"
-          Key="SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell"
-          Name="Path" />
+      <RegistrySearch Id="POWERSHELLEXE" Type="raw" Root="HKLM" Key="SOFTWARE\Microsoft\PowerShell\1\ShellIds\Microsoft.PowerShell" Name="Path" />
     </Property>
-    <Condition Message="This application requires Windows PowerShell.">
-      <![CDATA[Installed OR POWERSHELLEXE]]>
-    </Condition>
+    <Launch Condition="Installed OR POWERSHELLEXE" Message="This application requires Windows PowerShell." />
 
-    <SetProperty Id="ConfigureTelemetry"
-        Before ="ConfigureTelemetry"
-        Sequence="execute"
-        Value="&quot;[POWERSHELLEXE]&quot; -NoProfile -NonInteractive -InputFormat None -ExecutionPolicy Bypass -Command &quot;&amp; '[INSTALLDIR]set-telemetry.ps1' [TELEMETRY_ENABLED]; exit $$($Error.Count)&quot;" />
+    <SetProperty Id="ConfigureTelemetry" Before="ConfigureTelemetry" Sequence="execute" Value="&quot;[POWERSHELLEXE]&quot; -NoProfile -NonInteractive -InputFormat None -ExecutionPolicy Bypass -Command &quot;&amp; '[INSTALLDIR]set-telemetry.ps1' [TELEMETRY_ENABLED]; exit $$($Error.Count)&quot;" />
 
-    <CustomAction Id="ConfigureTelemetry" BinaryKey="WixCA" DllEntry="WixQuietExec" Execute="deferred" Return="ignore" Impersonate="yes" />
+    <CustomAction Id="ConfigureTelemetry" DllEntry="WixQuietExec" Execute="deferred" Return="ignore" Impersonate="yes" BinaryRef="Wix4UtilCA_X86" />
 
     <InstallExecuteSequence>
-      <Custom Action="ConfigureTelemetry" Before="InstallFinalize"><![CDATA[NOT Installed]]></Custom>
+      <Custom Action="ConfigureTelemetry" Before="InstallFinalize" Condition="NOT Installed" />
     </InstallExecuteSequence>
 
     <UI>
@@ -30,7 +20,7 @@
         <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="18" Default="yes" Text="!(loc.WixUINext)" />
         <Control Id="Back" Type="PushButton" X="177" Y="243" Width="56" Height="18" Text="!(loc.WixUIBack)" />
         <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="18" Cancel="no" Text="!(loc.WixUICancel)">
-          <Publish Event="SpawnDialog" Value="GitEx_CancelDlg">1</Publish>
+          <Publish Event="SpawnDialog" Value="GitEx_CancelDlg" />
         </Control>
         <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="!(loc.InstallDirDlgBannerBitmap)" />
         <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="2" />

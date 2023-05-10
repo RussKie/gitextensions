@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Include>
+﻿<Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
 
   <Upgrade Id="$(var.UpgradeCode)">
     <UpgradeVersion Property="UPGRADE" Minimum="$(var.MinSupportedVersion)" Maximum="$(var.Version)" />
@@ -7,30 +6,15 @@
     <UpgradeVersion Minimum="0.0.0" Property="PREVIOUSVERSIONSINSTALLED" MigrateFeatures="yes" IncludeMinimum="yes" />
   </Upgrade>
 
-  <Condition Message="The installed version is not upgradeable to $(var.Version).&#13;&#10;Uninstall the previous version first.&#13;&#10;&#13;&#10;Setup will now exit.">
-    <![CDATA[NOT (PREVIOUSVERSIONSINSTALLED AND DONTUPGRADE)]]>
-  </Condition>
+  <Launch Condition="NOT (PREVIOUSVERSIONSINSTALLED AND DONTUPGRADE)" Message="The installed version is not upgradeable to $(var.Version).&#xD;&#xA;Uninstall the previous version first.&#xD;&#xA;&#xD;&#xA;Setup will now exit." />
 
    <!-- Upgrade WiX installations -->
-  <MajorUpgrade
-    Schedule="afterInstallInitialize"
-    DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."
-    AllowSameVersionUpgrades="yes"/>
+  <MajorUpgrade Schedule="afterInstallInitialize" DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." AllowSameVersionUpgrades="yes" />
 
-  <SetProperty After="FindRelatedProducts" Id="FirstInstall" Value="true">
-      NOT Installed AND NOT WIX_UPGRADE_DETECTED AND NOT WIX_DOWNGRADE_DETECTED
-  </SetProperty>
-  <SetProperty After="SetFirstInstall" Id="Upgrading" Value="true">
-      WIX_UPGRADE_DETECTED AND NOT (REMOVE="ALL")
-  </SetProperty>
-  <SetProperty After="RemoveExistingProducts" Id="RemovingForUpgrade" Sequence="execute" Value="true">
-      (REMOVE="ALL") AND UPGRADINGPRODUCTCODE
-  </SetProperty>
-  <SetProperty After="SetUpgrading" Id="Uninstalling" Value="true">
-      Installed AND (REMOVE="ALL") AND NOT (WIX_UPGRADE_DETECTED OR UPGRADINGPRODUCTCODE)
-  </SetProperty>
-  <SetProperty After="SetUninstalling" Id="Maintenance" Value="true">
-      Installed AND NOT Upgrading AND NOT Uninstalling AND NOT UPGRADINGPRODUCTCODE
-  </SetProperty>
+  <SetProperty After="FindRelatedProducts" Id="FirstInstall" Value="true" Condition="NOT Installed AND NOT WIX_UPGRADE_DETECTED AND NOT WIX_DOWNGRADE_DETECTED" />
+  <SetProperty After="SetFirstInstall" Id="Upgrading" Value="true" Condition="WIX_UPGRADE_DETECTED AND NOT (REMOVE=&quot;ALL&quot;)" />
+  <SetProperty After="RemoveExistingProducts" Id="RemovingForUpgrade" Sequence="execute" Value="true" Condition="(REMOVE=&quot;ALL&quot;) AND UPGRADINGPRODUCTCODE" />
+  <SetProperty After="SetUpgrading" Id="Uninstalling" Value="true" Condition="Installed AND (REMOVE=&quot;ALL&quot;) AND NOT (WIX_UPGRADE_DETECTED OR UPGRADINGPRODUCTCODE)" />
+  <SetProperty After="SetUninstalling" Id="Maintenance" Value="true" Condition="Installed AND NOT Upgrading AND NOT Uninstalling AND NOT UPGRADINGPRODUCTCODE" />
 
 </Include>

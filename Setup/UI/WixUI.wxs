@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+﻿<!--
     Copyright (c) Microsoft Corporation.  All rights reserved.
     
     The use and distribution terms for this software are covered by the
@@ -10,67 +9,67 @@
     
     You must not remove this notice, or any other, from this software.
 -->
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Fragment>
     <UI Id="WixUI_GitExtensions">
-      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="9"/>
-      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" Bold="yes"/>
-      <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="10" Bold="yes"/>
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="9" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" Bold="yes" />
+      <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="10" Bold="yes" />
 
-      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal"/>
-      <Property Id="WixUI_Mode" Value="FeatureTree"/>
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+      <Property Id="WixUI_Mode" Value="FeatureTree" />
 
       <Property Id="WixAppFolder" Value="WixPerMachineFolder" />
 
-      <DialogRef Id="BrowseDlg"/>
-      <DialogRef Id="FilesInUse"/>
-      <DialogRef Id="MsiRMFilesInUse"/>
-      <DialogRef Id="PrepareDlg"/>
-      <DialogRef Id="ResumeDlg"/>
-      <DialogRef Id="GitEx_ErrorDlg"/>
-      <DialogRef Id="GitEx_FatalError"/>
-      <DialogRef Id="GitEx_UserExit"/>
+      <DialogRef Id="BrowseDlg" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />
+      <DialogRef Id="PrepareDlg" />
+      <DialogRef Id="ResumeDlg" />
+      <DialogRef Id="GitEx_ErrorDlg" />
+      <DialogRef Id="GitEx_FatalError" />
+      <DialogRef Id="GitEx_UserExit" />
 
-      <Publish Dialog="GitEx_ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999">1</Publish>
+      <Publish Dialog="GitEx_ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999" />
 
-      <Publish Dialog="BrowseDlg" Control="OK" Event="DoAction" Value="WixUIValidatePath" Order="3">1</Publish>
-      <Publish Dialog="BrowseDlg" Control="OK" Event="SpawnDialog" Value="InvalidDirDlg" Order="4"><![CDATA[WIXUI_INSTALLDIR_VALID<>"1"]]></Publish>
+      <Publish Dialog="BrowseDlg" Control="OK" Event="DoAction" Value="WixUIValidatePath_$(sys.BUILDARCHSHORT)" Order="3" />
+      <Publish Dialog="BrowseDlg" Control="OK" Event="SpawnDialog" Value="InvalidDirDlg" Order="4" Condition="WIXUI_INSTALLDIR_VALID&lt;&gt;&quot;1&quot;" />
 
       <?include ../Config.wxi ?>
       
-      <Publish Dialog="GitEx_WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallScopeDlg">1</Publish>
-      <Publish Dialog="InstallScopeDlg" Control="Back" Event="NewDialog" Value="GitEx_WelcomeDlg" Order="1">1</Publish>
-      <Publish Dialog="InstallScopeDlg" Control="Next" Event="NewDialog" Value="GitEx_InstallDirDlg" Order="1">1</Publish>
-      <Publish Dialog="GitEx_InstallDirDlg" Control="Back" Event="NewDialog" Value="InstallScopeDlg">1</Publish>
+      <Publish Dialog="GitEx_WelcomeDlg" Control="Next" Event="NewDialog" Value="InstallScopeDlg" />
+      <Publish Dialog="InstallScopeDlg" Control="Back" Event="NewDialog" Value="GitEx_WelcomeDlg" Order="1" />
+      <Publish Dialog="InstallScopeDlg" Control="Next" Event="NewDialog" Value="GitEx_InstallDirDlg" Order="1" />
+      <Publish Dialog="GitEx_InstallDirDlg" Control="Back" Event="NewDialog" Value="InstallScopeDlg" />
       
-      <Publish Dialog="GitEx_InstallDirDlg" Control="ChangeFolder" Property="_BrowseProperty" Value="[WIXUI_INSTALLDIR]" Order="1">1</Publish>
-      <Publish Dialog="GitEx_InstallDirDlg" Control="ChangeFolder" Event="SpawnDialog" Value="BrowseDlg" Order="2">1</Publish>
-      <Publish Dialog="GitEx_InstallDirDlg" Control="Next" Event="SetTargetPath" Value="[WIXUI_INSTALLDIR]" Order="1">1</Publish>
-      <Publish Dialog="GitEx_InstallDirDlg" Control="Next" Event="DoAction" Value="WixUIValidatePath" Order="2">NOT WIXUI_DONTVALIDATEPATH</Publish>
-      <Publish Dialog="GitEx_InstallDirDlg" Control="Next" Event="SpawnDialog" Value="InvalidDirDlg" Order="3"><![CDATA[NOT WIXUI_DONTVALIDATEPATH AND WIXUI_INSTALLDIR_VALID<>"1"]]></Publish>
-      <Publish Dialog="GitEx_InstallDirDlg" Control="Next" Event="NewDialog" Value="GitEx_CustomizeDlg" Order="4">WIXUI_DONTVALIDATEPATH OR WIXUI_INSTALLDIR_VALID="1"</Publish>
+      <Publish Dialog="GitEx_InstallDirDlg" Control="ChangeFolder" Property="_BrowseProperty" Value="[WIXUI_INSTALLDIR]" Order="1" />
+      <Publish Dialog="GitEx_InstallDirDlg" Control="ChangeFolder" Event="SpawnDialog" Value="BrowseDlg" Order="2" />
+      <Publish Dialog="GitEx_InstallDirDlg" Control="Next" Event="SetTargetPath" Value="[WIXUI_INSTALLDIR]" Order="1" />
+      <Publish Dialog="GitEx_InstallDirDlg" Control="Next" Event="DoAction" Value="WixUIValidatePath_$(sys.BUILDARCHSHORT)" Order="2" Condition="NOT WIXUI_DONTVALIDATEPATH" />
+      <Publish Dialog="GitEx_InstallDirDlg" Control="Next" Event="SpawnDialog" Value="InvalidDirDlg" Order="3" Condition="NOT WIXUI_DONTVALIDATEPATH AND WIXUI_INSTALLDIR_VALID&lt;&gt;&quot;1&quot;" />
+      <Publish Dialog="GitEx_InstallDirDlg" Control="Next" Event="NewDialog" Value="GitEx_CustomizeDlg" Order="4" Condition="WIXUI_DONTVALIDATEPATH OR WIXUI_INSTALLDIR_VALID=&quot;1&quot;" />
       <Publish Dialog="GitEx_CustomizeDlg" Control="Back" Event="NewDialog" Value="GitEx_InstallDirDlg" Order="1"></Publish>
 
       <!-- update: skip telemetry screens -->
-      <Publish Dialog="GitEx_CustomizeDlg" Control="Next" Event="NewDialog" Value="GitEx_VerifyReadyDlg" Order="1"><![CDATA[Upgrading]]></Publish>
+      <Publish Dialog="GitEx_CustomizeDlg" Control="Next" Event="NewDialog" Value="GitEx_VerifyReadyDlg" Order="1" Condition="Upgrading" />
 
       <!-- not installed: show telemetry screens -->
-      <Publish Dialog="GitEx_CustomizeDlg" Control="Next" Event="NewDialog" Value="GitEx_TelemetryDlg" Order="2"><![CDATA[NOT Upgrading]]></Publish>
-      <Publish Dialog="GitEx_TelemetryDlg" Control="Back" Event="NewDialog" Value="GitEx_CustomizeDlg" Order="2"><![CDATA[NOT Upgrading]]></Publish>
-      <Publish Dialog="GitEx_TelemetryDlg" Control="Next" Event="NewDialog" Value="GitEx_VerifyReadyDlg" Order="2"><![CDATA[NOT Upgrading]]></Publish>
+      <Publish Dialog="GitEx_CustomizeDlg" Control="Next" Event="NewDialog" Value="GitEx_TelemetryDlg" Order="2" Condition="NOT Upgrading" />
+      <Publish Dialog="GitEx_TelemetryDlg" Control="Back" Event="NewDialog" Value="GitEx_CustomizeDlg" Order="2" Condition="NOT Upgrading" />
+      <Publish Dialog="GitEx_TelemetryDlg" Control="Next" Event="NewDialog" Value="GitEx_VerifyReadyDlg" Order="2" Condition="NOT Upgrading" />
 
 
-      <Publish Dialog="GitEx_VerifyReadyDlg" Control="Back" Event="NewDialog" Value="GitEx_TelemetryDlg" Order="1"><![CDATA[NOT Upgrading]]></Publish>
-      <Publish Dialog="GitEx_VerifyReadyDlg" Control="Back" Event="NewDialog" Value="GitEx_CustomizeDlg" Order="3"><![CDATA[Upgrading]]></Publish>
+      <Publish Dialog="GitEx_VerifyReadyDlg" Control="Back" Event="NewDialog" Value="GitEx_TelemetryDlg" Order="1" Condition="NOT Upgrading" />
+      <Publish Dialog="GitEx_VerifyReadyDlg" Control="Back" Event="NewDialog" Value="GitEx_CustomizeDlg" Order="3" Condition="Upgrading" />
 
-      <Publish Dialog="GitEx_MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="GitEx_MaintenanceTypeDlg">1</Publish>
+      <Publish Dialog="GitEx_MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="GitEx_MaintenanceTypeDlg" />
 
-      <Publish Dialog="GitEx_MaintenanceTypeDlg" Control="ChangeButton" Event="NewDialog" Value="GitEx_CustomizeDlg">1</Publish>
-      <Publish Dialog="GitEx_MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="GitEx_VerifyReadyDlg">1</Publish>
-      <Publish Dialog="GitEx_MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="GitEx_VerifyReadyDlg">1</Publish>
-      <Publish Dialog="GitEx_MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="GitEx_MaintenanceWelcomeDlg">1</Publish>
+      <Publish Dialog="GitEx_MaintenanceTypeDlg" Control="ChangeButton" Event="NewDialog" Value="GitEx_CustomizeDlg" />
+      <Publish Dialog="GitEx_MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="GitEx_VerifyReadyDlg" />
+      <Publish Dialog="GitEx_MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="GitEx_VerifyReadyDlg" />
+      <Publish Dialog="GitEx_MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="GitEx_MaintenanceWelcomeDlg" />
     </UI>
 
-    <UIRef Id="WixUI_Common"/>
+    <UIRef Id="WixUI_Common" />
   </Fragment>
 </Wix>

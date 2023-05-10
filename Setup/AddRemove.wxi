@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Include>
-  <Property Id='ARPPRODUCTICON'>gitextensions.ico</Property>
-  <Property Id='ARPHELPLINK'>https://github.com/gitextensions/gitextensions/issues</Property>
-  <Property Id='ARPURLINFOABOUT'>https://gitextensions.github.io/</Property>
-  <Property Id='ARPURLUPDATEINFO'>https://gitextensions.github.io/</Property>
+﻿<Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Property Id="ARPPRODUCTICON" Value="gitextensions.ico" />
+  <Property Id="ARPHELPLINK" Value="https://github.com/gitextensions/gitextensions/issues" />
+  <Property Id="ARPURLINFOABOUT" Value="https://gitextensions.github.io/" />
+  <Property Id="ARPURLUPDATEINFO" Value="https://gitextensions.github.io/" />
 </Include>

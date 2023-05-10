@@ -1,8 +1,6 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension" xmlns:VSExtension="http://schemas.microsoft.com/wix/VSExtension">
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx">
   <?include Config.wxi?>
-  <Product Id="*" UpgradeCode="$(var.UpgradeCode)" Name="$(var.ProductName) $(var.Version)" Manufacturer="$(var.Manufacturer)" Version="$(var.NumericVersion)" Language="1033">
-    <Package InstallerVersion="200" Compressed="yes" Description="$(var.ProductName)" />
+  <Package UpgradeCode="$(var.UpgradeCode)" Name="$(var.ProductName) $(var.Version)" Manufacturer="$(var.Manufacturer)" Version="$(var.NumericVersion)" Language="1033" InstallerVersion="200"><SummaryInformation Description="$(var.ProductName)" />
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
     <Property Id="ALLUSERS" Value="1" />
     <!--
@@ -20,53 +18,19 @@
     <WixVariable Id="WixUIBannerBmp" Value="banner.bmp" />
     <WixVariable Id="WixUISupportPerUser" Value="1" Overridable="yes" />
     <WixVariable Id="WixUISupportPerMachine" Value="1" Overridable="yes" />
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFilesFolder">
-        <Directory Id="INSTALLDIR" Name="$(var.InstallName)">
-          <Directory Id="PluginsDir" Name="Plugins" />
-          <Directory Id="DictionariesDir" Name="Dictionaries" />
-          <Directory Id="TranslationsDir" Name="Translation" />
-          <Directory Id="DiffScriptsDir" Name="Diff-Scripts" />
-          <Directory Id="DirConEmu" Name="ConEmu" />
-          <Directory Id="ThemesDir" Name="Themes" />
-        </Directory>
-      </Directory>
-      <Directory Id="LocalAppDataFolder">
-        <Directory Id="LocalAppDataOrganizationDir" Name="GitExtensions">
-          <Directory Id="UserPluginsDir" Name="UserPlugins">
-            <Directory Id="PluginManagerDir" Name="GitExtensions.PluginManager">
-              <Directory Id="PackageManagerDir" Name="PackageManager">
-                <Component Id="PackageManager" Guid="{81556E1B-270C-448D-A68D-FD30678D4827}">
-                  <RemoveFolder Id="RemoveLocalAppDataOrganizationDir" Directory="LocalAppDataOrganizationDir" On="uninstall" />
-                  <RemoveFolder Id="RemoveUserPluginsDir" Directory="UserPluginsDir" On="uninstall" />
-                  <RemoveFolder Id="RemovePluginManagerDir" Directory="PluginManagerDir" On="uninstall" />
-                  <RemoveFolder Id="RemovePackageManagerDir" Directory="PackageManagerDir" On="uninstall" />
-                </Component>
-              </Directory>
-            </Directory>
-          </Directory>
-        </Directory>
-      </Directory>
-      <Directory Id="ProgramMenuFolder">
-        <Directory Id="StartMenuDir" Name="$(var.ProductName)" />
-      </Directory>
-      <Directory Id="DesktopFolder" />
-      <Component Id="Path" Guid="{DAC97FD8-A869-4458-AABD-C27D2C892643}">
-        <Environment Id="PATH" Name="PATH" Value="[INSTALLDIR]" Permanent="no" Part="last" Action="set" System="yes" />
-      </Component>
-    </Directory>
+    
     <DirectoryRef Id="INSTALLDIR">
-      <Component Id="gitextensions.ico" Guid="*">
-        <File Source="..\Logo\git-extensions-logo.ico" />
+      <Component Id="gitextensions.ico">
+        <File Id="git_extensions_logo.ico" Source="..\Logo\git-extensions-logo.ico" />
       </Component>
-      <Component Id="gitex.cmd" Guid="*">
-        <File Source="..\Bin\gitex.cmd" />
+      <Component Id="gitex.cmd">
+        <File Id="gitex.cmd" Source="..\Bin\gitex.cmd" />
       </Component>
-      <Component Id="set_telemetry" Guid="*">
-        <File Source="..\Bin\set-telemetry.ps1" />
+      <Component Id="set_telemetry">
+        <File Id="set_telemetry.ps1" Source="..\Bin\set-telemetry.ps1" />
       </Component>
       <Component Id="GitExtensions.exe" Guid="5530254F-DCAC-4C82-BD4B-F54D76024929">
-        <File Source="$(var.ArtifactsPublishPath)\GitExtensions.exe" KeyPath="yes">
+        <File Id="GitExtensions.exe" Source="$(var.ArtifactsPublishPath)\GitExtensions.exe" KeyPath="yes">
           <netfx:NativeImage Id="ngen_GitExtensions.exe" Platform="all" Priority="1" />
         </File>
         <ProgId Id="GitExtensions" Description="Git Extentions Shortcut" Advertise="no">
@@ -75,29 +39,29 @@
           </Extension>
         </ProgId>
       </Component>
-      <Component Id="AdysTech.CredentialManager.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\AdysTech.CredentialManager.dll" />
+      <Component Id="AdysTech.CredentialManager.dll">
+        <File Id="AdysTech.CredentialManager.dll" Source="$(var.ArtifactsPublishPath)\AdysTech.CredentialManager.dll" />
       </Component>
-      <Component Id="AppInsights.WindowsDesktop.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\AppInsights.WindowsDesktop.dll" />
+      <Component Id="AppInsights.WindowsDesktop.dll">
+        <File Id="AppInsights.WindowsDesktop.dll" Source="$(var.ArtifactsPublishPath)\AppInsights.WindowsDesktop.dll" />
       </Component>
-      <Component Id="Ben.Demystifier.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Ben.Demystifier.dll" />
+      <Component Id="Ben.Demystifier.dll">
+        <File Id="Ben.Demystifier.dll" Source="$(var.ArtifactsPublishPath)\Ben.Demystifier.dll" />
       </Component>
-      <Component Id="BugReporter.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\BugReporter.dll" />
+      <Component Id="BugReporter.dll">
+        <File Id="BugReporter.dll" Source="$(var.ArtifactsPublishPath)\BugReporter.dll" />
       </Component>
-      <Component Id="BugReporter.exe" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\BugReporter.exe" />
+      <Component Id="BugReporter.exe">
+        <File Id="BugReporter.exe" Source="$(var.ArtifactsPublishPath)\BugReporter.exe" />
       </Component>
-      <Component Id="BugReporter.runtimeconfig.json" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\BugReporter.runtimeconfig.json" />
+      <Component Id="BugReporter.runtimeconfig.json">
+        <File Id="BugReporter.runtimeconfig.json" Source="$(var.ArtifactsPublishPath)\BugReporter.runtimeconfig.json" />
       </Component>
-      <Component Id="ConEmuWinForms.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\ConEmuWinForms.dll" />
+      <Component Id="ConEmuWinForms.dll">
+        <File Id="ConEmuWinForms.dll" Source="$(var.ArtifactsPublishPath)\ConEmuWinForms.dll" />
       </Component>
-      <Component Id="EnvDTE.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\EnvDTE.dll" />
+      <Component Id="EnvDTE.dll">
+        <File Id="EnvDTE.dll" Source="$(var.ArtifactsPublishPath)\EnvDTE.dll" />
       </Component>
       <!--
       <Component Id="EasyHook.dll" Guid="*">
@@ -110,156 +74,156 @@
         <File Source="$(var.ArtifactsPublishPath)\EasyHook64.dll" />
       </Component>
       -->
-      <Component Id="ExCSS.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\ExCSS.dll" />
+      <Component Id="ExCSS.dll">
+        <File Id="ExCSS.dll" Source="$(var.ArtifactsPublishPath)\ExCSS.dll" />
       </Component>
-      <Component Id="Git.hub.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Git.hub.dll" />
+      <Component Id="Git.hub.dll">
+        <File Id="Git.hub.dll" Source="$(var.ArtifactsPublishPath)\Git.hub.dll" />
       </Component>
-      <Component Id="GitCommands.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\GitCommands.dll" />
+      <Component Id="GitCommands.dll">
+        <File Id="GitCommands.dll" Source="$(var.ArtifactsPublishPath)\GitCommands.dll" />
       </Component>
-      <Component Id="GitExtensions.deps.json" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\GitExtensions.deps.json" />
+      <Component Id="GitExtensions.deps.json">
+        <File Id="GitExtensions.deps.json" Source="$(var.ArtifactsPublishPath)\GitExtensions.deps.json" />
       </Component>
       <!-- <Component Id="GitExtensions.exe.config" Guid="*">
         <File Source="$(var.ArtifactsPublishPath)\GitExtensions.exe.config" />
       </Component> -->
-      <Component Id="GitExtensions.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\GitExtensions.dll" />
+      <Component Id="GitExtensions.dll">
+        <File Id="GitExtensions.dll" Source="$(var.ArtifactsPublishPath)\GitExtensions.dll" />
       </Component>
-      <Component Id="GitExtensions.dll.config" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\GitExtensions.dll.config" />
+      <Component Id="GitExtensions.dll.config">
+        <File Id="GitExtensions.dll.config" Source="$(var.ArtifactsPublishPath)\GitExtensions.dll.config" />
       </Component>
-      <Component Id="GitExtensions.runtimeconfig.json" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\GitExtensions.runtimeconfig.json" />
+      <Component Id="GitExtensions.runtimeconfig.json">
+        <File Id="GitExtensions.runtimeconfig.json" Source="$(var.ArtifactsPublishPath)\GitExtensions.runtimeconfig.json" />
       </Component>
-      <Component Id="GitExtUtils.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\GitExtUtils.dll" />
+      <Component Id="GitExtUtils.dll">
+        <File Id="GitExtUtils.dll" Source="$(var.ArtifactsPublishPath)\GitExtUtils.dll" />
       </Component>
-      <Component Id="GitUI.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\GitUI.dll" />
+      <Component Id="GitUI.dll">
+        <File Id="GitUI.dll" Source="$(var.ArtifactsPublishPath)\GitUI.dll" />
       </Component>
-      <Component Id="GitUIPluginInterfaces.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\GitUIPluginInterfaces.dll" />
+      <Component Id="GitUIPluginInterfaces.dll">
+        <File Id="GitUIPluginInterfaces.dll" Source="$(var.ArtifactsPublishPath)\GitUIPluginInterfaces.dll" />
       </Component>
-      <Component Id="ICSharpCode.TextEditor.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\ICSharpCode.TextEditor.dll" />
+      <Component Id="ICSharpCode.TextEditor.dll">
+        <File Id="ICSharpCode.TextEditor.dll" Source="$(var.ArtifactsPublishPath)\ICSharpCode.TextEditor.dll" />
       </Component>
-      <Component Id="Microsoft.AI.DependencyCollector.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Microsoft.AI.DependencyCollector.dll" />
+      <Component Id="Microsoft.AI.DependencyCollector.dll">
+        <File Id="Microsoft.AI.DependencyCollector.dll" Source="$(var.ArtifactsPublishPath)\Microsoft.AI.DependencyCollector.dll" />
       </Component>
-      <Component Id="Microsoft.ApplicationInsights.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Microsoft.ApplicationInsights.dll" />
+      <Component Id="Microsoft.ApplicationInsights.dll">
+        <File Id="Microsoft.ApplicationInsights.dll" Source="$(var.ArtifactsPublishPath)\Microsoft.ApplicationInsights.dll" />
       </Component>
-      <Component Id="Microsoft.Bcl.AsyncInterfaces.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Microsoft.Bcl.AsyncInterfaces.dll" />
+      <Component Id="Microsoft.Bcl.AsyncInterfaces.dll">
+        <File Id="Microsoft.Bcl.AsyncInterfaces.dll" Source="$(var.ArtifactsPublishPath)\Microsoft.Bcl.AsyncInterfaces.dll" />
       </Component>
-      <Component Id="Microsoft.Toolkit.HighPerformance.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Microsoft.Toolkit.HighPerformance.dll" />
+      <Component Id="Microsoft.Toolkit.HighPerformance.dll">
+        <File Id="Microsoft.Toolkit.HighPerformance.dll" Source="$(var.ArtifactsPublishPath)\Microsoft.Toolkit.HighPerformance.dll" />
       </Component>
-      <Component Id="Microsoft.VisualStudio.Composition.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Microsoft.VisualStudio.Composition.dll" />
+      <Component Id="Microsoft.VisualStudio.Composition.dll">
+        <File Id="Microsoft.VisualStudio.Composition.dll" Source="$(var.ArtifactsPublishPath)\Microsoft.VisualStudio.Composition.dll" />
       </Component>
       <!-- Remove unused dll, installed in versions <= 4.0.1 -->
       <Component Id="Microsoft.VisualStudio.Composition.NetFxAttributes.dll" Guid="D4782F6D-044B-5BD2-858A-1A3D8510B277">
         <RemoveFile Name="Microsoft.VisualStudio.Composition.NetFxAttributes.dll" Id="Microsoft.VisualStudio.Composition.NetFxAttributes.dll" On="both" />
       </Component>
-      <Component Id="Microsoft.VisualStudio.Interop.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Microsoft.VisualStudio.Interop.dll" />
+      <Component Id="Microsoft.VisualStudio.Interop.dll">
+        <File Id="Microsoft.VisualStudio.Interop.dll" Source="$(var.ArtifactsPublishPath)\Microsoft.VisualStudio.Interop.dll" />
       </Component>
-      <Component Id="Microsoft.VisualStudio.Threading.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Microsoft.VisualStudio.Threading.dll" />
+      <Component Id="Microsoft.VisualStudio.Threading.dll">
+        <File Id="Microsoft.VisualStudio.Threading.dll" Source="$(var.ArtifactsPublishPath)\Microsoft.VisualStudio.Threading.dll" />
       </Component>
-      <Component Id="Microsoft.VisualStudio.Validation.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Microsoft.VisualStudio.Validation.dll" />
+      <Component Id="Microsoft.VisualStudio.Validation.dll">
+        <File Id="Microsoft.VisualStudio.Validation.dll" Source="$(var.ArtifactsPublishPath)\Microsoft.VisualStudio.Validation.dll" />
       </Component>
-      <Component Id="Microsoft.WindowsAPICodePack.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Microsoft.WindowsAPICodePack.dll" />
+      <Component Id="Microsoft.WindowsAPICodePack.dll">
+        <File Id="Microsoft.WindowsAPICodePack.dll" Source="$(var.ArtifactsPublishPath)\Microsoft.WindowsAPICodePack.dll" />
       </Component>
-      <Component Id="Microsoft.WindowsAPICodePack.Shell.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Microsoft.WindowsAPICodePack.Shell.dll" />
+      <Component Id="Microsoft.WindowsAPICodePack.Shell.dll">
+        <File Id="Microsoft.WindowsAPICodePack.Shell.dll" Source="$(var.ArtifactsPublishPath)\Microsoft.WindowsAPICodePack.Shell.dll" />
       </Component>
-      <Component Id="Newtonsoft.Json.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Newtonsoft.Json.dll" />
+      <Component Id="Newtonsoft.Json.dll">
+        <File Id="Newtonsoft.Json.dll" Source="$(var.ArtifactsPublishPath)\Newtonsoft.Json.dll" />
       </Component>
-      <Component Id="ResourceManager.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\ResourceManager.dll" />
+      <Component Id="ResourceManager.dll">
+        <File Id="ResourceManager.dll" Source="$(var.ArtifactsPublishPath)\ResourceManager.dll" />
       </Component>
-      <Component Id="RestSharp.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\RestSharp.dll" />
+      <Component Id="RestSharp.dll">
+        <File Id="RestSharp.dll" Source="$(var.ArtifactsPublishPath)\RestSharp.dll" />
       </Component>
-      <Component Id="SmartFormat.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\SmartFormat.dll" />
+      <Component Id="SmartFormat.dll">
+        <File Id="SmartFormat.dll" Source="$(var.ArtifactsPublishPath)\SmartFormat.dll" />
       </Component>
-      <Component Id="SmartFormat.ZString.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\SmartFormat.ZString.dll" />
+      <Component Id="SmartFormat.ZString.dll">
+        <File Id="SmartFormat.ZString.dll" Source="$(var.ArtifactsPublishPath)\SmartFormat.ZString.dll" />
       </Component>
-      <Component Id="SpellChecker.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\SpellChecker.dll" />
+      <Component Id="SpellChecker.dll">
+        <File Id="SpellChecker.dll" Source="$(var.ArtifactsPublishPath)\SpellChecker.dll" />
       </Component>
-      <Component Id="System.ComponentModel.Composition.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\System.ComponentModel.Composition.dll" />
+      <Component Id="System.ComponentModel.Composition.dll">
+        <File Id="System.ComponentModel.Composition.dll" Source="$(var.ArtifactsPublishPath)\System.ComponentModel.Composition.dll" />
       </Component>
-      <Component Id="System.Composition.AttributedModel.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\System.Composition.AttributedModel.dll" />
+      <Component Id="System.Composition.AttributedModel.dll">
+        <File Id="System.Composition.AttributedModel.dll" Source="$(var.ArtifactsPublishPath)\System.Composition.AttributedModel.dll" />
       </Component>
-      <Component Id="System.Composition.Convention.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\System.Composition.Convention.dll" />
+      <Component Id="System.Composition.Convention.dll">
+        <File Id="System.Composition.Convention.dll" Source="$(var.ArtifactsPublishPath)\System.Composition.Convention.dll" />
       </Component>
-      <Component Id="System.Composition.Hosting.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\System.Composition.Hosting.dll" />
+      <Component Id="System.Composition.Hosting.dll">
+        <File Id="System.Composition.Hosting.dll" Source="$(var.ArtifactsPublishPath)\System.Composition.Hosting.dll" />
       </Component>
-      <Component Id="System.Composition.Runtime.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\System.Composition.Runtime.dll" />
+      <Component Id="System.Composition.Runtime.dll">
+        <File Id="System.Composition.Runtime.dll" Source="$(var.ArtifactsPublishPath)\System.Composition.Runtime.dll" />
       </Component>
-      <Component Id="System.Composition.TypedParts.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\System.Composition.TypedParts.dll" />
+      <Component Id="System.Composition.TypedParts.dll">
+        <File Id="System.Composition.TypedParts.dll" Source="$(var.ArtifactsPublishPath)\System.Composition.TypedParts.dll" />
       </Component>
-      <Component Id="System.IO.Abstractions.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\System.IO.Abstractions.dll" />
+      <Component Id="System.IO.Abstractions.dll">
+        <File Id="System.IO.Abstractions.dll" Source="$(var.ArtifactsPublishPath)\System.IO.Abstractions.dll" />
       </Component>
-      <Component Id="TestableIO.System.IO.Abstractions.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\TestableIO.System.IO.Abstractions.dll" />
+      <Component Id="TestableIO.System.IO.Abstractions.dll">
+        <File Id="TestableIO.System.IO.Abstractions.dll" Source="$(var.ArtifactsPublishPath)\TestableIO.System.IO.Abstractions.dll" />
       </Component>
-      <Component Id="TestableIO.System.IO.Abstractions.Wrappers.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\TestableIO.System.IO.Abstractions.Wrappers.dll" />
+      <Component Id="TestableIO.System.IO.Abstractions.Wrappers.dll">
+        <File Id="TestableIO.System.IO.Abstractions.Wrappers.dll" Source="$(var.ArtifactsPublishPath)\TestableIO.System.IO.Abstractions.Wrappers.dll" />
       </Component>
-      <Component Id="System.Reactive.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\System.Reactive.dll" />
+      <Component Id="System.Reactive.dll">
+        <File Id="System.Reactive.dll" Source="$(var.ArtifactsPublishPath)\System.Reactive.dll" />
       </Component>
-      <Component Id="System.Reactive.Interfaces.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\System.Reactive.Interfaces.dll" />
+      <Component Id="System.Reactive.Interfaces.dll">
+        <File Id="System.Reactive.Interfaces.dll" Source="$(var.ArtifactsPublishPath)\System.Reactive.Interfaces.dll" />
       </Component>
-      <Component Id="System.Reactive.Linq.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\System.Reactive.Linq.dll" />
+      <Component Id="System.Reactive.Linq.dll">
+        <File Id="System.Reactive.Linq.dll" Source="$(var.ArtifactsPublishPath)\System.Reactive.Linq.dll" />
       </Component>
       <!-- Shell extensions -->
       <?define ShellExCLSID = "{3C16B20A-BA16-4156-916F-0A375ECFFE24}"?>
-      <Component Id="GitExtensionsShellEx32.dll" Guid="*">
-        <File Name="GitExtensionsShellEx32.dll" Source="$(var.ArtifactsPublishPath)\GitExtensionsShellEx32.dll" KeyPath="yes" />
+      <Component Id="GitExtensionsShellEx32.dll">
+        <File Id="GitExtensionsShellEx32.dll" Name="GitExtensionsShellEx32.dll" Source="$(var.ArtifactsPublishPath)\GitExtensionsShellEx32.dll" KeyPath="yes" />
         <?foreach ShellExFileName in GitExtensionsShellEx32.dll?>
         <?include RegisterShellExtension.wxi?>
-        <?endforeach ?>
+        <?endforeach?>
       </Component>
-      <Component Id="GitExtensionsShellEx64.dll" Guid="*" Win64="yes">
-        <Condition>VersionNT64</Condition>
-        <File Name="GitExtensionsShellEx64.dll" Source="$(var.ArtifactsPublishPath)\GitExtensionsShellEx64.dll" KeyPath="yes" />
+      <Component Id="GitExtensionsShellEx64.dll" Condition="VersionNT64" Bitness="always64">
+        
+        <File Id="GitExtensionsShellEx64.dll" Name="GitExtensionsShellEx64.dll" Source="$(var.ArtifactsPublishPath)\GitExtensionsShellEx64.dll" KeyPath="yes" />
         <?foreach ShellExFileName in GitExtensionsShellEx64.dll?>
         <?include RegisterShellExtension.wxi?>
-        <?endforeach ?>
+        <?endforeach?>
       </Component>
       <!-- End shell extensions -->
-      <Component Id="GitExtSshAskPass.exe" Guid="*">
-        <File Source="$(var.ArtifactsBinPath)\GitExtSshAskPass\GitExtSshAskPass.exe" />
+      <Component Id="GitExtSshAskPass.exe">
+        <File Id="GitExtSshAskPass.exe" Source="$(var.ArtifactsBinPath)\GitExtSshAskPass\GitExtSshAskPass.exe" />
       </Component>
-      <Component Id="checksettings.reg" Guid="*">
+      <Component Id="checksettings.reg">
         <RegistryValue Name="CheckSettings" Value="true" Root="HKCU" Key="$(var.AppRegKey)" Type="string" />
       </Component>
-      <Component Id="InstallDir.reg" Guid="*">
+      <Component Id="InstallDir.reg">
         <RegistryValue Name="InstallDir" Value="[INSTALLDIR]" Root="HKCU" Key="$(var.AppRegKey)" Type="string" />
       </Component>
-      <Component Id="Protocol.git" Guid="*">
+      <Component Id="Protocol.git">
         <RegistryKey Key="git" Root="HKCR">
           <RegistryValue Value="URL: Github for Windows Protocol" Type="string" />
           <RegistryValue Name="URL Protocol" Value="" Type="string" />
@@ -273,7 +237,7 @@
           <RegistryValue Value="&quot;[INSTALLDIR]GitExtensions.exe&quot; %1" Type="string" />
         </RegistryKey>
       </Component>
-      <Component Id="Protocol.github_windows" Guid="*">
+      <Component Id="Protocol.github_windows">
         <RegistryKey Key="github-windows" Root="HKCR">
           <RegistryValue Value="URL: Github for Windows Protocol" Type="string" />
           <RegistryValue Name="URL Protocol" Value="" Type="string" />
@@ -287,7 +251,7 @@
           <RegistryValue Value="&quot;[INSTALLDIR]GitExtensions.exe&quot; %1" Type="string" />
         </RegistryKey>
       </Component>
-      <Component Id="Protocol.github_mac" Guid="*">
+      <Component Id="Protocol.github_mac">
         <RegistryKey Key="github-mac" Root="HKCR">
           <RegistryValue Value="URL: Github for Mac Protocol" Type="string" />
           <RegistryValue Name="URL Protocol" Value="" Type="string" />
@@ -303,251 +267,251 @@
       </Component>
     </DirectoryRef>
     <DirectoryRef Id="ThemesDir">
-      <Component Id="Themes.README.md" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Themes\README.md" />
+      <Component Id="Themes.README.md">
+        <File Id="README.md" Source="$(var.ArtifactsPublishPath)\Themes\README.md" />
       </Component>
-      <Component Id="Themes.invariant.css" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Themes\invariant.css" />
+      <Component Id="Themes.invariant.css">
+        <File Id="invariant.css" Source="$(var.ArtifactsPublishPath)\Themes\invariant.css" />
       </Component>
-      <Component Id="Themes.bright.css" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Themes\bright.css" />
+      <Component Id="Themes.bright.css">
+        <File Id="bright.css" Source="$(var.ArtifactsPublishPath)\Themes\bright.css" />
       </Component>
-      <Component Id="Themes.highcontrast_dark.css" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Themes\highcontrast_dark.css" />
+      <Component Id="Themes.highcontrast_dark.css">
+        <File Id="highcontrast_dark.css" Source="$(var.ArtifactsPublishPath)\Themes\highcontrast_dark.css" />
       </Component>
     </DirectoryRef>
     <DirectoryRef Id="PluginsDir">
-      <Component Id="DeleteUnusedBranches.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.DeleteUnusedBranches.dll" />
+      <Component Id="DeleteUnusedBranches.dll">
+        <File Id="GitExtensions.Plugins.DeleteUnusedBranches.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.DeleteUnusedBranches.dll" />
       </Component>
-      <Component Id="AutoCompileSubmodules.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.AutoCompileSubmodules.dll" />
+      <Component Id="AutoCompileSubmodules.dll">
+        <File Id="GitExtensions.Plugins.AutoCompileSubmodules.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.AutoCompileSubmodules.dll" />
       </Component>
-      <Component Id="BackgroundFetch.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.BackgroundFetch.dll" />
+      <Component Id="BackgroundFetch.dll">
+        <File Id="GitExtensions.Plugins.BackgroundFetch.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.BackgroundFetch.dll" />
       </Component>
-      <Component Id="CreateLocalBranches.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.CreateLocalBranches.dll" />
+      <Component Id="CreateLocalBranches.dll">
+        <File Id="GitExtensions.Plugins.CreateLocalBranches.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.CreateLocalBranches.dll" />
       </Component>
-      <Component Id="GitStatistics.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.GitStatistics.dll" />
+      <Component Id="GitStatistics.dll">
+        <File Id="GitExtensions.Plugins.GitStatistics.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.GitStatistics.dll" />
       </Component>
-      <Component Id="GitImpact.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.GitImpact.dll" />
+      <Component Id="GitImpact.dll">
+        <File Id="GitExtensions.Plugins.GitImpact.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.GitImpact.dll" />
       </Component>
       <Component Id="Gource.dll" Guid="52F03345-7A36-5CFC-9287-94F03E72556B">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.Gource.dll" />
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\ICSharpCode.SharpZipLib.dll" />
+        <File Id="GitExtensions.Plugins.Gource.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.Gource.dll" />
+        <File Id="ICSharpCode.SharpZipLib.dll" Source="$(var.ArtifactsPublishPath)\Plugins\ICSharpCode.SharpZipLib.dll" />
       </Component>
-      <Component Id="Github3.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.GitHub3.dll" />
+      <Component Id="Github3.dll">
+        <File Id="GitExtensions.Plugins.GitHub3.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.GitHub3.dll" />
       </Component>
-      <Component Id="GitFlow.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.GitFlow.dll" />
+      <Component Id="GitFlow.dll">
+        <File Id="GitExtensions.Plugins.GitFlow.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.GitFlow.dll" />
       </Component>
-      <Component Id="ReleaseNotesGenerator.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.ReleaseNotesGenerator.dll" />
+      <Component Id="ReleaseNotesGenerator.dll">
+        <File Id="GitExtensions.Plugins.ReleaseNotesGenerator.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.ReleaseNotesGenerator.dll" />
       </Component>
-      <Component Id="JiraCommitHintPlugin.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.JiraCommitHintPlugin.dll" />
+      <Component Id="JiraCommitHintPlugin.dll">
+        <File Id="GitExtensions.Plugins.JiraCommitHintPlugin.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.JiraCommitHintPlugin.dll" />
       </Component>
-      <Component Id="Atlassian.Jira.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\Atlassian.Jira.dll" />
+      <Component Id="Atlassian.Jira.dll">
+        <File Id="Atlassian.Jira.dll" Source="$(var.ArtifactsPublishPath)\Plugins\Atlassian.Jira.dll" />
       </Component>
-      <Component Id="NString.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\NString.dll" />
+      <Component Id="NString.dll">
+        <File Id="NString.dll" Source="$(var.ArtifactsPublishPath)\Plugins\NString.dll" />
       </Component>
-      <Component Id="FindLargeFiles.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.FindLargeFiles.dll" />
+      <Component Id="FindLargeFiles.dll">
+        <File Id="GitExtensions.Plugins.FindLargeFiles.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.FindLargeFiles.dll" />
       </Component>
-      <Component Id="ProxySwitcher.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.ProxySwitcher.dll" />
+      <Component Id="ProxySwitcher.dll">
+        <File Id="GitExtensions.Plugins.ProxySwitcher.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.ProxySwitcher.dll" />
       </Component>
-      <Component Id="Bitbucket.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.Bitbucket.dll" />
+      <Component Id="Bitbucket.dll">
+        <File Id="GitExtensions.Plugins.Bitbucket.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.Bitbucket.dll" />
       </Component>
-      <Component Id="TeamCityIntegration.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.TeamCityIntegration.dll" />
+      <Component Id="TeamCityIntegration.dll">
+        <File Id="GitExtensions.Plugins.TeamCityIntegration.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.TeamCityIntegration.dll" />
       </Component>
-      <Component Id="AppVeyorIntegration.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.AppVeyorIntegration.dll" />
+      <Component Id="AppVeyorIntegration.dll">
+        <File Id="GitExtensions.Plugins.AppVeyorIntegration.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.AppVeyorIntegration.dll" />
       </Component>
-      <Component Id="JenkinsIntegration.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.JenkinsIntegration.dll" />
+      <Component Id="JenkinsIntegration.dll">
+        <File Id="GitExtensions.Plugins.JenkinsIntegration.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.JenkinsIntegration.dll" />
       </Component>
-      <Component Id="AzureDevOpsIntegration.dll" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.AzureDevOpsIntegration.dll" />
+      <Component Id="AzureDevOpsIntegration.dll">
+        <File Id="GitExtensions.Plugins.AzureDevOpsIntegration.dll" Source="$(var.ArtifactsPublishPath)\Plugins\GitExtensions.Plugins.AzureDevOpsIntegration.dll" />
       </Component>
     </DirectoryRef>
     <DirectoryRef Id="PluginManagerDir">
-      <Component Id="GitExtensions.PluginManager.dll" Guid="*">
-        <File Source="$(var.PluginManagerSourceDir)\GitExtensions.PluginManager.dll" />
+      <Component Id="GitExtensions.PluginManager.dll">
+        <File Id="GitExtensions.PluginManager.dll" Source="$(var.PluginManagerSourceDir)\GitExtensions.PluginManager.dll" />
       </Component>
     </DirectoryRef>
     <DirectoryRef Id="PackageManagerDir">
-      <Component Id="PackageManager.UI.exe" Guid="*">
-        <File Source="$(var.PluginManagerSourceDir)\PackageManager\PackageManager.UI.exe" />
+      <Component Id="PackageManager.UI.exe">
+        <File Id="PackageManager.UI.exe" Source="$(var.PluginManagerSourceDir)\PackageManager\PackageManager.UI.exe" />
       </Component>
-      <Component Id="PackageManager.UI.runtimeconfig.json" Guid="*">
-        <File Source="$(var.PluginManagerSourceDir)\PackageManager\PackageManager.UI.runtimeconfig.json" />
+      <Component Id="PackageManager.UI.runtimeconfig.json">
+        <File Id="PackageManager.UI.runtimeconfig.json" Source="$(var.PluginManagerSourceDir)\PackageManager\PackageManager.UI.runtimeconfig.json" />
       </Component>
     </DirectoryRef>
     <DirectoryRef Id="DiffScriptsDir">
-      <Component Id="mergedoc.js" Guid="*">
-        <File Source="..\Bin\Diff-Scripts\merge-doc.js" />
+      <Component Id="mergedoc.js">
+        <File Id="merge_doc.js" Source="..\Bin\Diff-Scripts\merge-doc.js" />
       </Component>
-      <Component Id="mergeods.vbs" Guid="*">
-        <File Source="..\Bin\Diff-Scripts\merge-ods.vbs" />
+      <Component Id="mergeods.vbs">
+        <File Id="merge_ods.vbs" Source="..\Bin\Diff-Scripts\merge-ods.vbs" />
       </Component>
-      <Component Id="License.txt" Guid="*">
-        <File Source="..\Bin\Diff-Scripts\TortoiseSVN License.txt" />
+      <Component Id="License.txt">
+        <File Id="TortoiseSVN_License.txt" Source="..\Bin\Diff-Scripts\TortoiseSVN License.txt" />
       </Component>
     </DirectoryRef>
     <DirectoryRef Id="DictionariesDir">
-      <Component Id="deDE.dic" Guid="*">
-        <File Source="..\Bin\Dictionaries\de-DE.dic" />
+      <Component Id="deDE.dic">
+        <File Id="de_DE.dic" Source="..\Bin\Dictionaries\de-DE.dic" />
       </Component>
-      <Component Id="enAU.dic" Guid="*">
-        <File Source="..\Bin\Dictionaries\en-AU.dic" />
+      <Component Id="enAU.dic">
+        <File Id="en_AU.dic" Source="..\Bin\Dictionaries\en-AU.dic" />
       </Component>
-      <Component Id="enCA.dic" Guid="*">
-        <File Source="..\Bin\Dictionaries\en-CA.dic" />
+      <Component Id="enCA.dic">
+        <File Id="en_CA.dic" Source="..\Bin\Dictionaries\en-CA.dic" />
       </Component>
-      <Component Id="enGB.dic" Guid="*">
-        <File Source="..\Bin\Dictionaries\en-GB.dic" />
+      <Component Id="enGB.dic">
+        <File Id="en_GB.dic" Source="..\Bin\Dictionaries\en-GB.dic" />
       </Component>
-      <Component Id="enUS.dic" Guid="*">
-        <File Source="..\Bin\Dictionaries\en-US.dic" />
+      <Component Id="enUS.dic">
+        <File Id="en_US.dic" Source="..\Bin\Dictionaries\en-US.dic" />
       </Component>
-      <Component Id="esES.dic" Guid="*">
-        <File Source="..\Bin\Dictionaries\es-ES.dic" />
+      <Component Id="esES.dic">
+        <File Id="es_ES.dic" Source="..\Bin\Dictionaries\es-ES.dic" />
       </Component>
-      <Component Id="esMX.dic" Guid="*">
-        <File Source="..\Bin\Dictionaries\es-MX.dic" />
+      <Component Id="esMX.dic">
+        <File Id="es_MX.dic" Source="..\Bin\Dictionaries\es-MX.dic" />
       </Component>
-      <Component Id="frFR.dic" Guid="*">
-        <File Source="..\Bin\Dictionaries\fr-FR.dic" />
+      <Component Id="frFR.dic">
+        <File Id="fr_FR.dic" Source="..\Bin\Dictionaries\fr-FR.dic" />
       </Component>
-      <Component Id="itIT.dic" Guid="*">
-        <File Source="..\Bin\Dictionaries\it-IT.dic" />
+      <Component Id="itIT.dic">
+        <File Id="it_IT.dic" Source="..\Bin\Dictionaries\it-IT.dic" />
       </Component>
-      <Component Id="nlNL.dic" Guid="*">
-        <File Source="..\Bin\Dictionaries\nl-NL.dic" />
+      <Component Id="nlNL.dic">
+        <File Id="nl_NL.dic" Source="..\Bin\Dictionaries\nl-NL.dic" />
       </Component>
-      <Component Id="roRO.dic" Guid="*">
-        <File Source="..\Bin\Dictionaries\ro-RO.dic" />
+      <Component Id="roRO.dic">
+        <File Id="ro_RO.dic" Source="..\Bin\Dictionaries\ro-RO.dic" />
       </Component>
-      <Component Id="ruRU.dic" Guid="*">
-        <File Source="..\Bin\Dictionaries\ru-RU.dic" />
+      <Component Id="ruRU.dic">
+        <File Id="ru_RU.dic" Source="..\Bin\Dictionaries\ru-RU.dic" />
       </Component>
-      <Component Id="plPL.dic" Guid="*">
-        <File Source="..\Bin\Dictionaries\pl-PL.dic" />
+      <Component Id="plPL.dic">
+        <File Id="pl_PL.dic" Source="..\Bin\Dictionaries\pl-PL.dic" />
       </Component>
     </DirectoryRef>
     <DirectoryRef Id="TranslationsDir">
-      <Component Id="English.gif" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\English.gif" />
+      <Component Id="English.gif">
+        <File Id="English.gif" Source="$(var.ArtifactsPublishPath)\Translation\English.gif" />
       </Component>
-      <Component Id="English.xlf" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\English.xlf" />
+      <Component Id="English.xlf">
+        <File Id="English.xlf" Source="$(var.ArtifactsPublishPath)\Translation\English.xlf" />
       </Component>
-      <Component Id="English.Plugins.xlf" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\English.Plugins.xlf" />
+      <Component Id="English.Plugins.xlf">
+        <File Id="English.Plugins.xlf" Source="$(var.ArtifactsPublishPath)\Translation\English.Plugins.xlf" />
       </Component>
-      <Component Id="Japanese.gif" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Japanese.gif" />
+      <Component Id="Japanese.gif">
+        <File Id="Japanese.gif" Source="$(var.ArtifactsPublishPath)\Translation\Japanese.gif" />
       </Component>
-      <Component Id="Japanese.xlf" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Japanese.xlf" />
+      <Component Id="Japanese.xlf">
+        <File Id="Japanese.xlf" Source="$(var.ArtifactsPublishPath)\Translation\Japanese.xlf" />
       </Component>
-      <Component Id="Japanese.Plugins.xlf" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Japanese.Plugins.xlf" />
+      <Component Id="Japanese.Plugins.xlf">
+        <File Id="Japanese.Plugins.xlf" Source="$(var.ArtifactsPublishPath)\Translation\Japanese.Plugins.xlf" />
       </Component>
-      <Component Id="Russian.gif" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Russian.gif" />
+      <Component Id="Russian.gif">
+        <File Id="Russian.gif" Source="$(var.ArtifactsPublishPath)\Translation\Russian.gif" />
       </Component>
-      <Component Id="Russian.xlf" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Russian.xlf" />
+      <Component Id="Russian.xlf">
+        <File Id="Russian.xlf" Source="$(var.ArtifactsPublishPath)\Translation\Russian.xlf" />
       </Component>
-      <Component Id="Russian.Plugins.xlf" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Russian.Plugins.xlf" />
+      <Component Id="Russian.Plugins.xlf">
+        <File Id="Russian.Plugins.xlf" Source="$(var.ArtifactsPublishPath)\Translation\Russian.Plugins.xlf" />
       </Component>
-      <Component Id="SimplifiedChinese.gif" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Simplified Chinese.gif" />
+      <Component Id="SimplifiedChinese.gif">
+        <File Id="Simplified_Chinese.gif" Source="$(var.ArtifactsPublishPath)\Translation\Simplified Chinese.gif" />
       </Component>
-      <Component Id="SimplifiedChinese.xlf" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Simplified Chinese.xlf" />
+      <Component Id="SimplifiedChinese.xlf">
+        <File Id="Simplified_Chinese.xlf" Source="$(var.ArtifactsPublishPath)\Translation\Simplified Chinese.xlf" />
       </Component>
-      <Component Id="SimplifiedChinese.Plugins.xlf" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Simplified Chinese.Plugins.xlf" />
+      <Component Id="SimplifiedChinese.Plugins.xlf">
+        <File Id="Simplified_Chinese.Plugins.xlf" Source="$(var.ArtifactsPublishPath)\Translation\Simplified Chinese.Plugins.xlf" />
       </Component>
-      <Component Id="Spanish_Argentina.gif" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Spanish (Argentina).gif" />
+      <Component Id="Spanish_Argentina.gif">
+        <File Id="Spanish__Argentina_.gif" Source="$(var.ArtifactsPublishPath)\Translation\Spanish (Argentina).gif" />
       </Component>
-      <Component Id="Spanish_Argentina.xlf" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Spanish (Argentina).xlf" />
+      <Component Id="Spanish_Argentina.xlf">
+        <File Id="Spanish__Argentina_.xlf" Source="$(var.ArtifactsPublishPath)\Translation\Spanish (Argentina).xlf" />
       </Component>
-      <Component Id="Spanish_Argentina.Plugins.xlf" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Spanish (Argentina).Plugins.xlf" />
+      <Component Id="Spanish_Argentina.Plugins.xlf">
+        <File Id="Spanish__Argentina_.Plugins.xlf" Source="$(var.ArtifactsPublishPath)\Translation\Spanish (Argentina).Plugins.xlf" />
       </Component>
-      <Component Id="Spanish.gif" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Spanish.gif" />
+      <Component Id="Spanish.gif">
+        <File Id="Spanish.gif" Source="$(var.ArtifactsPublishPath)\Translation\Spanish.gif" />
       </Component>
-      <Component Id="Spanish.xlf" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Spanish.xlf" />
+      <Component Id="Spanish.xlf">
+        <File Id="Spanish.xlf" Source="$(var.ArtifactsPublishPath)\Translation\Spanish.xlf" />
       </Component>
-      <Component Id="Spanish.Plugins.xlf" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Spanish.Plugins.xlf" />
+      <Component Id="Spanish.Plugins.xlf">
+        <File Id="Spanish.Plugins.xlf" Source="$(var.ArtifactsPublishPath)\Translation\Spanish.Plugins.xlf" />
       </Component>
-      <Component Id="TraditionalChinese.gif" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Traditional Chinese.gif" />
+      <Component Id="TraditionalChinese.gif">
+        <File Id="Traditional_Chinese.gif" Source="$(var.ArtifactsPublishPath)\Translation\Traditional Chinese.gif" />
       </Component>
-      <Component Id="TraditionalChinese.xlf" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Traditional Chinese.xlf" />
+      <Component Id="TraditionalChinese.xlf">
+        <File Id="Traditional_Chinese.xlf" Source="$(var.ArtifactsPublishPath)\Translation\Traditional Chinese.xlf" />
       </Component>
-      <Component Id="TraditionalChinese.Plugins.xlf" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Traditional Chinese.Plugins.xlf" />
+      <Component Id="TraditionalChinese.Plugins.xlf">
+        <File Id="Traditional_Chinese.Plugins.xlf" Source="$(var.ArtifactsPublishPath)\Translation\Traditional Chinese.Plugins.xlf" />
       </Component>
-      <Component Id="Turkish.gif" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Turkish.gif" />
+      <Component Id="Turkish.gif">
+        <File Id="Turkish.gif" Source="$(var.ArtifactsPublishPath)\Translation\Turkish.gif" />
       </Component>
-      <Component Id="Turkish.xlf" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Turkish.xlf" />
+      <Component Id="Turkish.xlf">
+        <File Id="Turkish.xlf" Source="$(var.ArtifactsPublishPath)\Translation\Turkish.xlf" />
       </Component>
-      <Component Id="Turkish.Plugins.xlf" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\Translation\Turkish.Plugins.xlf" />
+      <Component Id="Turkish.Plugins.xlf">
+        <File Id="Turkish.Plugins.xlf" Source="$(var.ArtifactsPublishPath)\Translation\Turkish.Plugins.xlf" />
       </Component>
     </DirectoryRef>
     <DirectoryRef Id="DirConEmu">
-      <Component Id="File.CER00" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\ConEmu\CmdInit.cmd" />
+      <Component Id="File.CER00">
+        <File Id="CmdInit.cmd" Source="$(var.ArtifactsPublishPath)\ConEmu\CmdInit.cmd" />
       </Component>
-      <Component Id="File.CER01" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\ConEmu\ConEmu.exe" />
+      <Component Id="File.CER01">
+        <File Id="ConEmu.exe" Source="$(var.ArtifactsPublishPath)\ConEmu\ConEmu.exe" />
       </Component>
-      <Component Id="File.CER03" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\ConEmu\ConEmu64.exe" />
+      <Component Id="File.CER03">
+        <File Id="ConEmu64.exe" Source="$(var.ArtifactsPublishPath)\ConEmu\ConEmu64.exe" />
       </Component>
-      <Component Id="File.CER04" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\ConEmu\ConEmuC.exe" />
+      <Component Id="File.CER04">
+        <File Id="ConEmuC.exe" Source="$(var.ArtifactsPublishPath)\ConEmu\ConEmuC.exe" />
       </Component>
-      <Component Id="File.CER05" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\ConEmu\ConEmuC64.exe" />
+      <Component Id="File.CER05">
+        <File Id="ConEmuC64.exe" Source="$(var.ArtifactsPublishPath)\ConEmu\ConEmuC64.exe" />
       </Component>
-      <Component Id="File.CER06" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\ConEmu\ConEmuCD.dll" />
+      <Component Id="File.CER06">
+        <File Id="ConEmuCD.dll" Source="$(var.ArtifactsPublishPath)\ConEmu\ConEmuCD.dll" />
       </Component>
-      <Component Id="File.CER07" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\ConEmu\ConEmuCD64.dll" />
+      <Component Id="File.CER07">
+        <File Id="ConEmuCD64.dll" Source="$(var.ArtifactsPublishPath)\ConEmu\ConEmuCD64.dll" />
       </Component>
-      <Component Id="File.CER08" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\ConEmu\ConEmuHk.dll" />
+      <Component Id="File.CER08">
+        <File Id="ConEmuHk.dll" Source="$(var.ArtifactsPublishPath)\ConEmu\ConEmuHk.dll" />
       </Component>
-      <Component Id="File.CER09" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\ConEmu\ConEmuHk64.dll" />
+      <Component Id="File.CER09">
+        <File Id="ConEmuHk64.dll" Source="$(var.ArtifactsPublishPath)\ConEmu\ConEmuHk64.dll" />
       </Component>
-      <Component Id="File.CER10" Guid="*">
-        <File Source="$(var.ArtifactsPublishPath)\ConEmu\GitShowBranch.cmd" />
+      <Component Id="File.CER10">
+        <File Id="GitShowBranch.cmd" Source="$(var.ArtifactsPublishPath)\ConEmu\GitShowBranch.cmd" />
       </Component>
     </DirectoryRef>
     <ComponentGroup Id="Component.ConEmuFiles">
@@ -574,25 +538,25 @@
       <ComponentRef Id="English.Plugins.xlf" />
     </ComponentGroup>
     <ComponentGroup Id="Component.PluginResources" />
-    <DirectoryRef Id="ProgramMenuFolder">
-      <Component Id="GitExtensions.newstartmenu" Guid="*">
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Component Id="GitExtensions.newstartmenu">
         <Shortcut Id="GitExtensions.newstartmenu" Name="$(var.ProductName)" Description="$(var.ProductName)" Icon="gitextensions.ico" Target="[INSTALLDIR]GitExtensions.exe" WorkingDirectory="INSTALLDIR" />
         <RegistryValue Root="HKCU" Key="$(var.InstalledRegKey)" Name="GitExtensions.newstartmenu" Value="" Type="string" KeyPath="yes" />
       </Component>
-    </DirectoryRef>
+    </StandardDirectory>
     <!-- Remove old start menu entries -->
     <DirectoryRef Id="StartMenuDir">
       <Component Id="GitExtensions.startmenu" Guid="{028C359A-8752-48E1-86EE-A539A9D2709A}">
         <RemoveFolder Id="GitExtensions.startmenu" Directory="StartMenuDir" On="install" />
       </Component>
     </DirectoryRef>
-    <DirectoryRef Id="DesktopFolder">
-      <Component Id="GitExtensions.desktop" Guid="*">
+    <StandardDirectory Id="DesktopFolder">
+      <Component Id="GitExtensions.desktop">
         <Shortcut Id="GitExtensions.desktop" Name="$(var.ProductName)" Description="$(var.ProductName)" Icon="gitextensions.ico" Target="[INSTALLDIR]GitExtensions.exe" WorkingDirectory="INSTALLDIR" />
         <RegistryValue Root="HKCU" Key="$(var.InstalledRegKey)" Name="GitExtensions.desktop" Value="" Type="string" KeyPath="yes" />
         <RemoveFolder Id="GitExtensions.desktop" On="uninstall" />
       </Component>
-    </DirectoryRef>
+    </StandardDirectory>
     <Feature Id="GitExtensions" Title="Git Extensions" Level="1" Display="expand">
       <!-- Application build artifacts -->
       <ComponentGroupRef Id="Component.ConEmuFiles" />
@@ -828,10 +792,44 @@
         <ComponentRef Id="Protocol.github_mac" />
       </Feature>
     </Feature>
-    <CustomAction Id="LaunchFile" FileKey="GitExtensions.exe" ExeCommand="" Return="asyncNoWait" />
+    <CustomAction Id="LaunchFile" ExeCommand="" Return="asyncNoWait" FileRef="GitExtensions.exe" />
     <UI />
     <InstallExecuteSequence>
-      <Custom Action="LaunchFile" After="InstallFinalize">( NOT Installed ) AND ( LAUNCH = "1" )</Custom>
+      <Custom Action="LaunchFile" After="InstallFinalize" Condition="( NOT Installed ) AND ( LAUNCH = &quot;1&quot; )" />
     </InstallExecuteSequence>
-  </Product>
+  
+      <StandardDirectory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLDIR" Name="$(var.InstallName)">
+          <Directory Id="PluginsDir" Name="Plugins" />
+          <Directory Id="DictionariesDir" Name="Dictionaries" />
+          <Directory Id="TranslationsDir" Name="Translation" />
+          <Directory Id="DiffScriptsDir" Name="Diff-Scripts" />
+          <Directory Id="DirConEmu" Name="ConEmu" />
+          <Directory Id="ThemesDir" Name="Themes" />
+        </Directory>
+      </StandardDirectory>
+      <StandardDirectory Id="LocalAppDataFolder">
+        <Directory Id="LocalAppDataOrganizationDir" Name="GitExtensions">
+          <Directory Id="UserPluginsDir" Name="UserPlugins">
+            <Directory Id="PluginManagerDir" Name="GitExtensions.PluginManager">
+              <Directory Id="PackageManagerDir" Name="PackageManager">
+                <Component Id="PackageManager" Guid="{81556E1B-270C-448D-A68D-FD30678D4827}">
+                  <RemoveFolder Id="RemoveLocalAppDataOrganizationDir" Directory="LocalAppDataOrganizationDir" On="uninstall" />
+                  <RemoveFolder Id="RemoveUserPluginsDir" Directory="UserPluginsDir" On="uninstall" />
+                  <RemoveFolder Id="RemovePluginManagerDir" Directory="PluginManagerDir" On="uninstall" />
+                  <RemoveFolder Id="RemovePackageManagerDir" Directory="PackageManagerDir" On="uninstall" />
+                </Component>
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+      </StandardDirectory>
+      <StandardDirectory Id="ProgramMenuFolder">
+        <Directory Id="StartMenuDir" Name="$(var.ProductName)" />
+      </StandardDirectory>
+      <StandardDirectory Id="DesktopFolder" />
+      <Component Id="Path" Guid="{DAC97FD8-A869-4458-AABD-C27D2C892643}" Directory="TARGETDIR">
+        <Environment Id="PATH" Name="PATH" Value="[INSTALLDIR]" Permanent="no" Part="last" Action="set" System="yes" />
+      </Component>
+    </Package>
 </Wix>
