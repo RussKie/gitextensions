@@ -63,6 +63,18 @@ namespace GitUI.CommandsDialogs
             SolveMergeConflicts.SetForeColorForBackColor();
         }
 
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+
+            if (IsDesignMode)
+            {
+                return;
+            }
+
+            StartPatchGridInitialize();
+        }
+
         private void FormApplyPatchLoad(object sender, EventArgs e)
         {
             EnableButtons();
@@ -125,7 +137,7 @@ namespace GitUI.CommandsDialogs
 
             if (PatchGrid.PatchFiles is null || PatchGrid.PatchFiles.Count == 0)
             {
-                PatchGrid.Initialize();
+                StartPatchGridInitialize();
             }
             else
             {
@@ -164,6 +176,14 @@ namespace GitUI.CommandsDialogs
                 Title = _selectPatchFileCaption.Text
             };
             return (dialog.ShowDialog(this) == DialogResult.OK) ? dialog.FileName : PatchFile.Text;
+        }
+
+        private void StartPatchGridInitialize()
+        {
+            ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
+            {
+                await PatchGrid.InitializeAsync(cancellationToken: default);
+            }).FileAndForget();
         }
 
         private void BrowsePatch_Click(object sender, EventArgs e)

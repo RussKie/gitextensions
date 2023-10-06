@@ -1,9 +1,12 @@
-﻿using GitCommands;
+﻿using System.Threading;
+using System.Windows.Forms;
+using GitCommands;
 using GitCommands.Git.Commands;
 using GitCommands.Patches;
 using GitExtUtils.GitUI.Theming;
 using GitUI.HelperDialogs;
 using GitUIPluginInterfaces;
+using Microsoft.VisualStudio.Threading;
 using ResourceManager;
 
 namespace GitUI.CommandsDialogs
@@ -77,6 +80,9 @@ namespace GitUI.CommandsDialogs
                 ShowOptions_LinkClicked(this, null!);
             }
 
+            Controls.SetChildIndex(ProgressBar, 1);
+            ProgressBar.Dock = DockStyle.Bottom;
+
             InitializeComplete();
         }
 
@@ -100,47 +106,52 @@ namespace GitUI.CommandsDialogs
                 return;
             }
 
-            PatchGrid.SelectCurrentlyApplyingPatch();
-
-            var selectedHead = Module.GetSelectedBranch();
-            Currentbranch.Text = selectedHead;
-
-            // Offer rebase on refs also for tags (but not stash, notes etc)
-            List<GitRef> refs = _startRebaseImmediately
-                ? new()
-                : Module.GetRefs(RefsFilter.Heads | RefsFilter.Remotes | RefsFilter.Tags).OfType<GitRef>().ToList();
-            cboBranches.DataSource = refs;
-            cboBranches.DisplayMember = nameof(GitRef.Name);
-
-            if (_defaultBranch is not null)
+            StartPatchGridInitialize(async () =>
             {
-                cboBranches.Text = _defaultBranch;
-            }
+                await this.SwitchToMainThreadAsync();
 
-            cboBranches.Select();
+                PatchGrid.SelectCurrentlyApplyingPatch();
 
-            refs = refs.Where(h => h.IsHead).ToList();
-            cboTo.DataSource = refs;
-            cboTo.DisplayMember = nameof(GitRef.Name);
+                var selectedHead = Module.GetSelectedBranch();
+                Currentbranch.Text = selectedHead;
 
-            cboTo.Text = _defaultToBranch ?? selectedHead;
+                // Offer rebase on refs also for tags (but not stash, notes etc)
+                List<GitRef> refs = _startRebaseImmediately
+                    ? new()
+                    : Module.GetRefs(RefsFilter.Heads | RefsFilter.Remotes | RefsFilter.Tags).OfType<GitRef>().ToList();
+                cboBranches.DataSource = refs;
+                cboBranches.DisplayMember = nameof(GitRef.Name);
 
-            rebasePanel.Visible = !Module.InTheMiddleOfRebase();
-            EnableButtons();
+                if (_defaultBranch is not null)
+                {
+                    cboBranches.Text = _defaultBranch;
+                }
 
-            // Honor the rebase.autosquash configuration.
-            var autosquashSetting = Module.GetEffectiveSetting("rebase.autosquash");
-            chkAutosquash.Checked = autosquashSetting.Trim().ToLower() == "true";
+                cboBranches.Select();
 
-            chkStash.Checked = AppSettings.RebaseAutoStash;
-            if (_startRebaseImmediately)
-            {
-                OkClick(this, EventArgs.Empty);
-            }
-            else
-            {
-                ShowOptions_LinkClicked(this, null!);
-            }
+                refs = refs.Where(h => h.IsHead).ToList();
+                cboTo.DataSource = refs;
+                cboTo.DisplayMember = nameof(GitRef.Name);
+
+                cboTo.Text = _defaultToBranch ?? selectedHead;
+
+                rebasePanel.Visible = !Module.InTheMiddleOfRebase();
+                EnableButtons();
+
+                // Honor the rebase.autosquash configuration.
+                var autosquashSetting = Module.GetEffectiveSetting("rebase.autosquash");
+                chkAutosquash.Checked = autosquashSetting.Trim().ToLower() == "true";
+
+                chkStash.Checked = AppSettings.RebaseAutoStash;
+                if (_startRebaseImmediately)
+                {
+                    OkClick(this, EventArgs.Empty);
+                }
+                else
+                {
+                    ShowOptions_LinkClicked(this, null!);
+                }
+            });
         }
 
         private void EnableButtons()
@@ -204,6 +215,23 @@ namespace GitUI.CommandsDialogs
             }
         }
 
+        private void StartPatchGridInitialize(Func<Task> postInitializeActionAsync = default)
+        {
+            ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
+            {
+                await this.SwitchToMainThreadAsync();
+                ProgressBar.Visible = true;
+
+                await TaskScheduler.Default;
+                await PatchGrid.InitializeAsync(cancellationToken: default);
+
+                await this.SwitchToMainThreadAsync();
+                ProgressBar.Visible = false;
+
+                await postInitializeActionAsync?.Invoke();
+            }).FileAndForget();
+        }
+
         private void MergetoolClick(object sender, EventArgs e)
         {
             UICommands.StartResolveConflictsDialog(this);
@@ -250,8 +278,8 @@ namespace GitUI.CommandsDialogs
                     Close();
                 }
 
+                StartPatchGridInitialize();
                 EnableButtons();
-                PatchGrid.Initialize();
             }
         }
 
@@ -291,8 +319,8 @@ namespace GitUI.CommandsDialogs
                     Close();
                 }
 
+                StartPatchGridInitialize();
                 EnableButtons();
-                PatchGrid.Initialize();
             }
         }
 
@@ -308,8 +336,8 @@ namespace GitUI.CommandsDialogs
                     Close();
                 }
 
+                StartPatchGridInitialize();
                 EnableButtons();
-                PatchGrid.Initialize();
             }
         }
 
@@ -353,8 +381,8 @@ namespace GitUI.CommandsDialogs
                     Close();
                 }
 
+                StartPatchGridInitialize();
                 EnableButtons();
-                PatchGrid.Initialize();
             }
         }
 

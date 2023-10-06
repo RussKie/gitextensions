@@ -38,6 +38,7 @@ namespace GitUI.CommandsDialogs
             btnSkip = new Button();
             lblCurrent = new Label();
             Currentbranch = new Label();
+            ProgressBar = new ProgressBar();
             lblRebase = new Label();
             cboBranches = new ComboBox();
             label2 = new Label();
@@ -91,7 +92,7 @@ namespace GitUI.CommandsDialogs
             // 
             MainPanel.Controls.Add(MainLayout);
             MainPanel.Padding = new Padding(9);
-            MainPanel.Size = new Size(1034, 420);
+            MainPanel.Size = new Size(1034, 417);
             // 
             // ControlsPanel
             // 
@@ -211,6 +212,18 @@ namespace GitUI.CommandsDialogs
             Currentbranch.Name = "Currentbranch";
             Currentbranch.Size = new Size(0, 15);
             Currentbranch.TabIndex = 3;
+            // 
+            // ProgressBar
+            // 
+            ProgressBar.Dock = DockStyle.Bottom;
+            ProgressBar.Location = new Point(0, 417);
+            ProgressBar.Margin = new Padding(0);
+            ProgressBar.MarqueeAnimationSpeed = 1;
+            ProgressBar.Name = "ProgressBar";
+            ProgressBar.Size = new Size(1034, 3);
+            ProgressBar.Step = 50;
+            ProgressBar.Style = ProgressBarStyle.Marquee;
+            ProgressBar.TabIndex = 0;
             // 
             // lblRebase
             // 
@@ -464,11 +477,12 @@ namespace GitUI.CommandsDialogs
             // 
             PatchGrid.AutoSize = true;
             PatchGrid.Dock = DockStyle.Fill;
+            PatchGrid.IsManagingRebase = false;
             PatchGrid.Location = new Point(3, 177);
             PatchGrid.Margin = new Padding(3, 2, 3, 2);
             PatchGrid.MinimumSize = new Size(0, 100);
             PatchGrid.Name = "PatchGrid";
-            PatchGrid.Size = new Size(709, 174);
+            PatchGrid.Size = new Size(709, 171);
             PatchGrid.TabIndex = 26;
             // 
             // lblCommitsToReapply
@@ -522,7 +536,7 @@ namespace GitUI.CommandsDialogs
             MainLayout.Name = "MainLayout";
             MainLayout.RowCount = 1;
             MainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            MainLayout.Size = new Size(1016, 402);
+            MainLayout.Size = new Size(1016, 399);
             MainLayout.TabIndex = 0;
             // 
             // PanelLeftImage
@@ -568,7 +582,7 @@ namespace GitUI.CommandsDialogs
             PanelMiddle.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             PanelMiddle.RowStyles.Add(new RowStyle());
             PanelMiddle.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            PanelMiddle.Size = new Size(715, 396);
+            PanelMiddle.Size = new Size(715, 393);
             PanelMiddle.TabIndex = 2;
             // 
             // rebasePanel
@@ -593,7 +607,7 @@ namespace GitUI.CommandsDialogs
             tlpnlSecondaryControls.Controls.Add(flowLayoutPanel1, 0, 0);
             tlpnlSecondaryControls.Controls.Add(flowLayoutPanel2, 1, 0);
             tlpnlSecondaryControls.Dock = DockStyle.Fill;
-            tlpnlSecondaryControls.Location = new Point(3, 356);
+            tlpnlSecondaryControls.Location = new Point(3, 353);
             tlpnlSecondaryControls.Name = "tlpnlSecondaryControls";
             tlpnlSecondaryControls.RowCount = 1;
             tlpnlSecondaryControls.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
@@ -623,11 +637,13 @@ namespace GitUI.CommandsDialogs
             BackgroundImageLayout = ImageLayout.Center;
             ClientSize = new Size(1034, 461);
             Controls.Add(btnSolveMergeconflicts);
+            Controls.Add(ProgressBar);
             MinimumSize = new Size(1050, 500);
             Name = "FormRebase";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Rebase";
             Controls.SetChildIndex(ControlsPanel, 0);
+            Controls.SetChildIndex(ProgressBar, 0);
             Controls.SetChildIndex(MainPanel, 0);
             Controls.SetChildIndex(btnSolveMergeconflicts, 0);
             MainPanel.ResumeLayout(false);
@@ -659,6 +675,7 @@ namespace GitUI.CommandsDialogs
 
         #endregion
 
+        private System.Windows.Forms.ProgressBar ProgressBar;
         private System.Windows.Forms.Label lblRebase;
         private System.Windows.Forms.Label lblCurrent;
         private System.Windows.Forms.Label label2;

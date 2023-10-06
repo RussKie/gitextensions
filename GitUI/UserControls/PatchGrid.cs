@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel;
+using System.Threading;
 using GitCommands.Patches;
 using GitExtUtils.GitUI;
 using GitExtUtils.GitUI.Theming;
 using Microsoft;
+using Microsoft.VisualStudio.Threading;
 using ResourceManager;
 
 namespace GitUI
@@ -66,31 +68,31 @@ namespace GitUI
             }
         }
 
-        protected override void OnRuntimeLoad()
-        {
-            Initialize();
-        }
-
         public void RefreshGrid()
         {
             Validates.NotNull(PatchFiles);
 
-            var updatedPatches = GetPatches();
+            IReadOnlyList<PatchFile> updatedPatches = ThreadHelper.JoinableTaskFactory.Run(async () => await GetPatchesAsync(cancellationToken: default));
 
             for (int i = 0; i < updatedPatches.Count; i++)
             {
                 updatedPatches[i].IsSkipped = PatchFiles[i].IsSkipped;
             }
 
+            ThreadHelper.ThrowIfNotOnUIThread();
             DisplayPatches(updatedPatches);
         }
 
-        private IReadOnlyList<PatchFile> GetPatches()
+        private async Task<IReadOnlyList<PatchFile>> GetPatchesAsync(CancellationToken cancellationToken)
         {
+            await TaskScheduler.Default;
+
+            // TODO: plumb the cancellationToken into these API
             var patches = Module.InTheMiddleOfInteractiveRebase()
                             ? Module.GetInteractiveRebasePatchFiles()
                             : Module.GetRebasePatchFiles();
 
+            cancellationToken.ThrowIfCancellationRequested();
             if (!_skipped.Any())
             {
                 return patches;
@@ -102,21 +104,27 @@ namespace GitUI
                 .Where(p => _skipped.Any(s => p.ObjectId == s.ObjectId && p.Name == s.Name));
             foreach (var patchFile in skippedPatches)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 patchFile.IsSkipped = true;
             }
 
             return patches;
         }
 
-        public void Initialize()
+        public async Task InitializeAsync(CancellationToken cancellationToken = default)
         {
             if (DesignMode)
             {
                 return;
             }
 
+            await this.SwitchToMainThreadAsync(cancellationToken);
             UpdateState(IsManagingRebase);
-            DisplayPatches(GetPatches());
+
+            IReadOnlyList<PatchFile> patches = await GetPatchesAsync(cancellationToken);
+
+            await this.SwitchToMainThreadAsync(cancellationToken);
+            DisplayPatches(patches);
         }
 
         private void DisplayPatches(IReadOnlyList<PatchFile> patchFiles)
