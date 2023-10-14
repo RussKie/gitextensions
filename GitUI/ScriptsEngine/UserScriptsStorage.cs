@@ -4,37 +4,34 @@ using GitCommands.Settings;
 
 namespace GitUI.ScriptsEngine
 {
+    /// <summary>
+    ///  Provides the ability to read and save user scripts.
+    /// </summary>
     public interface IUserScriptsStorage
     {
         /// <summary>
-        /// Loads external link definitions from the settings.
+        ///  Loads user scripts from the <paramref name="settings"/>.
         /// </summary>
         IReadOnlyList<ScriptInfo> Load(DistributedSettings settings);
 
         /// <summary>
-        /// Saves the provided external link definitions to the settings.
+        ///  Saves the <paramref name="scripts"/> to the <paramref name="settings"/>.
         /// </summary>
         void Save(DistributedSettings settings, IReadOnlyList<ScriptInfo> scripts);
     }
 
     internal sealed class UserScriptsStorage : IUserScriptsStorage
     {
-        private static readonly XmlSerializer _serializer = new(typeof(List<ScriptInfo>));
         private const string SettingName = "ownScripts";
+        private static readonly XmlSerializer _serializer = new(typeof(List<ScriptInfo>));
 
-        /// <summary>
-        /// Loads external link definitions from the settings.
-        /// </summary>
         public IReadOnlyList<ScriptInfo>? Load(DistributedSettings settings)
         {
-            var xml = settings.GetString(SettingName, null);
-            var scripts = LoadFromXmlString(xml);
+            string xml = settings.GetString(SettingName, null);
+            IReadOnlyList<ScriptInfo> scripts = LoadFromXmlString(xml);
             return scripts;
         }
 
-        /// <summary>
-        /// Saves the provided external link definitions to the settings.
-        /// </summary>
         public void Save(DistributedSettings settings, IReadOnlyList<ScriptInfo> scripts)
         {
             string? xml;

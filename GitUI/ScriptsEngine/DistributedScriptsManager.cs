@@ -1,4 +1,5 @@
-﻿using GitCommands;
+﻿using System.Diagnostics;
+using GitCommands;
 using GitCommands.Settings;
 using GitExtUtils;
 using GitUI.NBugReports;
@@ -13,6 +14,7 @@ namespace GitUI.ScriptsEngine
         private DistributedSettings _cachedSettings;
         private DistributedScriptsManager? _lowerPriority;
         private List<ScriptInfo>? _scripts;
+        private bool _initialized;
 
         public DistributedScriptsManager(IUserScriptsStorage scriptsStorage)
         {
@@ -90,12 +92,15 @@ namespace GitUI.ScriptsEngine
         }
 
         private IEnumerable<ScriptInfo> GetScriptsInternal()
-        {
-            return _scripts.Union(_lowerPriority?.GetScriptsInternal() ?? Enumerable.Empty<ScriptInfo>());
-        }
+            => _scripts.Union(_lowerPriority?.GetScriptsInternal() ?? Enumerable.Empty<ScriptInfo>());
 
         public void Initialize(DistributedSettings settings)
         {
+            if (_initialized)
+            {
+                Debug.Fail($"{nameof(DistributedScriptsManager)} is already initialized.");
+            }
+
             _cachedSettings = new DistributedSettings(null, settings.SettingsCache, settings.SettingLevel);
             _scripts = new List<ScriptInfo>(_scriptsStorage.Load(_cachedSettings));
 
@@ -104,6 +109,8 @@ namespace GitUI.ScriptsEngine
                 _lowerPriority = new DistributedScriptsManager(_scriptsStorage);
                 _lowerPriority.Initialize(settings.LowerPriority);
             }
+
+            _initialized = true;
         }
 
         public void Remove(ScriptInfo script)
