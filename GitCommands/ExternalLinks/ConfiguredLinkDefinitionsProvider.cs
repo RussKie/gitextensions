@@ -5,20 +5,20 @@ using Microsoft;
 namespace GitCommands.ExternalLinks
 {
     /// <summary>
-    /// Provides the ability to retrieves available persisted external link definitions.
+    ///  Provides the ability to retrieves available persisted external link definitions.
     /// </summary>
     public interface IConfiguredLinkDefinitionsProvider
     {
         /// <summary>
-        /// Loads all persisted external link definitions across all setting layers.
+        ///  Loads all persisted external link definitions across all setting layers.
         /// </summary>
-        IReadOnlyList<ExternalLinkDefinition> Get(DistributedSettings settings);
+        IReadOnlyList<ExternalLinkDefinition> Get(IDistributedSettingsSource settings);
     }
 
     /// <summary>
-    /// Retrieves available persisted external link definitions.
+    ///  Retrieves available persisted external link definitions.
     /// </summary>
-    public sealed class ConfiguredLinkDefinitionsProvider : IConfiguredLinkDefinitionsProvider
+    internal sealed class ConfiguredLinkDefinitionsProvider : IConfiguredLinkDefinitionsProvider
     {
         private readonly IExternalLinksStorage _externalLinksStorage;
 
@@ -27,10 +27,7 @@ namespace GitCommands.ExternalLinks
             _externalLinksStorage = externalLinksStorage;
         }
 
-        /// <summary>
-        /// Loads all persisted external link definitions across all setting layers.
-        /// </summary>
-        public IReadOnlyList<ExternalLinkDefinition> Get(DistributedSettings settings)
+        public IReadOnlyList<ExternalLinkDefinition> Get(IDistributedSettingsSource settings)
         {
             if (settings is null)
             {

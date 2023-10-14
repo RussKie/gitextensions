@@ -3,12 +3,18 @@ using GitUIPluginInterfaces;
 
 namespace GitCommands.Settings
 {
+    public interface IDistributedSettingsSource
+    {
+        IDistributedSettingsSource? LowerPriority { get; }
+        GitExtSettingsCache SettingsCache { get; }
+    }
+
     /// <summary>
     /// Settings that can be distributed with repository.
     /// They can be overridden for a particular repository.
     /// </summary>
     [DebuggerDisplay("{" + nameof(SettingLevel) + "}: {" + nameof(SettingsCache) + "} << {" + nameof(LowerPriority) + "}")]
-    public class DistributedSettings : SettingsContainer<DistributedSettings, GitExtSettingsCache>
+    public class DistributedSettings : SettingsContainer<DistributedSettings, GitExtSettingsCache>, IDistributedSettingsSource
     {
         public DistributedSettings(DistributedSettings? lowerPriority, GitExtSettingsCache settingsCache, SettingLevel settingLevel)
             : base(lowerPriority, settingsCache)
@@ -110,5 +116,8 @@ namespace GitCommands.Settings
                 LowerPriority!.SetValue(name, value);
             }
         }
+
+        IDistributedSettingsSource? IDistributedSettingsSource.LowerPriority => LowerPriority;
+        GitExtSettingsCache IDistributedSettingsSource.SettingsCache => SettingsCache;
     }
 }

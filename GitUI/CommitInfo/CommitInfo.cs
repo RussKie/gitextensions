@@ -56,8 +56,8 @@ namespace GitUI.CommitInfo
         private RefsFormatter? _refsFormatter;
 
         private readonly ICommitDataManager _commitDataManager;
-        private readonly IExternalLinksStorage _externalLinksStorage;
-        private readonly IConfiguredLinkDefinitionsProvider _effectiveLinkDefinitionsProvider;
+        ////private readonly IExternalLinksStorage _externalLinksStorage;
+        ////private readonly IConfiguredLinkDefinitionsProvider _effectiveLinkDefinitionsProvider;
         private readonly IGitRevisionExternalLinksParser _gitRevisionExternalLinksParser;
         private readonly IExternalLinkRevisionParser _externalLinkRevisionParser;
         private readonly IConfigFileRemoteSettingsManager _remotesManager;
@@ -93,8 +93,6 @@ namespace GitUI.CommitInfo
 
             _commitDataManager = new CommitDataManager(() => Module);
 
-            _externalLinksStorage = new ExternalLinksStorage();
-            _effectiveLinkDefinitionsProvider = new ConfiguredLinkDefinitionsProvider(_externalLinksStorage);
             _remotesManager = new ConfigFileRemoteSettingsManager(() => Module);
             _externalLinkRevisionParser = new ExternalLinkRevisionParser(_remotesManager);
             _gitRevisionExternalLinksParser = new GitRevisionExternalLinksParser(_effectiveLinkDefinitionsProvider, _externalLinkRevisionParser);
@@ -310,7 +308,7 @@ namespace GitUI.CommitInfo
 
             if (_revision is not null && !_revision.IsArtificial)
             {
-                StartAsyncDataLoad(Module.EffectiveSettings);
+                StartAsyncDataLoad(Module.GetEffectiveSettings());
             }
             else
             {
@@ -355,7 +353,7 @@ namespace GitUI.CommitInfo
                 rtbxCommitMessage.SetXHTMLText(commitMessage);
             }
 
-            void StartAsyncDataLoad(DistributedSettings settings)
+            void StartAsyncDataLoad(ISettingsSource settings)
             {
                 var cancellationToken = _asyncLoadCancellation.Next();
                 var initialRevision = _revision;
@@ -399,7 +397,7 @@ namespace GitUI.CommitInfo
 
                 return;
 
-                async Task LoadLinksForRevisionAsync(GitRevision revision, DistributedSettings settings)
+                async Task LoadLinksForRevisionAsync(GitRevision revision, ISettingsSource settings)
                 {
                     await TaskScheduler.Default;
                     cancellationToken.ThrowIfCancellationRequested();
@@ -411,7 +409,12 @@ namespace GitUI.CommitInfo
                         return;
                     }
 
-                    string linksInfo = GetLinksForRevision(settings);
+                    if (settings is not IDistributedSettingsSource distributedSettings)
+                    {
+                        return;
+                    }
+
+                    string linksInfo = GetLinksForRevision(distributedSettings);
 
                     // Most commits do not have link; do not switch to main thread if nothing is changed
                     if (_linksInfo == linksInfo)
@@ -424,9 +427,9 @@ namespace GitUI.CommitInfo
 
                     return;
 
-                    string GetLinksForRevision(DistributedSettings settings)
+                    string GetLinksForRevision(IDistributedSettingsSource distributedSettings)
                     {
-                        IEnumerable<ExternalLink> links = _gitRevisionExternalLinksParser.Parse(revision, settings);
+                        IEnumerable<ExternalLink> links = _gitRevisionExternalLinksParser.Parse(revision, distributedSettings);
                         cancellationToken.ThrowIfCancellationRequested();
                         string result = string.Join(", ", links.Distinct().Select(link => linkFactory.CreateLink(link.Caption, link.Uri)));
 

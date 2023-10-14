@@ -18,7 +18,7 @@ namespace GitCommands.ExternalLinks
         void Save(DistributedSettings settings, IReadOnlyList<ExternalLinkDefinition> definitions);
     }
 
-    public sealed class ExternalLinksStorage : IExternalLinksStorage
+    internal sealed class ExternalLinksStorage : IExternalLinksStorage
     {
         private const string SettingName = "RevisionLinkDefs";
 

@@ -3,6 +3,7 @@ using System.Text;
 using GitCommands;
 using GitCommands.Config;
 using GitCommands.Git;
+using GitCommands.Settings;
 using GitExtUtils;
 using NUnit.Framework;
 
@@ -194,7 +195,7 @@ namespace CommonTestUtils
                 // are stopped before actually deleting, else the timers will throw on a background thread.
                 // Note that the intermittent failures mentioned below are likely related too.
                 Module.EffectiveConfigFile.SettingsCache.Dispose();
-                Module.EffectiveSettings.SettingsCache.Dispose();
+                ((DistributedSettings)Module.GetEffectiveSettings()).SettingsCache.Dispose();
 
                 // Directory.Delete seems to intermittently fail, so delete the files first before deleting folders
                 foreach (var file in Directory.GetFiles(TemporaryPath, "*", SearchOption.AllDirectories))

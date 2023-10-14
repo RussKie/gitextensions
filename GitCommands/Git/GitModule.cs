@@ -214,7 +214,7 @@ namespace GitCommands
 
         private DistributedSettings? _effectiveSettings;
 
-        public DistributedSettings EffectiveSettings
+        private DistributedSettings EffectiveSettings
         {
             get
             {
