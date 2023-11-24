@@ -72,6 +72,15 @@ namespace GitCommands.Settings
 
         public new string GetValue(string setting) => GetString(setting, string.Empty);
 
+        /// <summary>
+        /// Get a git setting converted in an expected C# value type (bool, int, ...)
+        /// </summary>
+        /// <typeparam name="T">the expected type to convert the value to.</typeparam>
+        /// <param name="setting">the git setting key</param>
+        /// <returns>
+        /// null if the settings is not set
+        /// the value converted in the <typeparamref name="T" /> type otherwise.
+        /// </returns>
         public T? GetValue<T>(string setting) where T : struct => ConvertValue<T>(GetValue(setting), setting);
 
         private T? ConvertValue<T>(string value, string setting) where T : struct
@@ -94,6 +103,11 @@ namespace GitCommands.Settings
             }
         }
 
+        /// <summary>
+        /// Get all values for a git setting allowing multiple values for a same key.
+        /// </summary>
+        /// <param name="setting">A git setting key</param>
+        /// <returns>An array containing all the values</returns>
         public IReadOnlyList<string> GetValues(string setting) => SettingsCache.GetValues(setting);
 
         public new void SetValue(string setting, string? value)

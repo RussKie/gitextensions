@@ -167,6 +167,11 @@ namespace GitCommands.Config
             return GetStringValue(setting);
         }
 
+        /// <summary>
+        /// Get all values for a git setting allowing multiple values for a same key.
+        /// </summary>
+        /// <param name="setting">A git setting key</param>
+        /// <returns>An array containing all the values</returns>
         public IReadOnlyList<string> GetValues(string setting)
         {
             int keyIndex = FindAndCheckKeyIndex(setting);

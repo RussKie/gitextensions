@@ -81,6 +81,11 @@ namespace GitCommands.Settings
             });
         }
 
+        /// <summary>
+        /// Get all values for a git setting allowing multiple values for a same key.
+        /// </summary>
+        /// <param name="key">A git setting key</param>
+        /// <returns>An array containing all the values</returns>
         public IReadOnlyList<string> GetValues(string key)
         {
             return LockedAction(() =>
