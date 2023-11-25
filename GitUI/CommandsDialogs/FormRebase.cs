@@ -1,6 +1,5 @@
 ﻿using GitCommands;
 using GitCommands.Git;
-using GitCommands.Patches;
 using GitExtUtils.GitUI.Theming;
 using GitUI.HelperDialogs;
 using GitUIPluginInterfaces;
@@ -339,15 +338,33 @@ namespace GitUI.CommandsDialogs
                 string rebaseCmd;
                 if (chkSpecificRange.Checked && !string.IsNullOrWhiteSpace(txtFrom.Text) && !string.IsNullOrWhiteSpace(cboTo.Text))
                 {
-                    rebaseCmd = Commands.Rebase(
-                        cboTo.Text, chkInteractive.Checked, chkPreserveMerges.Checked,
-                        chkAutosquash.Checked, chkStash.Checked, chkIgnoreDate.Checked, chkCommitterDateIsAuthorDate.Checked, updateRefChoice, txtFrom.Text, cboBranches.Text);
+                    rebaseCmd = Commands.Rebase(new()
+                    {
+                        BranchName = cboTo.Text,
+                        Interactive = chkInteractive.Checked,
+                        PreserveMerges = chkPreserveMerges.Checked,
+                        AutoSquash = chkAutosquash.Checked,
+                        AutoStash = chkStash.Checked,
+                        IgnoreDate = chkIgnoreDate.Checked,
+                        CommitterDateIsAuthorDate = chkCommitterDateIsAuthorDate.Checked,
+                        UpdateRefs = updateRefChoice,
+                        From = txtFrom.Text,
+                        OnTo = cboBranches.Text
+                    });
                 }
                 else
                 {
-                    rebaseCmd = Commands.Rebase(
-                        cboBranches.Text, chkInteractive.Checked,
-                        chkPreserveMerges.Checked, chkAutosquash.Checked, chkStash.Checked, chkIgnoreDate.Checked, chkCommitterDateIsAuthorDate.Checked, updateRefChoice);
+                    rebaseCmd = Commands.Rebase(new()
+                    {
+                        BranchName = cboTo.Text,
+                        Interactive = chkInteractive.Checked,
+                        PreserveMerges = chkPreserveMerges.Checked,
+                        AutoSquash = chkAutosquash.Checked,
+                        AutoStash = chkStash.Checked,
+                        IgnoreDate = chkIgnoreDate.Checked,
+                        CommitterDateIsAuthorDate = chkCommitterDateIsAuthorDate.Checked,
+                        UpdateRefs = updateRefChoice,
+                    });
                 }
 
                 string cmdOutput = FormProcess.ReadDialog(this, UICommands, arguments: rebaseCmd, Module.WorkingDir, input: null, useDialogSettings: true);
