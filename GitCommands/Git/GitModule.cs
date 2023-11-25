@@ -2129,8 +2129,8 @@ namespace GitCommands
         public string GetSetting(string setting) => LocalConfigFile.GetValue(setting);
         public T? GetSetting<T>(string setting) where T : struct => LocalConfigFile.GetValue<T>(setting);
 
-        public string GetEffectiveSetting(string setting) => EffectiveConfigFile.GetValue(setting);
-        public T? GetEffectiveSetting<T>(string setting) where T : struct => EffectiveConfigFile.GetValue<T>(setting);
+        public string? GetEffectiveSetting(string setting) => EffectiveConfigFile.GetValue<string?>(setting);
+        public T GetEffectiveSetting<T>(string setting) => EffectiveConfigFile.GetValue<T>(setting);
 
         public string? GetEffectiveGitSetting(string setting, bool cache = true)
         {

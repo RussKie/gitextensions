@@ -72,34 +72,54 @@ namespace GitCommands.Settings
 
         public new string GetValue(string setting) => GetString(setting, string.Empty);
 
-        /// <summary>
-        /// Get a git setting converted in an expected C# value type (bool, int, ...)
-        /// </summary>
-        /// <typeparam name="T">the expected type to convert the value to.</typeparam>
-        /// <param name="setting">the git setting key</param>
-        /// <returns>
-        /// null if the settings is not set
-        /// the value converted in the <typeparamref name="T" /> type otherwise.
-        /// </returns>
-        public T? GetValue<T>(string setting) where T : struct => ConvertValue<T>(GetValue(setting), setting);
-
-        private T? ConvertValue<T>(string value, string setting) where T : struct
+        public T GetValue<T>(string setting)
         {
-            // Handle case where setting is not set
-            if (string.IsNullOrWhiteSpace(value))
+            if (typeof(T) == typeof(string))
             {
-                return default;
+                return (T)(object)GetString(setting, string.Empty);
             }
 
-            Type targetType = typeof(T);
-            try
+            if (!typeof(T).IsValueType)
             {
-                return (T)Convert.ChangeType(value, targetType);
+                throw new NotSupportedException("Only string and ValueType types are supported.");
             }
-            catch (Exception ex)
+
+            string value = GetValue(setting);
+            T result;
+
+            // Handle nullable types which denote optional settings, e.g., bool?, int?, etc.
+            if (typeof(T).Name == typeof(Nullable<>).Name)
             {
-                Debug.WriteLine($"Setting '{setting}': fail to convert value '{value}' into type '{targetType}'. Error: {ex}");
-                throw;
+                // Handle case where setting is not set
+                if (string.IsNullOrWhiteSpace(value) || !TryConvert(setting, value, @throw: false, out result))
+                {
+                    return default;
+                }
+
+                return result;
+            }
+
+            TryConvert(setting, value, @throw: true, out result);
+            return result;
+
+            static bool TryConvert<TV>(string setting, string rawValue, bool @throw, out TV value)
+            {
+                value = default(TV);
+                Type targetType = typeof(TV);
+                try
+                {
+                    value = (TV)Convert.ChangeType(rawValue, targetType);
+                    return true;
+                }
+                catch
+                {
+                    if (@throw)
+                    {
+                        throw;
+                    }
+
+                    return false;
+                }
             }
         }
 
