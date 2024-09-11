@@ -30,7 +30,7 @@ public partial class FormUpdates : GitExtensionsDialog
     public FormUpdates(Version currentVersion)
         : base(commands: null, enablePositionRestore: false)
     {
-        _currentVersion = currentVersion;
+        _currentVersion = new Version(4, 2, 0); // currentVersion;
 
         InitializeComponent();
         InitializeComplete();
@@ -132,12 +132,14 @@ public partial class FormUpdates : GitExtensionsDialog
             _updateUrl = update.DownloadPage;
             _requiredNetRuntimeVersion = update.RequiredNetRuntimeVersion;
             _newVersion = update.ApplicationVersion.ToString();
+            _releaseNotesUrl = update.ReleaseNotesPage;
             Done();
             return;
         }
 
         _updateUrl = string.Empty;
         _requiredNetRuntimeVersion = null;
+        _releaseNotesUrl = string.Empty;
         _updateFound = false;
         Done();
     }

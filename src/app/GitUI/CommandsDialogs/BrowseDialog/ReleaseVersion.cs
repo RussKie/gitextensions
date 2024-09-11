@@ -18,12 +18,13 @@ internal class ReleaseVersion
     /// <param name="releaseType">The type of the release.</param>
     /// <param name="downloadPage">The download page URL for the release.</param>
     /// <param name="requiredNetRuntimeVersion">The required .NET runtime version for the release.</param>
-    private ReleaseVersion(Version version, ReleaseType releaseType, string downloadPage, Version? requiredNetRuntimeVersion)
+    private ReleaseVersion(Version version, ReleaseType releaseType, string downloadPage, Version? requiredNetRuntimeVersione, string? releaseNotesPage)
     {
         ApplicationVersion = version;
         ReleaseType = releaseType;
         DownloadPage = downloadPage;
         RequiredNetRuntimeVersion = requiredNetRuntimeVersion;
+        ReleaseNotesPage = releaseNotesPage;
     }
 
     /// <summary>
@@ -47,6 +48,11 @@ internal class ReleaseVersion
     public Version? RequiredNetRuntimeVersion { get; }
 
     /// <summary>
+    ///  Gets the release notes page URL for the release.
+    /// </summary>
+    public string? ReleaseNotesPage { get; }
+
+    /// <summary>
     ///  Creates a <see cref="ReleaseVersion"/> instance from a configuration section.
     /// </summary>
     /// <param name="section">The configuration section.</param>
@@ -68,7 +74,7 @@ internal class ReleaseVersion
 
         _ = Version.TryParse(section.GetValue("NetRuntimeVersion"), out Version? requiredNetRuntimeVersion);
 
-        return new ReleaseVersion(appVersion, releaseType, section.GetValue(nameof(DownloadPage)), requiredNetRuntimeVersion);
+        return new ReleaseVersion(appVersion, releaseType, section.GetValue(nameof(DownloadPage)), requiredNetRuntimeVersion), section.GetValue("ReleaseNotesPage"));
     }
 
     /// <summary>
