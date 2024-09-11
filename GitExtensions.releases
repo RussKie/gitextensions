@@ -1,4 +1,4 @@
-[Version "5.0.0"]
+[Version "5.0.1"]
     DownloadPage = https://github.com/gitextensions/gitextensions/releases/download/v5.0/GitExtensions-x64-5.0.0.17897-2a3b78b86.msi
     ReleaseNotesPage = https://github.com/gitextensions/gitextensions/releases/tag/v5.0
     ReleaseType = major
