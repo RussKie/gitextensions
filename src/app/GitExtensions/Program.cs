@@ -1,6 +1,7 @@
 using System.ComponentModel.Design;
 using System.Configuration;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using GitCommands;
 using GitCommands.Utils;
 using GitExtUtils.GitUI;
@@ -12,6 +13,7 @@ using GitUI.NBugReports;
 using GitUI.Theming;
 using GitUIPluginInterfaces;
 using Microsoft.VisualStudio.Threading;
+using MS.WindowsAPICodePack.Internal;
 
 namespace GitExtensions
 {
@@ -21,6 +23,23 @@ namespace GitExtensions
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern bool SetProcessDPIAware();
+
+        [DllImport("Shcore.dll")]
+        private static extern nint SetProcessDpiAwareness(short value);
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool SetProcessDpiAwarenessContext(nint value);
+
+        public static IntPtr UNSPECIFIED_DPI_AWARENESS_CONTEXT = IntPtr.Zero;
+
+        public static class DPI_AWARENESS_CONTEXT
+        {
+            public static readonly IntPtr UNAWARE = (IntPtr)(-1);
+            public static readonly IntPtr SYSTEM_AWARE = (IntPtr)(-2);
+            public static readonly IntPtr PER_MONITOR_AWARE = (IntPtr)(-3);
+            public static readonly IntPtr PER_MONITOR_AWARE_V2 = (IntPtr)(-4);
+            public static readonly IntPtr UNAWARE_GDISCALED = (IntPtr)(-5);
+        }
 
         /// <summary>
         /// The main entry point for the application.
@@ -37,12 +56,14 @@ namespace GitExtensions
 
             if (Environment.OSVersion.Version.Major >= 6)
             {
-                SetProcessDPIAware();
+                ////SetProcessDPIAware();
+                nint res = SetProcessDpiAwareness(2);
+                ////bool res = SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT.PER_MONITOR_AWARE_V2);
             }
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 
             bool checkForIllegalCrossThreadCalls = false;
 #if !DEBUG

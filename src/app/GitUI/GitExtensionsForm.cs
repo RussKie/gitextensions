@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using GitExtUtils.GitUI;
 using GitUI.Interops.DwmApi;
 using GitUI.Theming;
@@ -78,6 +79,34 @@ namespace GitUI
         {
         }
 
+#pragma warning disable SA1305 // Field names should not use Hungarian notation
+        /// <summary>
+        /// Retrieves a handle to the display monitor that contains a specified point.
+        /// </summary>
+        /// <param name="pt"> Specifies the point of interest in virtual-screen coordinates. </param>
+        /// <param name="dwFlags"> Determines the function's return value if the point is not contained within any display monitor. </param>
+        /// <returns> If the point is contained by a display monitor, the return value is an HMONITOR handle to that display monitor. </returns>
+        /// <remarks>
+        /// <see href="https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-monitorfrompoint"/>
+        /// </remarks>
+        [DllImport("User32.dll")]
+        internal static extern nint MonitorFromPoint(Point pt, uint dwFlags);
+
+        /// <summary>
+        /// Queries the dots per inch (dpi) of a display.
+        /// </summary>
+        /// <param name="hmonitor"> Handle of the monitor being queried. </param>
+        /// <param name="dpiType"> The type of DPI being queried. </param>
+        /// <param name="dpiX"> The value of the DPI along the X axis. </param>
+        /// <param name="dpiY"> The value of the DPI along the Y axis. </param>
+        /// <returns> Status success </returns>
+        /// <remarks>
+        /// <see href="https://learn.microsoft.com/en-us/windows/win32/api/shellscalingapi/nf-shellscalingapi-getdpiformonitor"/>
+        /// </remarks>
+        [DllImport("Shcore.dll")]
+        private static extern nint GetDpiForMonitor(nint hmonitor, /*DpiType*/ int dpiType, out uint dpiX, out uint dpiY);
+#pragma warning restore SA1305 // Field names should not use Hungarian notation
+
         /// <summary>
         ///   Restores the position of a form from the user settings. Does
         ///   nothing if there is no entry for the form in the settings, or the
@@ -120,10 +149,18 @@ namespace GitUI
             bool windowCentred = StartPosition == FormStartPosition.CenterParent;
             StartPosition = FormStartPosition.Manual;
 
+#pragma warning disable SA1305 // Field names should not use Hungarian notation
+            uint dpiX;
+            uint dpiY;
+            /*HMONITOR*/
+            nint hMonitor = MonitorFromPoint(position.Rect.Location, 0); // MONITOR_DEFAULTTONEAREST
+            nint result = GetDpiForMonitor(hMonitor, /*DpiType.Effective*/0, out dpiX, out dpiY);
+#pragma warning restore SA1305 // Field names should not use Hungarian notation
+
             if (FormBorderStyle == FormBorderStyle.Sizable ||
                 FormBorderStyle == FormBorderStyle.SizableToolWindow)
             {
-                Size = DpiUtil.Scale(position.Rect.Size, originalDpi: position.DeviceDpi);
+                Size = DpiUtil.Scale(position.Rect.Size, originalDpi: (int)dpiX);
             }
 
             if (Owner is null || !windowCentred)

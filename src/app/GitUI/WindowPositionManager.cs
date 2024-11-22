@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using GitExtUtils.GitUI;
 
 namespace GitUI
