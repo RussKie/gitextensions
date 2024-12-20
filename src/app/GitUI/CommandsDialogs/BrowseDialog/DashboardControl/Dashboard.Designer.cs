@@ -28,44 +28,74 @@
         /// </summary>
         private void InitializeComponent()
         {
+            ToolStripSeparator toolStripSeparator1;
+            ToolStripMenuItem mnuRefresh;
+            ToolStripMenuItem mnuConfigure;
             pnlLeft = new Panel();
             flpnlStart = new FlowLayoutPanel();
             flpnlContribute = new FlowLayoutPanel();
             lblContribute = new Label();
             pnlLogo = new Panel();
             pbLogo = new PictureBox();
-            userRepositoriesList = new GitUI.CommandsDialogs.BrowseDialog.DashboardControl.UserRepositoriesList();
+            userRepositoriesList = new UserRepositoriesList();
             tableLayoutPanel1 = new TableLayoutPanel();
+            mnuDashboard = new ToolStripMenuItem();
+            menuStrip1 = new MenuStrip();
+            toolStripSeparator1 = new ToolStripSeparator();
+            mnuRefresh = new ToolStripMenuItem();
+            mnuConfigure = new ToolStripMenuItem();
             pnlLeft.SuspendLayout();
             flpnlContribute.SuspendLayout();
             pnlLogo.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(pbLogo)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbLogo).BeginInit();
             tableLayoutPanel1.SuspendLayout();
+            menuStrip1.SuspendLayout();
             SuspendLayout();
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(215, 6);
+            // 
+            // mnuRefresh
+            // 
+            mnuRefresh.Image = Properties.Images.ReloadRevisions;
+            mnuRefresh.Name = "mnuRefresh";
+            mnuRefresh.ShortcutKeys = Keys.F5;
+            mnuRefresh.Size = new Size(218, 22);
+            mnuRefresh.Text = "&Refresh";
+            // 
+            // mnuConfigure
+            // 
+            mnuConfigure.Image = Properties.Images.Settings;
+            mnuConfigure.Name = "mnuConfigure";
+            mnuConfigure.Size = new Size(218, 22);
+            mnuConfigure.Text = "Recent repositories &settings";
+            mnuConfigure.Click += mnuConfigure_Click;
             // 
             // pnlLeft
             // 
             pnlLeft.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            pnlLeft.BackColor = Color.FromArgb(((int)(((byte)(223)))), ((int)(((byte)(228)))), ((int)(((byte)(235)))));
+            pnlLeft.BackColor = Color.FromArgb(223, 228, 235);
             pnlLeft.Controls.Add(flpnlStart);
             pnlLeft.Controls.Add(flpnlContribute);
             pnlLeft.Controls.Add(pnlLogo);
             pnlLeft.Location = new Point(33, 0);
             pnlLeft.Margin = new Padding(0);
             pnlLeft.Name = "pnlLeft";
-            pnlLeft.Size = new Size(213, 358);
+            pnlLeft.Size = new Size(213, 360);
             pnlLeft.TabIndex = 0;
             // 
             // flpnlStart
             // 
-            flpnlStart.BackColor = Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(50)))), ((int)(((byte)(58)))));
+            flpnlStart.BackColor = Color.FromArgb(46, 50, 58);
             flpnlStart.Dock = DockStyle.Fill;
             flpnlStart.FlowDirection = FlowDirection.TopDown;
             flpnlStart.Location = new Point(0, 68);
             flpnlStart.Margin = new Padding(2);
             flpnlStart.Name = "flpnlStart";
             flpnlStart.Padding = new Padding(20);
-            flpnlStart.Size = new Size(213, 135);
+            flpnlStart.Size = new Size(213, 137);
             flpnlStart.TabIndex = 1;
             flpnlStart.WrapContents = false;
             // 
@@ -75,7 +105,7 @@
             flpnlContribute.Controls.Add(lblContribute);
             flpnlContribute.Dock = DockStyle.Bottom;
             flpnlContribute.FlowDirection = FlowDirection.TopDown;
-            flpnlContribute.Location = new Point(0, 203);
+            flpnlContribute.Location = new Point(0, 205);
             flpnlContribute.Margin = new Padding(2);
             flpnlContribute.Name = "flpnlContribute";
             flpnlContribute.Padding = new Padding(20, 20, 20, 30);
@@ -97,7 +127,7 @@
             // 
             // pnlLogo
             // 
-            pnlLogo.BackColor = Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(40)))), ((int)(((byte)(57)))));
+            pnlLogo.BackColor = Color.FromArgb(30, 40, 57);
             pnlLogo.Controls.Add(pbLogo);
             pnlLogo.Dock = DockStyle.Top;
             pnlLogo.Location = new Point(0, 0);
@@ -119,9 +149,10 @@
             // 
             // userRepositoriesList
             // 
+            userRepositoriesList.AllowDrop = true;
             userRepositoriesList.BranchNameColor = SystemColors.HotTrack;
             userRepositoriesList.Dock = DockStyle.Fill;
-            userRepositoriesList.HeaderBackColor = Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(183)))), ((int)(((byte)(226)))));
+            userRepositoriesList.HeaderBackColor = Color.FromArgb(160, 183, 226);
             userRepositoriesList.HeaderColor = Color.Empty;
             userRepositoriesList.HeaderHeight = 70;
             userRepositoriesList.HoverColor = Color.Empty;
@@ -129,7 +160,7 @@
             userRepositoriesList.MainBackColor = Color.Empty;
             userRepositoriesList.Margin = new Padding(0);
             userRepositoriesList.Name = "userRepositoriesList";
-            userRepositoriesList.Size = new Size(405, 358);
+            userRepositoriesList.Size = new Size(407, 360);
             userRepositoriesList.TabIndex = 1;
             // 
             // tableLayoutPanel1
@@ -143,33 +174,56 @@
             tableLayoutPanel1.Controls.Add(pnlLeft, 1, 0);
             tableLayoutPanel1.Controls.Add(userRepositoriesList, 2, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
-            tableLayoutPanel1.Location = new Point(0, 0);
+            tableLayoutPanel1.Location = new Point(0, 24);
             tableLayoutPanel1.Margin = new Padding(0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.Size = new Size(686, 358);
+            tableLayoutPanel1.Size = new Size(688, 336);
             tableLayoutPanel1.TabIndex = 2;
+            // 
+            // mnuDashboard
+            // 
+            mnuDashboard.DropDownItems.AddRange(new ToolStripItem[] { mnuRefresh, toolStripSeparator1, mnuConfigure });
+            mnuDashboard.MergeAction = MergeAction.Insert;
+            mnuDashboard.MergeIndex = 1;
+            mnuDashboard.Name = "mnuDashboard";
+            mnuDashboard.Size = new Size(76, 20);
+            mnuDashboard.Text = "&Dashboard";
+            // 
+            // menuStrip1
+            // 
+            menuStrip1.Items.AddRange(new ToolStripItem[] { mnuDashboard });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(688, 24);
+            menuStrip1.TabIndex = 3;
+            menuStrip1.Text = "menuStrip1";
+            menuStrip1.Visible = false;
             // 
             // Dashboard
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             AutoScroll = true;
-            BackColor = Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(243)))), ((int)(((byte)(253)))));
+            BackColor = Color.FromArgb(238, 243, 253);
             Controls.Add(tableLayoutPanel1);
+            Controls.Add(menuStrip1);
             DoubleBuffered = true;
             Margin = new Padding(2, 1, 2, 1);
             Name = "Dashboard";
-            Size = new Size(686, 358);
+            Size = new Size(688, 360);
             ParentChanged += dashboard_ParentChanged;
             pnlLeft.ResumeLayout(false);
             flpnlContribute.ResumeLayout(false);
             flpnlContribute.PerformLayout();
             pnlLogo.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(pbLogo)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbLogo).EndInit();
             tableLayoutPanel1.ResumeLayout(false);
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
 
         }
 
@@ -183,5 +237,7 @@
         private UserRepositoriesList userRepositoriesList;
         private TableLayoutPanel tableLayoutPanel1;
         private PictureBox pbLogo;
+        private ToolStripMenuItem mnuDashboard;
+        private MenuStrip menuStrip1;
     }
 }
