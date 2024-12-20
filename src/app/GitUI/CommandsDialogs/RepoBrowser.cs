@@ -1,7 +1,5 @@
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing.Drawing2D;
 using System.Globalization;
 using ConEmu.WinForms;
 using GitCommands;
@@ -20,7 +18,6 @@ using GitExtUtils.GitUI;
 using GitExtUtils.GitUI.Theming;
 using GitUI.Avatars;
 using GitUI.CommandsDialogs.BrowseDialog;
-using GitUI.CommandsDialogs.BrowseDialog.DashboardControl;
 using GitUI.CommandsDialogs.WorktreeDialog;
 using GitUI.HelperDialogs;
 using GitUI.Infrastructure.Telemetry;
@@ -34,14 +31,12 @@ using GitUI.UserControls;
 using GitUI.UserControls.RevisionGrid;
 using GitUIPluginInterfaces;
 using Microsoft;
-using Microsoft.VisualStudio.Threading;
 using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Taskbar;
 using ResourceManager;
 
 namespace GitUI.CommandsDialogs
 {
-    public sealed partial class FormBrowse : GitModuleForm, IBrowseRepo
+    public sealed partial class RepoBrowser : GitModuleControl
     {
         #region Mnemonics
         /*
@@ -204,9 +199,7 @@ namespace GitUI.CommandsDialogs
 
         #endregion
 
-        private readonly uint _closeAllMessage = NativeMethods.RegisterWindowMessageW("Global.GitExtensions.CloseAllInstances");
         private readonly SplitterManager _splitterManager;
-        private readonly GitStatusMonitor _gitStatusMonitor;
         private readonly FormBrowseMenus _formBrowseMenus;
         private readonly IFormBrowseController _controller;
         private readonly ICommitDataManager _commitDataManager;
@@ -217,11 +210,9 @@ namespace GitUI.CommandsDialogs
         private readonly IScriptsManager _scriptsManager;
         private readonly IRepositoryHistoryUIService _repositoryHistoryUIService;
         private List<ToolStripItem>? _currentSubmoduleMenuItems;
-        private readonly DiagnosticsReporter _diagnosticsReporter;
         private BuildReportTabPageExtension? _buildReportTabPageExtension;
         private readonly ShellProvider _shellProvider = new();
         private ConEmuControl? _terminal;
-        private Dashboard? _dashboard;
         private bool _isFileHistoryMode;
         private bool _fileBlameHistoryLeftPanelStartupState;
 
@@ -232,14 +223,12 @@ namespace GitUI.CommandsDialogs
 
         private UpdateTargets _selectedRevisionUpdatedTargets = UpdateTargets.None;
 
-        public RevisionGridControl RevisionGridControl => RevisionGrid;
-
         /// <summary>
         /// Open Browse - main GUI including dashboard.
         /// </summary>
         /// <param name="commands">The commands in the current form.</param>
         /// <param name="args">The start up arguments.</param>
-        public FormBrowse(IGitUICommands commands, BrowseArguments args)
+        public RepoBrowser(IGitUICommands commands, BrowseArguments args)
 #pragma warning disable CS0618 // Type or member is obsolete
             : this(commands, args, new AppSettingsPath("FormBrowse"))
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -247,8 +236,7 @@ namespace GitUI.CommandsDialogs
         }
 
         [Obsolete("Test only!")]
-        internal FormBrowse(IGitUICommands commands, BrowseArguments args, SettingsSource settingsSource)
-            : base(commands)
+        internal RepoBrowser(IGitUICommands commands, BrowseArguments args, SettingsSource settingsSource)
         {
             _splitterManager = new(settingsSource);
 
@@ -259,12 +247,9 @@ namespace GitUI.CommandsDialogs
 
             _repositoryHistoryUIService = commands.GetRequiredService<IRepositoryHistoryUIService>();
 
-            fileToolStripMenuItem.Initialize(() => UICommands);
-            helpToolStripMenuItem.Initialize(() => UICommands);
-            toolsToolStripMenuItem.Initialize(() => UICommands);
-            _NO_TRANSLATE_WorkingDir.Initialize(() => UICommands, _repositoryHistoryUIService, fileToolStripMenuItem, closeToolStripMenuItem);
+            _NO_TRANSLATE_WorkingDir.Initialize(() => UICommands, _repositoryHistoryUIService, closeToolStripMenuItem);
 
-            _repositoryHistoryUIService.GitModuleChanged += SetGitModule;
+            _repositoryHistoryUIService.GitModuleChanged += OpenGitModule;
 
             BackColor = OtherColors.BackgroundColor;
 
@@ -274,23 +259,16 @@ namespace GitUI.CommandsDialogs
             _windowsJumpListManager = commands.GetRequiredService<IWindowsJumpListManager>();
             _scriptsManager = commands.GetRequiredService<IScriptsManager>();
 
-            _diagnosticsReporter = new(this);
-
-            _repositoryHostsToolStripMenuItem.Visible = false;
+            mnuRepositoryHosts.Visible = false;
 
             MainSplitContainer.Visible = false;
             MainSplitContainer.SplitterDistance = DpiUtil.Scale(260);
-
-            InitCountArtificial(out _gitStatusMonitor);
 
             _formBrowseMenus = new FormBrowseMenus(mainMenuStrip);
 
             RevisionGrid.SuspendRefreshRevisions();
 
             ToolStripFilters.Bind(() => Module, RevisionGrid);
-
-            InitRevisionGrid(args.SelectedId, args.FirstId, args.IsFileHistoryMode);
-            InitCommitDetails();
 
             // Please do not ask me why the setting in the Designer has no effect!
             Color splitterBackColor = LeftSplitContainer.BackColor;
@@ -302,9 +280,6 @@ namespace GitUI.CommandsDialogs
             LoadHotkeys(HotkeySettingsName);
             SetShortcutKeyDisplayStringsFromHotkeySettings();
             InitMenusAndToolbars(args.RevFilter, args.PathFilter.ToPosixPath());
-
-            UICommands.PostRepositoryChanged += UICommands_PostRepositoryChanged;
-            UICommands.BrowseRepo = this;
 
             _controller = new FormBrowseController(new GitGpgController(() => Module));
             _commitDataManager = new CommitDataManager(() => Module);
@@ -321,12 +296,10 @@ namespace GitUI.CommandsDialogs
             }
 
             _aheadBehindDataProvider = new AheadBehindDataProvider(() => Module.GitExecutable);
-            toolStripButtonPush.ResetToDefaultState();
-            repoObjectsTree.Initialize(_aheadBehindDataProvider, filterRevisionGridBySpaceSeparatedRefs: ToolStripFilters.SetBranchFilter, refsSource: RevisionGrid, revisionGridInfo: RevisionGrid);
-            revisionDiff.Bind(revisionGridInfo: RevisionGrid, revisionGridUpdate: RevisionGrid, revisionFileTree: fileTree, () => RevisionGrid.CurrentFilter.PathFilter, RefreshGitStatusMonitor);
 
             // Show blame by default in file tree if not started from command line
-            fileTree.Bind(revisionGridInfo: RevisionGrid, revisionGridUpdate: RevisionGrid, RefreshGitStatusMonitor, _isFileHistoryMode);
+            // TODO:
+            ////fileTree.Bind(revisionGridInfo: RevisionGrid, revisionGridUpdate: RevisionGrid, RefreshGitStatusMonitor, _isFileHistoryMode);
             RevisionGrid.ResumeRefreshRevisions();
 
             // Application is init, the repo related operations are triggered in OnLoad()
@@ -337,108 +310,6 @@ namespace GitUI.CommandsDialogs
                 LeftSplitContainer.BackColor = splitterBackColor;
                 LeftSplitContainer.Invalidated -= FixupSplitterColor;
             }
-
-            void InitCountArtificial(out GitStatusMonitor gitStatusMonitor)
-            {
-                Brush? lastBrush = null;
-
-                gitStatusMonitor = new GitStatusMonitor(this, () => IsMinimized());
-                if (!NeedsGitStatusMonitor())
-                {
-                    gitStatusMonitor.Active = false;
-                }
-
-                gitStatusMonitor.GitStatusMonitorStateChanged += (s, e) =>
-                {
-                    GitStatusMonitorState status = e.State;
-                    if (status == GitStatusMonitorState.Stopped)
-                    {
-                        // fall back to operation without info in the button
-                        UpdateCommitButtonAndGetBrush(null, showCount: false);
-                        RevisionGrid.UpdateArtificialCommitCount(null);
-                        if (EnvUtils.RunningOnWindowsWithMainWindow())
-                        {
-                            TaskbarManager.Instance.SetOverlayIcon(null, "");
-                        }
-
-                        lastBrush = null;
-                    }
-                };
-
-                gitStatusMonitor.GitWorkingDirectoryStatusChanged += (s, e) =>
-                {
-                    IReadOnlyList<GitItemStatus>? status = e?.ItemStatuses;
-
-                    bool countToolbar = AppSettings.ShowGitStatusInBrowseToolbar;
-                    bool countArtificial = AppSettings.ShowGitStatusForArtificialCommits && AppSettings.RevisionGraphShowArtificialCommits;
-
-                    Brush brush = UpdateCommitButtonAndGetBrush(status, countToolbar);
-
-                    RevisionGrid.UpdateArtificialCommitCount(countArtificial ? status : null);
-
-                    if (countToolbar || countArtificial)
-                    {
-                        UpdateStatusInTaskbar();
-
-                        if (AppSettings.ShowSubmoduleStatus)
-                        {
-                            Validates.NotNull(_submoduleStatusProvider);
-
-                            ThreadHelper.FileAndForget(async () =>
-                            {
-                                try
-                                {
-                                    await _submoduleStatusProvider.UpdateSubmodulesStatusAsync(Module.WorkingDir, status);
-                                }
-                                catch (GitConfigurationException ex)
-                                {
-                                    await this.SwitchToMainThreadAsync();
-                                    MessageBoxes.ShowGitConfigurationExceptionMessage(this, ex);
-                                }
-                            });
-                        }
-                    }
-
-                    return;
-
-                    void UpdateStatusInTaskbar()
-                    {
-                        if (!EnvUtils.RunningOnWindowsWithMainWindow())
-                        {
-                            return;
-                        }
-
-                        if (ReferenceEquals(brush, lastBrush))
-                        {
-                            TaskbarManager.Instance.SetOverlayIcon(_overlayIconByBrush[lastBrush], "");
-                            return;
-                        }
-
-                        lastBrush = brush;
-
-                        if (!_overlayIconByBrush.TryGetValue(brush, out Icon overlay))
-                        {
-                            const int imgDim = 32;
-                            const int dotDim = 15;
-                            const int pad = 2;
-                            using Bitmap bmp = new(imgDim, imgDim);
-                            using Graphics g = Graphics.FromImage(bmp);
-                            g.SmoothingMode = SmoothingMode.AntiAlias;
-                            g.Clear(Color.Transparent);
-                            g.FillEllipse(brush, new Rectangle(imgDim - dotDim - pad, imgDim - dotDim - pad, dotDim, dotDim));
-
-                            overlay = bmp.ToIcon();
-                            _overlayIconByBrush.Add(brush, overlay);
-                        }
-
-                        TaskbarManager.Instance.SetOverlayIcon(overlay, "");
-
-                        _windowsJumpListManager.UpdateCommitIcon(toolStripButtonCommit.Image);
-                    }
-                };
-            }
-
-            bool IsMinimized() => WindowState == FormWindowState.Minimized;
 
             void WorkaroundPaddingIncreaseBug()
             {
@@ -454,26 +325,77 @@ namespace GitUI.CommandsDialogs
             {
                 if (_repositoryHistoryUIService is not null)
                 {
-                    _repositoryHistoryUIService.GitModuleChanged -= SetGitModule;
+                    _repositoryHistoryUIService.GitModuleChanged -= OpenGitModule;
                 }
 
                 _formBrowseMenus?.Dispose();
                 components?.Dispose();
-                _gitStatusMonitor?.Dispose();
                 _windowsJumpListManager?.Dispose();
             }
 
             base.Dispose(disposing);
         }
 
-        protected override void OnApplicationActivated()
+        /*
+        protected override void OnRuntimeLoad()
         {
-            if (AppSettings.RefreshArtificialCommitOnApplicationActivated && CommitInfoTabControl.SelectedTab == DiffTabPage)
-            {
-                revisionDiff.RefreshArtificial();
-            }
+            base.OnRuntimeLoad();
 
-            base.OnApplicationActivated();
+            ////InitCountArtificial(out _gitStatusMonitor);
+
+            InitRevisionGrid(_args.SelectedId, _args.FirstId, _args.IsFileBlameHistory);
+            InitCommitDetails();
+
+            toolStripButtonPush.Initialize(_aheadBehindDataProvider);
+            repoObjectsTree.Initialize(_aheadBehindDataProvider, filterRevisionGridBySpaceSeparatedRefs: ToolStripFilters.SetBranchFilter, RevisionGrid, RevisionGrid, RevisionGrid);
+            revisionDiff.Bind(RevisionGrid, fileTree, RefreshGitStatusMonitor);
+
+            // Show blame by default if not started from command line
+            fileTree.Bind(RevisionGrid, RefreshGitStatusMonitor, _isFileBlameHistory);
+
+            RevisionGrid.ResumeRefreshRevisions();
+        }
+        */
+
+        protected override void OnUICommandsSourceSet(IGitUICommandsSource source)
+        {
+            base.OnUICommandsSourceSet(source);
+
+            source.UICommandsChanged += UICommandsSource_UICommandsChanged;
+
+            // TODO: work out how to not call this, and delegate everything to UICommandsSource_UICommandsChanged
+            OpenGitModule(this, new(source.UICommands.Module));
+            return;
+
+            void UICommandsSource_UICommandsChanged(object? sender, GitUICommandsChangedEventArgs e)
+            {
+                IGitUICommands oldCommands = e.OldCommands;
+
+                if (oldCommands is not null)
+                {
+                    oldCommands.PostRepositoryChanged -= UICommands_PostRepositoryChanged;
+                }
+
+                UICommands.PostRepositoryChanged += UICommands_PostRepositoryChanged;
+
+                OpenGitModule(this, new(UICommands.Module));
+                return;
+
+                void UICommands_PostRepositoryChanged(object sender, GitUIEventArgs e)
+                {
+                    // Note that this called in most FormBrowse context to "be sure"
+                    // that the repo has not been updated externally.
+
+                    // It can also be called from background tasks, e.g. from BackgroundFetchPlugin.
+                    if (!ThreadHelper.JoinableTaskContext.IsOnMainThread)
+                    {
+                        Invoke(() => RefreshRevisions(e.GetRefs));
+                        return;
+                    }
+
+                    RefreshRevisions(e.GetRefs);
+                }
+            }
         }
 
         protected override void OnLoad(EventArgs e)
@@ -486,151 +408,17 @@ namespace GitUI.CommandsDialogs
 
             base.OnLoad(e);
 
-            _diagnosticsReporter.Report();
-
             // All app init is done, make all repo related similar to switching repos
-            SetGitModule(this, new GitModuleEventArgs(new GitModule(Module.WorkingDir)));
-            bool isDashboard = _dashboard?.Visible ?? false;
-            this.InvokeAndForget(async () =>
+            OpenGitModule(this, new GitModuleEventArgs(new GitModule(Module.WorkingDir)));
+
+            this.InvokeAndForget(() =>
             {
                 _outputHistoryController = AppSettings.ShowOutputHistoryAsTab.Value
                     ? new OutputHistoryTabController(UICommands.GetRequiredService<IOutputHistoryProvider>(), new OutputHistoryControl(), parent: CommitInfoTabControl,
                         tabCaption: _outputHistoryTabCaption.Text)
                     : new OutputHistoryPanelController(UICommands.GetRequiredService<IOutputHistoryProvider>(), new OutputHistoryControl(), parent: toolPanel.ContentPanel,
                         verticalSplitContainer1: LeftSplitContainer, verticalSplitContainer2: revisionDiff.LeftSplitContainer, horizontalSplitContainer: revisionDiff.HorizontalSplitter);
-
-                await TaskScheduler.Default;
-
-                if (isDashboard)
-                {
-                    // Load only the git hoster plugin to quickly provide related features in dashboard
-                    PluginRegistry.InitializeGitHostersOnly();
-
-                    await this.SwitchToMainThreadAsync();
-
-                    // Now that hoster plugin is registered, populate Git-host-plugin actions on Dashboard, like "Clone GitHub repository"
-                    UpdateRepositoryHostsMenu();
-
-                    // Check if during plugin loading user left dashboard
-                    if (_dashboard.Visible)
-                    {
-                        _dashboard.RefreshContent();
-                    }
-
-                    // Come back to background to load all the other plugins (that could be long...)
-                    await TaskScheduler.Default;
-                }
-
-                await InitializeAndRegisterAllPluginsAsync();
             });
-
-            return;
-
-            async Task InitializeAndRegisterAllPluginsAsync()
-            {
-                PluginRegistry.InitializeAll();
-                await this.SwitchToMainThreadAsync();
-                RegisterPlugins();
-                UpdateRepositoryHostsMenu();
-            }
-
-            void UpdateRepositoryHostsMenu()
-            {
-                if (PluginRegistry.GitHosters.Count != 0)
-                {
-                    // TODO: support more than one Git hosting provider plugin (ADO, GitLab,...)
-                    _repositoryHostsToolStripMenuItem.Text = PluginRegistry.GitHosters[0].Name;
-                }
-
-                // Show "Repository hosts" menu item when there is at least 1 repository host plugin loaded
-                _repositoryHostsToolStripMenuItem.Visible = PluginRegistry.GitHosters.Count != 0;
-            }
-        }
-
-        protected override void OnActivated(EventArgs e)
-        {
-            // wait for windows to really be displayed, which isn't necessarily the case in OnLoad()
-            if (_windowsJumpListManager.NeedsJumpListCreation)
-            {
-                _windowsJumpListManager.CreateJumpList(
-                    Handle,
-                    new WindowsThumbnailToolbarButtons(
-                        new WindowsThumbnailToolbarButton(toolStripButtonCommit.Text, toolStripButtonCommit.Image, CommitToolStripMenuItemClick),
-                        new WindowsThumbnailToolbarButton(toolStripButtonPush.Text, toolStripButtonPush.Image, PushToolStripMenuItemClick),
-                        new WindowsThumbnailToolbarButton(toolStripButtonPull.Text, toolStripButtonPull.Image, PullToolStripMenuItemClick),
-                        new WindowsThumbnailToolbarButton(_closeAll.Text, Images.DeleteFile, (s, e) => NativeMethods.PostMessageW(NativeMethods.HWND_BROADCAST, _closeAllMessage))));
-            }
-
-            this.InvokeAndForget(OnActivate);
-            base.OnActivated(e);
-        }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            SaveApplicationSettings();
-
-            foreach (Control control in this.FindDescendants())
-            {
-                control.DragEnter -= FormBrowse_DragEnter;
-                control.DragDrop -= FormBrowse_DragDrop;
-            }
-
-            base.OnFormClosing(e);
-        }
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            // Restore state at startup if file history mode, ignore the forced setting
-            if (_isFileHistoryMode)
-            {
-                MainSplitContainer.Panel1Collapsed = _fileBlameHistoryLeftPanelStartupState;
-            }
-
-            _splitterManager.SaveSplitters();
-            base.OnClosing(e);
-        }
-
-        protected override void OnClosed(EventArgs e)
-        {
-            PluginRegistry.Unregister(UICommands);
-            RevisionGrid.CancelBackgroundTasks();
-            base.OnClosed(e);
-        }
-
-        protected override void OnUICommandsChanged(GitUICommandsChangedEventArgs e)
-        {
-            IGitUICommands oldCommands = e.OldCommands;
-            RefreshDefaultPullAction();
-
-            if (oldCommands is not null)
-            {
-                oldCommands.PostRepositoryChanged -= UICommands_PostRepositoryChanged;
-                oldCommands.BrowseRepo = null;
-            }
-
-            UICommands.PostRepositoryChanged += UICommands_PostRepositoryChanged;
-            UICommands.BrowseRepo = this;
-
-            base.OnUICommandsChanged(e);
-        }
-
-        protected override void WndProc(ref Message m)
-        {
-            if (m.Msg == _closeAllMessage || m is { Msg: NativeMethods.WM_SYSCOMMAND, WParam: NativeMethods.SC_CLOSE })
-            {
-                // Application close is requested, e.g. using the Taskbar context menu.
-                // This request is directed to the main form also if a modal form like FormCommit is on top.
-                // So forward the request and try to close the modal form.
-                Form? modalForm = Application.OpenForms.Cast<Form>().FirstOrDefault(form => form.Modal);
-                if (modalForm is not null)
-                {
-                    modalForm.Close();
-                }
-
-                Close();
-            }
-
-            base.WndProc(ref m);
         }
 
         public override void AddTranslationItems(ITranslation translation)
@@ -643,40 +431,6 @@ namespace GitUI.CommandsDialogs
         {
             base.TranslateItems(translation);
             TranslationUtils.TranslateItemsFromFields(Name, ToolStripFilters, translation);
-        }
-
-        public override void CancelButtonClick(object sender, EventArgs e)
-        {
-            // If a filter is applied, clear it
-            if (RevisionGrid.FilterIsApplied())
-            {
-                // Clear filter
-                ToolStripFilters.SetRevisionFilter(string.Empty);
-            }
-        }
-
-        private static bool NeedsGitStatusMonitor()
-        {
-            return AppSettings.ShowGitStatusInBrowseToolbar || (AppSettings.ShowGitStatusForArtificialCommits && AppSettings.RevisionGraphShowArtificialCommits);
-        }
-
-        private void UICommands_PostRepositoryChanged(object sender, GitUIEventArgs e)
-        {
-            // Note that this called in most FormBrowse context to "be sure"
-            // that the repo has not been updated externally.
-
-            // It can also be called from background tasks, e.g. from BackgroundFetchPlugin.
-            if (!ThreadHelper.JoinableTaskContext.IsOnMainThread)
-            {
-                ThreadHelper.JoinableTaskFactory.Run(async () =>
-                    {
-                        await this.SwitchToMainThreadAsync();
-                        RefreshRevisions(e.GetRefs);
-                    });
-                return;
-            }
-
-            RefreshRevisions(e.GetRefs);
         }
 
         /// <summary>
@@ -699,29 +453,14 @@ namespace GitUI.CommandsDialogs
             }
 
             _aheadBehindDataProvider.ResetCache();
-            bool isDashboard = string.IsNullOrEmpty(Module.WorkingDir) || (_dashboard?.Visible ?? false);
-            if (isDashboard)
-            {
-                // Explicit call: Title is normally updated on RevisionGrid filter change
-                Text = _appTitleGenerator.Generate();
-
-                // "Repo" related methods, creates _dashboard
-                InternalInitialize();
-
-                return;
-            }
-
             RevisionGrid.PerformRefreshRevisions(getRefs, forceRefresh: true);
 
             InternalInitialize();
             ToolStripFilters.RefreshRevisionFunction(getRefs);
             UpdateSubmodulesStructure();
 
-            RefreshGitStatusMonitor();
             UpdateStashCount();
         }
-
-        private void RefreshGitStatusMonitor() => _gitStatusMonitor?.RequestRefresh();
 
         private void RefreshSelection()
         {
@@ -763,59 +502,9 @@ namespace GitUI.CommandsDialogs
             RevisionGrid.SetAndApplyPathFilter(pathFilter);
         }
 
-        private void ShowDashboard()
-        {
-            toolPanel.SuspendLayout();
-            toolPanel.TopToolStripPanelVisible = false;
-            toolPanel.BottomToolStripPanelVisible = false;
-            toolPanel.LeftToolStripPanelVisible = false;
-            toolPanel.RightToolStripPanelVisible = false;
-            toolPanel.ResumeLayout();
-
-            MainSplitContainer.Visible = false;
-
-            if (_dashboard is null)
-            {
-                _dashboard = new Dashboard { Dock = DockStyle.Fill };
-                _dashboard.GitModuleChanged += SetGitModule;
-                toolPanel.ContentPanel.Controls.Add(_dashboard);
-            }
-
-            Text = _appTitleGenerator.Generate(branchName: TranslatedStrings.NoBranch);
-
-            _dashboard.RefreshContent();
-            _dashboard.Visible = true;
-            _dashboard.BringToFront();
-
-            _createPullRequestsToolStripMenuItem.Enabled = false;
-            _viewPullRequestsToolStripMenuItem.Enabled = false;
-            _addUpstreamRemoteToolStripMenuItem.Enabled = false;
-
-            DiagnosticsClient.TrackPageView("Dashboard");
-        }
-
-        private void HideDashboard()
-        {
-            MainSplitContainer.Visible = true;
-            if (!_dashboard?.Visible ?? true)
-            {
-                return;
-            }
-
-            _dashboard.Visible = false;
-            toolPanel.SuspendLayout();
-            toolPanel.TopToolStripPanelVisible = true;
-            toolPanel.BottomToolStripPanelVisible = true;
-            toolPanel.LeftToolStripPanelVisible = true;
-            toolPanel.RightToolStripPanelVisible = true;
-            toolPanel.ResumeLayout();
-
-            DiagnosticsClient.TrackPageView("Revision graph");
-        }
-
         private void UpdatePluginMenu(bool validWorkingDir)
         {
-            foreach (ToolStripItem item in pluginsToolStripMenuItem.DropDownItems)
+            foreach (ToolStripItem item in mnuPlugins.DropDownItems)
             {
                 if (item == pluginsLoadingToolStripMenuItem)
                 {
@@ -829,7 +518,7 @@ namespace GitUI.CommandsDialogs
         private void RegisterPlugins()
         {
             const string PluginManagerName = "Plugin Manager";
-            ILookup<object, ToolStripMenuItem> existingPluginMenus = pluginsToolStripMenuItem.DropDownItems.OfType<ToolStripMenuItem>().ToLookup(c => c.Tag);
+            ILookup<object, ToolStripMenuItem> existingPluginMenus = mnuPlugins.DropDownItems.OfType<ToolStripMenuItem>().ToLookup(c => c.Tag);
 
             lock (PluginRegistry.Plugins)
             {
@@ -838,9 +527,9 @@ namespace GitUI.CommandsDialogs
                     return;
                 }
 
-                if (pluginsToolStripMenuItem.DropDownItems.Contains(pluginsLoadingToolStripMenuItem))
+                if (mnuPlugins.DropDownItems.Contains(pluginsLoadingToolStripMenuItem))
                 {
-                    pluginsToolStripMenuItem.DropDownItems.Remove(pluginsLoadingToolStripMenuItem);
+                    mnuPlugins.DropDownItems.Remove(pluginsLoadingToolStripMenuItem);
                 }
 
                 IOrderedEnumerable<IGitPlugin> pluginEntries = PluginRegistry.Plugins
@@ -875,15 +564,15 @@ namespace GitUI.CommandsDialogs
                     if (plugin.Name == PluginManagerName)
                     {
                         // insert Plugin Manager below the separator
-                        pluginsToolStripMenuItem.DropDownItems.Insert(pluginsToolStripMenuItem.DropDownItems.Count - 1, item);
+                        mnuPlugins.DropDownItems.Insert(mnuPlugins.DropDownItems.Count - 1, item);
                     }
                     else
                     {
                         // Handle special case where Git Hosting plugin has already been loaded
-                        ToolStripItem first = pluginsToolStripMenuItem.DropDownItems[0];
+                        ToolStripItem first = mnuPlugins.DropDownItems[0];
                         int index = first is ToolStripSeparator || string.CompareOrdinal(first.Text, item.Text) >= 0 ? 0 : 1;
 
-                        pluginsToolStripMenuItem.DropDownItems.Insert(index, item);
+                        mnuPlugins.DropDownItems.Insert(index, item);
                     }
                 }
 
@@ -898,52 +587,14 @@ namespace GitUI.CommandsDialogs
             UpdatePluginMenu(Module.IsValidGitWorkingDir());
         }
 
-        /// <summary>
-        /// to avoid showing menu items that should not be there during
-        /// the transition from dashboard to repo browser and vice versa
-        ///
-        /// and reset hotkeys that are shared between mutual exclusive menu items.
-        /// </summary>
-        private void HideVariableMainMenuItems()
-        {
-            dashboardToolStripMenuItem.Visible = false;
-            repositoryToolStripMenuItem.Visible = false;
-            commandsToolStripMenuItem.Visible = false;
-            pluginsToolStripMenuItem.Visible = false;
-            refreshToolStripMenuItem.ShortcutKeys = Keys.None;
-            refreshDashboardToolStripMenuItem.ShortcutKeys = Keys.None;
-            _formBrowseMenus.RemoveRevisionGridMainMenuItems();
-            mainMenuStrip.Refresh();
-        }
-
         private void InternalInitialize()
         {
-            toolPanel.SuspendLayout();
-            toolPanel.TopToolStripPanel.SuspendLayout();
-
             using (WaitCursorScope.Enter())
             {
-                // check for updates
-                if (AppSettings.CheckForUpdates && AppSettings.LastUpdateCheck.AddDays(7) < DateTime.Now)
-                {
-                    AppSettings.LastUpdateCheck = DateTime.Now;
-                    FormUpdates updateForm = new(AppSettings.AppVersion);
-                    updateForm.SearchForUpdatesAndShow(ownerWindow: this, alwaysShow: false);
-                }
-
                 bool hasWorkingDir = !string.IsNullOrEmpty(Module.WorkingDir);
-                if (hasWorkingDir)
-                {
-                    HideDashboard();
-                }
-                else
-                {
-                    ShowDashboard();
-                }
 
                 bool bareRepository = Module.IsBareRepository();
-                bool isDashboard = _dashboard?.Visible ?? false;
-                bool validBrowseDir = !isDashboard && Module.IsValidGitWorkingDir();
+                bool validBrowseDir = Module.IsValidGitWorkingDir();
 
                 branchSelect.Text = validBrowseDir
                     ? !string.IsNullOrWhiteSpace(RevisionGrid.CurrentBranch.Value)
@@ -960,19 +611,11 @@ namespace GitUI.CommandsDialogs
                 toolStripButtonPull.Enabled = validBrowseDir;
                 toolStripButtonPush.Enabled = validBrowseDir;
                 toolStripButtonPush.ResetBeforeUpdate();
-                dashboardToolStripMenuItem.Visible = isDashboard;
-                pluginsToolStripMenuItem.Visible = validBrowseDir;
-                repositoryToolStripMenuItem.Visible = validBrowseDir;
-                commandsToolStripMenuItem.Visible = validBrowseDir;
+                mnuPlugins.Visible = validBrowseDir;
+                mnuRepository.Visible = validBrowseDir;
+                mnuCommands.Visible = validBrowseDir;
                 toolStripFileExplorer.Enabled = validBrowseDir;
-                if (!isDashboard)
-                {
-                    refreshToolStripMenuItem.ShortcutKeys = Keys.F5;
-                }
-                else
-                {
-                    refreshDashboardToolStripMenuItem.ShortcutKeys = Keys.F5;
-                }
+                refreshToolStripMenuItem.ShortcutKeys = Keys.F5;
 
                 UpdatePluginMenu(validBrowseDir);
                 gitMaintenanceToolStripMenuItem.Enabled = validBrowseDir;
@@ -1013,11 +656,7 @@ namespace GitUI.CommandsDialogs
                 stashChangesToolStripMenuItem.Enabled = !bareRepository;
                 stashStagedToolStripMenuItem.Visible = Module.GitVersion.SupportStashStaged;
 
-                toolsToolStripMenuItem.RefreshState(bareRepository);
-
                 _NO_TRANSLATE_WorkingDir.RefreshContent();
-
-                OnActivate();
 
                 LoadUserMenu();
                 toolStripButtonLevelUp.Image = validBrowseDir && Module.SuperprojectModule is not null ? Images.NavigateUp : Images.SubmodulesManage;
@@ -1031,7 +670,7 @@ namespace GitUI.CommandsDialogs
                     _formBrowseMenus.AddMenuCommandSet(MainMenuItem.NavigateMenu, RevisionGrid.MenuCommands.NavigateMenuCommands);
                     _formBrowseMenus.AddMenuCommandSet(MainMenuItem.ViewMenu, RevisionGrid.MenuCommands.ViewMenuCommands);
 
-                    _formBrowseMenus.InsertRevisionGridMainMenuItems(repositoryToolStripMenuItem);
+                    _formBrowseMenus.InsertRevisionGridMainMenuItems(mnuRepository);
 
                     if (AppSettings.ShowAheadBehindData)
                     {
@@ -1046,7 +685,9 @@ namespace GitUI.CommandsDialogs
                             // and the data will be taken from cache (so what we pass as argument is kind of useless)
                             IDictionary<string, AheadBehindData> aheadBehindData = _aheadBehindDataProvider?.GetData(currentBranch);
                             await this.SwitchToMainThreadAsync();
-                            toolStripButtonPush.DisplayAheadBehindInformation(aheadBehindData, currentBranch, GetShortcutKeyTooltipString(Command.Push));
+
+                            // TODO:
+                            ////toolStripButtonPush.DisplayAheadBehindInformation(aheadBehindData, currentBranch, GetShortcutKeyTooltipString(Command.Push));
                         });
                     }
 
@@ -1054,14 +695,11 @@ namespace GitUI.CommandsDialogs
                 }
                 else
                 {
-                    _windowsJumpListManager.DisableThumbnailToolbar();
+                    _windowsJumpListManager.EnableThumbnailToolbar(Module.IsValidGitWorkingDir());
                 }
 
                 UICommands.RaisePostBrowseInitialize(this);
             }
-
-            toolPanel.TopToolStripPanel.ResumeLayout();
-            toolPanel.ResumeLayout();
 
             return;
 
@@ -1126,10 +764,11 @@ namespace GitUI.CommandsDialogs
             pushToolStripMenuItem.ShortcutKeyDisplayString = GetShortcutKeyDisplayString(Command.Push);
             rebaseToolStripMenuItem.ShortcutKeyDisplayString = GetShortcutKeyDisplayString(Command.Rebase);
 
-            fileToolStripMenuItem.RefreshShortcutKeys(Hotkeys);
-            helpToolStripMenuItem.RefreshShortcutKeys(Hotkeys);
-            toolsToolStripMenuItem.RefreshShortcutKeys(Hotkeys);
-            ToolStripFilters.RefreshBrowseDialogShortcutKeys(Hotkeys);
+            // TODO:
+            ////fileToolStripMenuItem.RefreshShortcutKeys(Hotkeys);
+            ////helpToolStripMenuItem.RefreshShortcutKeys(Hotkeys);
+            ////toolsToolStripMenuItem.RefreshShortcutKeys(Hotkeys);
+            ////ToolStripFilters.RefreshBrowseDialogShortcutKeys(Hotkeys);
             ToolStripFilters.RefreshRevisionGridShortcutKeys(GetHotkeys(RevisionGridControl.HotkeySettingsName));
 
             // Set shortcuts on the Browse toolbar with commands in RevGrid
@@ -1143,16 +782,6 @@ namespace GitUI.CommandsDialogs
             UpdateTooltipWithShortcut(toolStripFileExplorer, fileExplorerToolStripMenuItem.ShortcutKeys);
             UpdateTooltipWithShortcut(RefreshButton, Keys.F5);
             UpdateTooltipWithShortcut(userShell, Command.GitBash);
-        }
-
-        private void OnActivate()
-        {
-            // check if we are in the middle of bisect
-            notificationBarBisectInProgress.RefreshBisect();
-
-            // check if we are in the middle of an action (merge/rebase/etc.)
-            notificationBarGitActionInProgress.RefreshGitAction(
-                checkForConflicts: AppSettings.GitAsyncWhenMinimized || (WindowState != FormWindowState.Minimized));
         }
 
         private void UpdateStashCount()
@@ -1177,7 +806,7 @@ namespace GitUI.CommandsDialogs
             }
         }
 
-        public override IScriptOptionsProvider? GetScriptOptionsProvider()
+        protected override IScriptOptionsProvider? GetScriptOptionsProvider()
         {
             if (fileTree.Visible)
             {
@@ -1317,11 +946,6 @@ namespace GitUI.CommandsDialogs
             UICommands.RepoChangedNotifier.Notify();
         }
 
-        private void RefreshDashboardToolStripMenuItemClick(object sender, EventArgs e)
-        {
-            _dashboard?.RefreshContent();
-        }
-
         private void PatchToolStripMenuItemClick(object sender, EventArgs e)
         {
             UICommands.StartViewPatchDialog(this);
@@ -1376,7 +1000,6 @@ namespace GitUI.CommandsDialogs
         private void ResetToolStripMenuItem_Click(object sender, EventArgs e)
         {
             UICommands.StartResetChangesDialog(this, Module.GetWorkTreeFiles(), onlyWorkTree: false);
-            RefreshGitStatusMonitor();
             revisionDiff.RefreshArtificial();
         }
 
@@ -1410,11 +1033,6 @@ namespace GitUI.CommandsDialogs
         private void MergeBranchToolStripMenuItemClick(object sender, EventArgs e)
         {
             UICommands.StartMergeBranchDialog(this, null);
-        }
-
-        private void toolsToolStripMenuItem_SettingsChanged(object sender, Menus.SettingsChangedEventArgs e)
-        {
-            HandleSettingsChanged(e.OldTranslation, e.OldCommitInfoPosition);
         }
 
         private void OnShowSettingsClick(object sender, EventArgs e)
@@ -1463,10 +1081,6 @@ namespace GitUI.CommandsDialogs
                 revisionDiff.LoadCustomDifftools();
                 RevisionGrid.LoadCustomDifftools();
             });
-
-            _dashboard?.RefreshContent();
-
-            _gitStatusMonitor.Active = NeedsGitStatusMonitor() && Module.IsValidGitWorkingDir();
 
             RefreshDefaultPullAction();
         }
@@ -1667,67 +1281,51 @@ namespace GitUI.CommandsDialogs
         {
             RevisionGrid.SelectedId = selectedId;
             RevisionGrid.FirstId = firstId;
-            SetGitModule(this, new GitModuleEventArgs(new GitModule(path)));
+            OpenGitModule(this, new GitModuleEventArgs(new GitModule(path)));
         }
 
-        private void SetGitModule(object sender, GitModuleEventArgs e)
+        private void OpenGitModule(object sender, GitModuleEventArgs e)
         {
-            string originalWorkingDir = Module.WorkingDir;
-
-            HideVariableMainMenuItems();
             PluginRegistry.Unregister(UICommands);
             RevisionGrid.OnRepositoryChanged();
-            _gitStatusMonitor.InvalidateGitWorkingDirectoryStatus();
             _submoduleStatusProvider.Init();
 
             repoObjectsTree.ClearTrees();
 
-            UICommands = UICommands.WithGitModule(e.GitModule);
-            if (Module.IsValidGitWorkingDir())
+            if (!Module.IsValidGitWorkingDir())
             {
-                RevisionGrid.SuspendRefreshRevisions();
-                string path = Module.WorkingDir;
-                AppSettings.RecentWorkingDir = path;
+                return;
+            }
 
-                HideDashboard();
+            RevisionGrid.SuspendRefreshRevisions();
+            string path = Module.WorkingDir;
+            AppSettings.RecentWorkingDir = path;
 
-                if (!string.Equals(originalWorkingDir, Module.WorkingDir, StringComparison.Ordinal))
-                {
-                    ChangeTerminalActiveFolder(Module.WorkingDir);
+            ChangeTerminalActiveFolder(Module.WorkingDir);
 
 #if DEBUG
-                    // Current encodings
-                    Debug.WriteLine($"Encodings for {Module.WorkingDir}");
-                    Debug.WriteLine($"Files content encoding: {Module.FilesEncoding.EncodingName}");
-                    Debug.WriteLine($"Commit encoding: {Module.CommitEncoding.EncodingName}");
-                    if (Module.LogOutputEncoding.CodePage != Module.CommitEncoding.CodePage)
-                    {
-                        Debug.WriteLine($"Log output encoding: {Module.LogOutputEncoding.EncodingName}");
-                    }
+            // Current encodings
+            Debug.WriteLine($"Encodings for {Module.WorkingDir}");
+            Debug.WriteLine($"Files content encoding: {Module.FilesEncoding.EncodingName}");
+            Debug.WriteLine($"Commit encoding: {Module.CommitEncoding.EncodingName}");
+            if (Module.LogOutputEncoding.CodePage != Module.CommitEncoding.CodePage)
+            {
+                Debug.WriteLine($"Log output encoding: {Module.LogOutputEncoding.EncodingName}");
+            }
 #endif
 
-                    // Reset the filter when switching repos
+            // Reset the filter when switching repos
 
-                    // If we're applying custom branch or revision filters - reset them
-                    RevisionGrid.ResetAllFilters();
-                    ToolStripFilters.ClearQuickFilters();
-                    revisionDiff.RepositoryChanged();
-                }
+            // If we're applying custom branch or revision filters - reset them
+            RevisionGrid.ResetAllFilters();
+            ToolStripFilters.ClearQuickFilters();
+            revisionDiff.RepositoryChanged();
 
-                RevisionInfo.SetRevisionWithChildren(revision: null, children: Array.Empty<ObjectId>());
-                RevisionGrid.ResumeRefreshRevisions();
+            RevisionGrid.ResumeRefreshRevisions();
 
-                RefreshRevisions();
+            RefreshRevisions();
 
-                SetShortcutKeyDisplayStringsFromHotkeySettings();
-            }
-            else
-            {
-                dashboardToolStripMenuItem.Visible = true;
-
-                MainSplitContainer.Visible = false;
-                ShowDashboard();
-            }
+            SetShortcutKeyDisplayStringsFromHotkeySettings();
 
             RegisterPlugins();
 
@@ -1788,7 +1386,8 @@ namespace GitUI.CommandsDialogs
             {
                 ToolStripMenuItem checkoutBranchItem = new(checkoutBranchToolStripMenuItem.Text, Images.BranchCheckout)
                 {
-                    ShortcutKeys = GetShortcutKeys(Command.CheckoutBranch),
+                    // TODO:
+                    // ShortcutKeys = GetShortcutKeys(Command.CheckoutBranch),
                     ShortcutKeyDisplayString = GetShortcutKeyDisplayString(Command.CheckoutBranch)
                 };
 
@@ -1801,7 +1400,7 @@ namespace GitUI.CommandsDialogs
                 foreach (IGitRef branch in GetBranches())
                 {
                     Validates.NotNull(branch.ObjectId);
-                    bool isBranchVisible = ((ICheckRefs)RevisionGridControl).Contains(branch.ObjectId);
+                    bool isBranchVisible = ((ICheckRefs)RevisionGrid).Contains(branch.ObjectId);
 
                     ToolStripItem toolStripItem = branchSelect.DropDownItems.Add(branch.Name);
                     toolStripItem.ForeColor = isBranchVisible ? branchSelect.ForeColor : Color.Silver.AdaptTextColor();
@@ -1825,7 +1424,7 @@ namespace GitUI.CommandsDialogs
         {
             if (PluginRegistry.GitHosters.Count > 0)
             {
-                UICommands.StartCloneForkFromHoster(this, PluginRegistry.GitHosters[0], SetGitModule);
+                UICommands.StartCloneForkFromHoster(this, PluginRegistry.GitHosters[0], OpenGitModule);
                 RefreshRevisions();
             }
             else
@@ -1989,6 +1588,8 @@ namespace GitUI.CommandsDialogs
 
         private void QuickFetch()
         {
+            // TODO:
+            /*
             bool success = ScriptsRunner.RunEventScripts(ScriptEvent.BeforeFetch, this);
             if (!success)
             {
@@ -2003,6 +1604,7 @@ namespace GitUI.CommandsDialogs
 
             ScriptsRunner.RunEventScripts(ScriptEvent.AfterFetch, this);
             RefreshRevisions();
+            */
         }
 
         public override bool ProcessHotkey(Keys keyData)
@@ -2021,13 +1623,13 @@ namespace GitUI.CommandsDialogs
             // downstream (without keys for quick search and without keys for text selection and copy e.g. in CommitInfo)
             // but allow routing Ctrl+A away from RevisionGridControl in order to not select all revisions
             if (GitExtensionsControl.IsTextEditKey(keyData)
-                && !(keyData == (Keys.Control | Keys.A) && RevisionGridControl.ContainsFocus))
+                && !(keyData == (Keys.Control | Keys.A) && RevisionGrid.ContainsFocus))
             {
                 return false;
             }
 
             // route to visible controls which have their own hotkeys
-            return (keyData != (Keys.Control | Keys.A) && RevisionGridControl.ProcessHotkey(keyData))
+            return (keyData != (Keys.Control | Keys.A) && RevisionGrid.ProcessHotkey(keyData))
                 || (CommitInfoTabControl.SelectedTab == DiffTabPage && revisionDiff.ProcessHotkey(keyData))
                 || (CommitInfoTabControl.SelectedTab == TreeTabPage && fileTree.ProcessHotkey(keyData));
         }
@@ -2051,7 +1653,6 @@ namespace GitUI.CommandsDialogs
                 case Command.FocusNextTab: FocusNextTab(); break;
                 case Command.FocusPrevTab: FocusNextTab(forward: false); break;
                 case Command.FocusFilter: ToolStripFilters.SetFocus(); break;
-                case Command.OpenRepo: fileToolStripMenuItem.OpenRepositoryMenuItem.PerformClick(); break;
                 case Command.Commit: UICommands.StartCommitDialog(this); break;
                 case Command.AddNotes: AddNotes(); break;
                 case Command.FindFileInSelectedCommit: FindFileInSelectedCommit(); break;
@@ -2195,30 +1796,7 @@ namespace GitUI.CommandsDialogs
             }
         }
 
-        internal bool ExecuteCommand(Command cmd)
-        {
-            return ExecuteCommand((int)cmd);
-        }
-
         #endregion
-
-        public static void OpenContainingFolder(FileStatusList diffFiles, IGitModule module)
-        {
-            if (!diffFiles.SelectedItems.Any())
-            {
-                return;
-            }
-
-            foreach (FileStatusItem item in diffFiles.SelectedItems)
-            {
-                string filePath = Path.Combine(module.WorkingDir, item.Item.Name.ToNativePath());
-
-                if (!string.IsNullOrWhiteSpace(filePath))
-                {
-                    FormBrowseUtil.ShowFileOrParentFolderInFileExplorer(filePath);
-                }
-            }
-        }
 
         private void SetSplitterPositions()
         {
@@ -2477,7 +2055,7 @@ namespace GitUI.CommandsDialogs
         private void UpdateSubmodulesStructure()
         {
             // Submodule status is updated on git-status updates. To make sure supermodule status is updated, update immediately (once)
-            bool updateStatus = AppSettings.ShowSubmoduleStatus && _gitStatusMonitor.Active;
+            bool updateStatus = AppSettings.ShowSubmoduleStatus;
 
             toolStripButtonLevelUp.ToolTipText = "";
 
@@ -2624,7 +2202,7 @@ namespace GitUI.CommandsDialogs
         {
             if (Module.SuperprojectModule is not null)
             {
-                SetGitModule(this, new GitModuleEventArgs(Module.SuperprojectModule));
+                OpenGitModule(this, new GitModuleEventArgs(Module.SuperprojectModule));
             }
             else
             {
@@ -2909,7 +2487,6 @@ namespace GitUI.CommandsDialogs
                 ArgumentString args = Commands.Reset(ResetMode.Soft, "HEAD~1");
                 Module.GitExecutable.GetOutput(args);
                 refreshToolStripMenuItem.PerformClick();
-                RefreshGitStatusMonitor();
             }
         }
 
@@ -2918,9 +2495,9 @@ namespace GitUI.CommandsDialogs
 
         internal readonly struct TestAccessor
         {
-            private readonly FormBrowse _form;
+            private readonly RepoBrowser _form;
 
-            public TestAccessor(FormBrowse form)
+            public TestAccessor(RepoBrowser form)
             {
                 _form = form;
             }
@@ -2930,7 +2507,7 @@ namespace GitUI.CommandsDialogs
             public RepoObjectsTree RepoObjectsTree => _form.repoObjectsTree;
             public RevisionDiffControl RevisionDiffControl => _form.revisionDiff;
             public RevisionFileTreeControl RevisionFileTreeControl => _form.fileTree;
-            public RevisionGridControl RevisionGrid => _form.RevisionGridControl;
+////            public RevisionGridControl RevisionGrid => _form.RevisionGridControl;
             public SplitContainer RevisionsSplitContainer => _form.RevisionsSplitContainer;
             public SplitContainer RightSplitContainer => _form.RightSplitContainer;
             public SplitterManager SplitterManager => _form._splitterManager;
@@ -2994,11 +2571,6 @@ namespace GitUI.CommandsDialogs
             {
                 e.Effect = DragDropEffects.Move;
             }
-        }
-
-        private void fileToolStripMenuItem_RecentRepositoriesCleared(object sender, EventArgs e)
-        {
-            _dashboard?.RefreshContent();
         }
     }
 }

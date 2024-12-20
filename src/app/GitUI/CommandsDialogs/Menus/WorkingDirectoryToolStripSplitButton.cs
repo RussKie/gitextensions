@@ -22,7 +22,6 @@ internal class WorkingDirectoryToolStripSplitButton : ToolStripSplitButton, ITra
     private IRepositoryHistoryUIService? _repositoryHistoryUIService;
 
     // NOTE: This is pretty bad, but we want to share the same look and feel of the menu items defined in the Start menu.
-    private StartToolStripMenuItem? _startToolStripMenuItem;
     private ToolStripMenuItem? _closeToolStripMenuItem;
 
     public WorkingDirectoryToolStripSplitButton()
@@ -51,14 +50,12 @@ internal class WorkingDirectoryToolStripSplitButton : ToolStripSplitButton, ITra
     ///  Initializes the menu item.
     /// </summary>
     /// <param name="getUICommands">The method that returns the current instance of UI commands.</param>
-    public void Initialize(Func<IGitUICommands> getUICommands, IRepositoryHistoryUIService repositoryHistoryUIService,
-                           StartToolStripMenuItem startToolStripMenuItem, ToolStripMenuItem closeToolStripMenuItem)
+    public void Initialize(Func<IGitUICommands> getUICommands, IRepositoryHistoryUIService repositoryHistoryUIService, ToolStripMenuItem closeToolStripMenuItem)
     {
         Translator.Translate(this, AppSettings.CurrentTranslation);
 
         _getUICommands = getUICommands;
         _repositoryHistoryUIService = repositoryHistoryUIService;
-        _startToolStripMenuItem = startToolStripMenuItem;
         _closeToolStripMenuItem = closeToolStripMenuItem;
     }
 
@@ -72,7 +69,6 @@ internal class WorkingDirectoryToolStripSplitButton : ToolStripSplitButton, ITra
     protected override void OnDropDownShow(EventArgs e)
     {
         Assumes.NotNull(_repositoryHistoryUIService);
-        Assumes.NotNull(_startToolStripMenuItem);
         Assumes.NotNull(_closeToolStripMenuItem);
 
         base.OnDropDownShow(e);
@@ -80,23 +76,23 @@ internal class WorkingDirectoryToolStripSplitButton : ToolStripSplitButton, ITra
         DropDown.SuspendLayout();
         DropDownItems.Clear();
 
-        ToolStripMenuItem tsmiCategorisedRepos = new(_startToolStripMenuItem.FavouriteRepositoriesMenuItem.Text, _startToolStripMenuItem.FavouriteRepositoriesMenuItem.Image);
-        _repositoryHistoryUIService.PopulateFavouriteRepositoriesMenu(tsmiCategorisedRepos);
-        if (tsmiCategorisedRepos.DropDownItems.Count > 0)
-        {
-            DropDownItems.Add(tsmiCategorisedRepos);
-        }
+        ////ToolStripMenuItem tsmiCategorisedRepos = new(_startToolStripMenuItem.FavouriteRepositoriesMenuItem.Text, _startToolStripMenuItem.FavouriteRepositoriesMenuItem.Image);
+        ////_repositoryHistoryUIService.PopulateFavouriteRepositoriesMenu(tsmiCategorisedRepos);
+        ////if (tsmiCategorisedRepos.DropDownItems.Count > 0)
+        ////{
+        ////    DropDownItems.Add(tsmiCategorisedRepos);
+        ////}
 
         _repositoryHistoryUIService.PopulateRecentRepositoriesMenu(this);
 
         DropDownItems.Add(new ToolStripSeparator());
 
-        ToolStripMenuItem mnuOpenLocalRepository = new(_startToolStripMenuItem.OpenRepositoryMenuItem.Text, _startToolStripMenuItem.OpenRepositoryMenuItem.Image)
-        {
-            ShortcutKeyDisplayString = _startToolStripMenuItem.OpenRepositoryMenuItem.ShortcutKeyDisplayString
-        };
-        mnuOpenLocalRepository.Click += (s, e) => _startToolStripMenuItem.OpenRepositoryMenuItem.PerformClick();
-        DropDownItems.Add(mnuOpenLocalRepository);
+        ////ToolStripMenuItem mnuOpenLocalRepository = new(_startToolStripMenuItem.OpenRepositoryMenuItem.Text, _startToolStripMenuItem.OpenRepositoryMenuItem.Image)
+        ////{
+        ////    ShortcutKeyDisplayString = _startToolStripMenuItem.OpenRepositoryMenuItem.ShortcutKeyDisplayString
+        ////};
+        ////mnuOpenLocalRepository.Click += (s, e) => _startToolStripMenuItem.OpenRepositoryMenuItem.PerformClick();
+        ////DropDownItems.Add(mnuOpenLocalRepository);
 
         ToolStripMenuItem mnuCloseRepo = new(_closeToolStripMenuItem.Text);
         mnuCloseRepo.ShortcutKeyDisplayString = _closeToolStripMenuItem.ShortcutKeyDisplayString;
@@ -119,17 +115,6 @@ internal class WorkingDirectoryToolStripSplitButton : ToolStripSplitButton, ITra
         DropDownItems.Add(mnuRecentReposSettings);
 
         DropDown.ResumeLayout();
-    }
-
-    protected override void OnMouseUp(MouseEventArgs e)
-    {
-        base.OnMouseUp(e);
-
-        if (e.Button == MouseButtons.Right)
-        {
-            Assumes.NotNull(_startToolStripMenuItem);
-            _startToolStripMenuItem.OpenRepositoryMenuItem.PerformClick();
-        }
     }
 
     /// <summary>Updates the text shown on the combo button itself.</summary>

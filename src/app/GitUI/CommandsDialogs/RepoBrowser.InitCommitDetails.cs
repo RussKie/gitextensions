@@ -5,7 +5,7 @@ using GitUIPluginInterfaces;
 
 namespace GitUI.CommandsDialogs
 {
-    partial class FormBrowse
+    partial class RepoBrowser
     {
         // This file is dedicated to init logic for FormBrowse commit details panel that includes
         // the commit info panel, the diff panel, the commit file tree, etc.

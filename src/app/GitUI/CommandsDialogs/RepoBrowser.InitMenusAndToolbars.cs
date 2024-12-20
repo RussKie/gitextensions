@@ -10,7 +10,7 @@ using ResourceManager.Hotkey;
 
 namespace GitUI.CommandsDialogs
 {
-    partial class FormBrowse
+    partial class RepoBrowser
     {
         // This file is dedicated to init logic for FormBrowse menus and toolbars
 
@@ -18,7 +18,7 @@ namespace GitUI.CommandsDialogs
 
         private void InitMenusAndToolbars(string? revFilter, string? pathFilter)
         {
-            commandsToolStripMenuItem.DropDownOpening += CommandsToolStripMenuItem_DropDownOpening;
+            mnuCommands.DropDownOpening += CommandsToolStripMenuItem_DropDownOpening;
 
             InitFilters();
 
@@ -139,7 +139,7 @@ namespace GitUI.CommandsDialogs
         }
 
         private void UpdateTooltipWithShortcut(ToolStripItem button, Command command)
-            => UpdateTooltipWithShortcut(button, GetShortcutKeys(command));
+            => UpdateTooltipWithShortcut(button, GetShortcutKeys((int)command));
 
         private static void UpdateTooltipWithShortcut(ToolStripItem button, Keys keys)
             => button.ToolTipText = button.ToolTipText.UpdateSuffix(keys.ToShortcutKeyToolTipString());
@@ -164,7 +164,9 @@ namespace GitUI.CommandsDialogs
                     Name = FetchPullToolbarShortcutsPrefix + toolStripMenuItem.Name,
                     Size = toolStripMenuItem.Size,
                     Text = toolTipText,
-                    ToolTipText = toolTipText.UpdateSuffix(command.HasValue ? GetShortcutKeyTooltipString(command.Value) : null),
+
+                    // TODO:
+                    ////ToolTipText = toolTipText.UpdateSuffix(command.HasValue ? GetShortcutKeyTooltipString(command.Value) : null),
                     DisplayStyle = ToolStripItemDisplayStyle.Image,
                 };
 

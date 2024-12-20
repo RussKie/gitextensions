@@ -4,7 +4,7 @@ using GitUI.Properties;
 
 namespace GitUI.CommandsDialogs
 {
-    partial class FormBrowse
+    partial class RepoBrowser
     {
         // This file is dedicated to init logic for FormBrowse revisiong grid control
 
