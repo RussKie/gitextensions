@@ -288,13 +288,6 @@ namespace GitUI.CommandsDialogs
             _submoduleStatusProvider.StatusUpdating += SubmoduleStatusProvider_StatusUpdating;
             _submoduleStatusProvider.StatusUpdated += SubmoduleStatusProvider_StatusUpdated;
 
-            foreach (Control control in this.FindDescendants())
-            {
-                control.AllowDrop = true;
-                control.DragEnter += FormBrowse_DragEnter;
-                control.DragDrop += FormBrowse_DragDrop;
-            }
-
             _aheadBehindDataProvider = new AheadBehindDataProvider(() => Module.GitExecutable);
 
             // Show blame by default in file tree if not started from command line
@@ -405,7 +398,6 @@ namespace GitUI.CommandsDialogs
             RefreshSplitViewLayout();
             LayoutRevisionInfo();
             SetSplitterPositions();
-
             base.OnLoad(e);
 
             // All app init is done, make all repo related similar to switching repos
@@ -2515,11 +2507,7 @@ namespace GitUI.CommandsDialogs
             public FilterToolBar ToolStripFilters => _form.ToolStripFilters;
         }
 
-        private void FormBrowse_DragDrop(object sender, DragEventArgs e)
-        {
-            HandleDrop(e);
-        }
-
+        /* TODO:
         private void HandleDrop(DragEventArgs e)
         {
             if (TreeTabPage.Parent is null)
@@ -2563,6 +2551,16 @@ namespace GitUI.CommandsDialogs
             bool IsFileExistingInRepo([NotNullWhen(returnValue: true)] string? path) => IsPathExists(path) && path.StartsWith(Module.WorkingDir, StringComparison.InvariantCultureIgnoreCase);
         }
 
+        private void FormBrowse_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)
+                || e.Data.GetDataPresent(DataFormats.Text)
+                || e.Data.GetDataPresent(DataFormats.UnicodeText))
+            {
+                e.Effect = DragDropEffects.Move;
+            }
+        }
+
         private static void FormBrowse_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop)
@@ -2572,5 +2570,6 @@ namespace GitUI.CommandsDialogs
                 e.Effect = DragDropEffects.Move;
             }
         }
+        */
     }
 }

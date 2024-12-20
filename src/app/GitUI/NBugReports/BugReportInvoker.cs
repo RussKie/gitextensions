@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Security;
 using System.Text;
@@ -9,6 +9,7 @@ using GitCommands.Utils;
 using GitExtensions.Extensibility;
 using GitExtensions.Extensibility.Settings;
 using GitUI.CommandsDialogs;
+using GitUIPluginInterfaces;
 
 namespace GitUI.NBugReports
 {
@@ -330,12 +331,12 @@ namespace GitUI.NBugReports
 
             static void ShowGitRepo(Form? ownerForm, string? workingDir)
             {
-                if (ownerForm is FormBrowse formBrowse)
+                if (ownerForm is IBrowseRepo repoBrowser)
                 {
                     ThreadHelper.JoinableTaskFactory.Run(async () =>
                         {
-                            await formBrowse.SwitchToMainThreadAsync();
-                            formBrowse.SetWorkingDir(workingDir);
+                            await ownerForm.SwitchToMainThreadAsync();
+                            repoBrowser.SetWorkingDir(workingDir);
                         });
                 }
             }
