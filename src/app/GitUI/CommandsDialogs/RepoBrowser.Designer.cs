@@ -19,10 +19,11 @@ namespace GitUI.CommandsDialogs
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            components = new Container();
             ToolStripSeparator toolStripSeparator14;
             ToolStripSeparator toolStripSeparator11;
-            ToolStripMain = new GitUI.ToolStripEx();
+            ComponentResourceManager resources = new ComponentResourceManager(typeof(RepoBrowser));
+            ToolStripMain = new ToolStripEx();
             RefreshButton = new ToolStripButton();
             toolStripSeparator0 = new ToolStripSeparator();
             toggleLeftPanel = new ToolStripButton();
@@ -36,6 +37,16 @@ namespace GitUI.CommandsDialogs
             _NO_TRANSLATE_WorkingDir = new WorkingDirectoryToolStripSplitButton();
             branchSelect = new ToolStripSplitButton();
             toolStripSeparator1 = new ToolStripSeparator();
+            toolStripButtonPull = new ToolStripSplitButton();
+            pullToolStripMenuItem1 = new ToolStripMenuItem();
+            mergeToolStripMenuItem = new ToolStripMenuItem();
+            rebaseToolStripMenuItem1 = new ToolStripMenuItem();
+            fetchToolStripMenuItem = new ToolStripMenuItem();
+            fetchAllToolStripMenuItem = new ToolStripMenuItem();
+            fetchPruneAllToolStripMenuItem = new ToolStripMenuItem();
+            setDefaultPullButtonActionToolStripMenuItem = new ToolStripMenuItem();
+            toolStripButtonPush = new ToolStripPushButton();
+            toolStripButtonCommit = new ToolStripButton();
             toolStripSplitStash = new ToolStripSplitButton();
             stashChangesToolStripMenuItem = new ToolStripMenuItem();
             stashStagedToolStripMenuItem = new ToolStripMenuItem();
@@ -43,38 +54,10 @@ namespace GitUI.CommandsDialogs
             toolStripSeparator9 = new ToolStripSeparator();
             manageStashesToolStripMenuItem = new ToolStripMenuItem();
             createAStashToolStripMenuItem = new ToolStripMenuItem();
-            toolStripButtonCommit = new ToolStripButton();
-            toolStripButtonPull = new ToolStripSplitButton();
-            mergeToolStripMenuItem = new ToolStripMenuItem();
-            rebaseToolStripMenuItem1 = new ToolStripMenuItem();
-            fetchToolStripMenuItem = new ToolStripMenuItem();
-            pullToolStripMenuItem1 = new ToolStripMenuItem();
-            fetchAllToolStripMenuItem = new ToolStripMenuItem();
-            fetchPruneAllToolStripMenuItem = new ToolStripMenuItem();
-            setDefaultPullButtonActionToolStripMenuItem = new ToolStripMenuItem();
-            toolStripButtonPush = new GitUI.CommandsDialogs.ToolStripPushButton();
             toolStripSeparator2 = new ToolStripSeparator();
             toolStripFileExplorer = new ToolStripButton();
             userShell = new ToolStripSplitButton();
             EditSettings = new ToolStripButton();
-            MainSplitContainer = new SplitContainer();
-            LeftSplitContainer = new SplitContainer();
-            repoObjectsTree = new GitUI.LeftPanel.RepoObjectsTree();
-            RightSplitContainer = new SplitContainer();
-            RevisionsSplitContainer = new SplitContainer();
-            RevisionGridContainer = new Panel();
-            RevisionGrid = new GitUI.RevisionGridControl();
-            notificationBarBisectInProgress = new GitUI.UserControls.InteractiveGitActionControl();
-            notificationBarGitActionInProgress = new GitUI.UserControls.InteractiveGitActionControl();
-            CommitInfoTabControl = new GitUI.CommandsDialogs.FullBleedTabControl();
-            CommitInfoTabPage = new TabPage();
-            RevisionInfo = new GitUI.CommitInfo.CommitInfo();
-            TreeTabPage = new TabPage();
-            fileTree = new GitUI.CommandsDialogs.RevisionFileTreeControl();
-            DiffTabPage = new TabPage();
-            revisionDiff = new GitUI.CommandsDialogs.RevisionDiffControl();
-            GpgInfoTabPage = new TabPage();
-            revisionGpgInfo1 = new GitUI.CommandsDialogs.RevisionGpgInfoControl();
             FilterToolTip = new ToolTip(components);
             closeToolStripMenuItem = new ToolStripMenuItem();
             refreshToolStripMenuItem = new ToolStripMenuItem();
@@ -136,80 +119,53 @@ namespace GitUI.CommandsDialogs
             _forkCloneRepositoryToolStripMenuItem = new ToolStripMenuItem();
             _viewPullRequestsToolStripMenuItem = new ToolStripMenuItem();
             _createPullRequestsToolStripMenuItem = new ToolStripMenuItem();
+            _addUpstreamRemoteToolStripMenuItem = new ToolStripMenuItem();
             mnuPlugins = new ToolStripMenuItem();
+            pluginsLoadingToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator15 = new ToolStripSeparator();
             pluginSettingsToolStripMenuItem = new ToolStripMenuItem();
-            mainMenuStrip = new GitUI.MenuStripEx();
-            gitItemBindingSource = new BindingSource(components);
-            gitRevisionBindingSource = new BindingSource(components);
+            mainMenuStrip = new MenuStripEx();
             toolPanel = new ToolStripContainer();
-            _addUpstreamRemoteToolStripMenuItem = new ToolStripMenuItem();
+            MainSplitContainer = new SplitContainer();
+            LeftSplitContainer = new SplitContainer();
+            repoObjectsTree = new GitUI.LeftPanel.RepoObjectsTree();
+            ToolStripScripts = new ToolStripEx();
             ToolStripFilters = new GitUI.UserControls.FilterToolBar();
-            ToolStripScripts = new GitUI.ToolStripEx();
-            pluginsLoadingToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator14 = new ToolStripSeparator();
             toolStripSeparator11 = new ToolStripSeparator();
             ToolStripMain.SuspendLayout();
-            ToolStripFilters.SuspendLayout();
-            ToolStripScripts.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(MainSplitContainer)).BeginInit();
+            mainMenuStrip.SuspendLayout();
+            toolPanel.ContentPanel.SuspendLayout();
+            toolPanel.TopToolStripPanel.SuspendLayout();
+            toolPanel.SuspendLayout();
+            ((ISupportInitialize)MainSplitContainer).BeginInit();
             MainSplitContainer.Panel1.SuspendLayout();
-            MainSplitContainer.Panel2.SuspendLayout();
             MainSplitContainer.SuspendLayout();
             ((ISupportInitialize)LeftSplitContainer).BeginInit();
             LeftSplitContainer.Panel1.SuspendLayout();
             LeftSplitContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(RightSplitContainer)).BeginInit();
-            RightSplitContainer.Panel1.SuspendLayout();
-            RightSplitContainer.Panel2.SuspendLayout();
-            RightSplitContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(RevisionsSplitContainer)).BeginInit();
-            RevisionsSplitContainer.Panel1.SuspendLayout();
-            RevisionsSplitContainer.SuspendLayout();
-            RevisionGridContainer.SuspendLayout();
-            CommitInfoTabControl.SuspendLayout();
-            CommitInfoTabPage.SuspendLayout();
-            TreeTabPage.SuspendLayout();
-            DiffTabPage.SuspendLayout();
-            GpgInfoTabPage.SuspendLayout();
-            mainMenuStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(gitItemBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(gitRevisionBindingSource)).BeginInit();
-            toolPanel.ContentPanel.SuspendLayout();
-            toolPanel.TopToolStripPanel.SuspendLayout();
-            toolPanel.SuspendLayout();
             SuspendLayout();
             // 
             // toolStripSeparator14
             // 
             toolStripSeparator14.Name = "toolStripSeparator14";
-            toolStripSeparator14.Size = new Size(236, 6);
+            toolStripSeparator14.Size = new Size(225, 6);
+            // 
+            // toolStripSeparator11
+            // 
+            toolStripSeparator11.Name = "toolStripSeparator11";
+            toolStripSeparator11.Size = new Size(225, 6);
             // 
             // ToolStripMain
             // 
+            ToolStripMain.Dock = DockStyle.None;
             ToolStripMain.DrawBorder = false;
             ToolStripMain.GripEnabled = false;
-            ToolStripMain.Items.AddRange(new ToolStripItem[] {
-            RefreshButton,
-            toolStripSeparator0,
-            toggleLeftPanel,
-            toggleSplitViewLayout,
-            menuCommitInfoPosition,
-            toolStripSeparator17,
-            toolStripButtonLevelUp,
-            _NO_TRANSLATE_WorkingDir,
-            branchSelect,
-            toolStripSeparator1,
-            toolStripButtonPull,
-            toolStripButtonPush,
-            toolStripButtonCommit,
-            toolStripSplitStash,
-            toolStripSeparator2,
-            toolStripFileExplorer,
-            userShell,
-            EditSettings});
+            ToolStripMain.Items.AddRange(new ToolStripItem[] { RefreshButton, toolStripSeparator0, toggleLeftPanel, toggleSplitViewLayout, menuCommitInfoPosition, toolStripSeparator17, toolStripButtonLevelUp, _NO_TRANSLATE_WorkingDir, branchSelect, toolStripSeparator1, toolStripButtonPull, toolStripButtonPush, toolStripButtonCommit, toolStripSplitStash, toolStripSeparator2, toolStripFileExplorer, userShell, EditSettings });
             ToolStripMain.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
+            ToolStripMain.Location = new Point(554, 0);
             ToolStripMain.Name = "ToolStripMain";
+            ToolStripMain.Size = new Size(369, 25);
             ToolStripMain.TabIndex = 0;
             ToolStripMain.Text = "Standard";
             // 
@@ -249,10 +205,7 @@ namespace GitUI.CommandsDialogs
             // menuCommitInfoPosition
             // 
             menuCommitInfoPosition.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            menuCommitInfoPosition.DropDownItems.AddRange(new ToolStripItem[] {
-            commitInfoBelowMenuItem,
-            commitInfoLeftwardMenuItem,
-            commitInfoRightwardMenuItem});
+            menuCommitInfoPosition.DropDownItems.AddRange(new ToolStripItem[] { commitInfoBelowMenuItem, commitInfoLeftwardMenuItem, commitInfoRightwardMenuItem });
             menuCommitInfoPosition.Image = Properties.Images.LayoutFooterTab;
             menuCommitInfoPosition.Name = "menuCommitInfoPosition";
             menuCommitInfoPosition.Size = new Size(32, 22);
@@ -263,7 +216,7 @@ namespace GitUI.CommandsDialogs
             // 
             commitInfoBelowMenuItem.Image = Properties.Images.LayoutFooterTab;
             commitInfoBelowMenuItem.Name = "commitInfoBelowMenuItem";
-            commitInfoBelowMenuItem.Size = new Size(259, 22);
+            commitInfoBelowMenuItem.Size = new Size(218, 22);
             commitInfoBelowMenuItem.Text = "Commit info &below graph";
             commitInfoBelowMenuItem.Click += CommitInfoBelowClick;
             // 
@@ -271,7 +224,7 @@ namespace GitUI.CommandsDialogs
             // 
             commitInfoLeftwardMenuItem.Image = Properties.Images.LayoutSidebarTopLeft;
             commitInfoLeftwardMenuItem.Name = "commitInfoLeftwardMenuItem";
-            commitInfoLeftwardMenuItem.Size = new Size(259, 22);
+            commitInfoLeftwardMenuItem.Size = new Size(218, 22);
             commitInfoLeftwardMenuItem.Text = "Commit info &left of graph";
             commitInfoLeftwardMenuItem.Click += CommitInfoLeftwardClick;
             // 
@@ -279,7 +232,7 @@ namespace GitUI.CommandsDialogs
             // 
             commitInfoRightwardMenuItem.Image = Properties.Images.LayoutSidebarTopRight;
             commitInfoRightwardMenuItem.Name = "commitInfoRightwardMenuItem";
-            commitInfoRightwardMenuItem.Size = new Size(259, 22);
+            commitInfoRightwardMenuItem.Size = new Size(218, 22);
             commitInfoRightwardMenuItem.Text = "Commit info &right of graph";
             commitInfoRightwardMenuItem.Click += CommitInfoRightwardClick;
             // 
@@ -300,8 +253,13 @@ namespace GitUI.CommandsDialogs
             // 
             // _NO_TRANSLATE_WorkingDir
             // 
-            _NO_TRANSLATE_WorkingDir.Size = new Size(83, 22);
+            _NO_TRANSLATE_WorkingDir.Image = (Image)resources.GetObject("_NO_TRANSLATE_WorkingDir.Image");
+            _NO_TRANSLATE_WorkingDir.ImageAlign = ContentAlignment.MiddleLeft;
+            _NO_TRANSLATE_WorkingDir.ImageTransparentColor = Color.Magenta;
+            _NO_TRANSLATE_WorkingDir.Name = "WorkingDirectoryToolStripSplitButton";
+            _NO_TRANSLATE_WorkingDir.Size = new Size(99, 22);
             _NO_TRANSLATE_WorkingDir.Text = "WorkingDir";
+            _NO_TRANSLATE_WorkingDir.TextAlign = ContentAlignment.MiddleLeft;
             _NO_TRANSLATE_WorkingDir.ToolTipText = "Change working directory";
             // 
             // branchSelect
@@ -309,7 +267,7 @@ namespace GitUI.CommandsDialogs
             branchSelect.Image = Properties.Resources.branch;
             branchSelect.ImageTransparentColor = Color.Magenta;
             branchSelect.Name = "branchSelect";
-            branchSelect.Size = new Size(60, 22);
+            branchSelect.Size = new Size(76, 22);
             branchSelect.Text = "Branch";
             branchSelect.ToolTipText = "Change current branch";
             branchSelect.ButtonClick += CurrentBranchClick;
@@ -321,15 +279,98 @@ namespace GitUI.CommandsDialogs
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new Size(6, 25);
             // 
+            // toolStripButtonPull
+            // 
+            toolStripButtonPull.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButtonPull.DropDownItems.AddRange(new ToolStripItem[] { pullToolStripMenuItem1, toolStripSeparator11, mergeToolStripMenuItem, rebaseToolStripMenuItem1, fetchToolStripMenuItem, fetchAllToolStripMenuItem, fetchPruneAllToolStripMenuItem, toolStripSeparator14, setDefaultPullButtonActionToolStripMenuItem });
+            toolStripButtonPull.Image = Properties.Images.Pull;
+            toolStripButtonPull.ImageTransparentColor = Color.Magenta;
+            toolStripButtonPull.Name = "toolStripButtonPull";
+            toolStripButtonPull.Size = new Size(32, 22);
+            toolStripButtonPull.Text = "Pull";
+            toolStripButtonPull.ButtonClick += ToolStripButtonPullClick;
+            // 
+            // pullToolStripMenuItem1
+            // 
+            pullToolStripMenuItem1.Image = Properties.Images.Pull;
+            pullToolStripMenuItem1.Name = "pullToolStripMenuItem1";
+            pullToolStripMenuItem1.Size = new Size(228, 22);
+            pullToolStripMenuItem1.Text = "Open &pull dialog...";
+            pullToolStripMenuItem1.Click += pullToolStripMenuItem1_Click;
+            // 
+            // mergeToolStripMenuItem
+            // 
+            mergeToolStripMenuItem.Image = Properties.Images.PullMerge;
+            mergeToolStripMenuItem.Name = "mergeToolStripMenuItem";
+            mergeToolStripMenuItem.Size = new Size(228, 22);
+            mergeToolStripMenuItem.Text = "Pull - &merge";
+            mergeToolStripMenuItem.Click += mergeToolStripMenuItem_Click;
+            // 
+            // rebaseToolStripMenuItem1
+            // 
+            rebaseToolStripMenuItem1.Image = Properties.Images.PullRebase;
+            rebaseToolStripMenuItem1.Name = "rebaseToolStripMenuItem1";
+            rebaseToolStripMenuItem1.Size = new Size(228, 22);
+            rebaseToolStripMenuItem1.Text = "Pull - &rebase";
+            rebaseToolStripMenuItem1.Click += rebaseToolStripMenuItem1_Click;
+            // 
+            // fetchToolStripMenuItem
+            // 
+            fetchToolStripMenuItem.Image = Properties.Images.PullFetch;
+            fetchToolStripMenuItem.Name = "fetchToolStripMenuItem";
+            fetchToolStripMenuItem.Size = new Size(228, 22);
+            fetchToolStripMenuItem.Text = "&Fetch";
+            fetchToolStripMenuItem.ToolTipText = "Fetch branches and tags";
+            fetchToolStripMenuItem.Click += fetchToolStripMenuItem_Click;
+            // 
+            // fetchAllToolStripMenuItem
+            // 
+            fetchAllToolStripMenuItem.Image = Properties.Images.PullFetchAll;
+            fetchAllToolStripMenuItem.Name = "fetchAllToolStripMenuItem";
+            fetchAllToolStripMenuItem.Size = new Size(228, 22);
+            fetchAllToolStripMenuItem.Text = "Fetch &all";
+            fetchAllToolStripMenuItem.ToolTipText = "Fetch branches and tags from all remote repositories";
+            fetchAllToolStripMenuItem.Click += fetchAllToolStripMenuItem_Click;
+            // 
+            // fetchPruneAllToolStripMenuItem
+            // 
+            fetchPruneAllToolStripMenuItem.Image = Properties.Images.PullFetchPruneAll;
+            fetchPruneAllToolStripMenuItem.Name = "fetchPruneAllToolStripMenuItem";
+            fetchPruneAllToolStripMenuItem.Size = new Size(228, 22);
+            fetchPruneAllToolStripMenuItem.Text = "F&etch and prune all";
+            fetchPruneAllToolStripMenuItem.ToolTipText = "Fetch branches and tags from all remote repositories also prune deleted branches";
+            fetchPruneAllToolStripMenuItem.Click += fetchPruneAllToolStripMenuItem_Click;
+            // 
+            // setDefaultPullButtonActionToolStripMenuItem
+            // 
+            setDefaultPullButtonActionToolStripMenuItem.Name = "setDefaultPullButtonActionToolStripMenuItem";
+            setDefaultPullButtonActionToolStripMenuItem.Size = new Size(228, 22);
+            setDefaultPullButtonActionToolStripMenuItem.Text = "Set &default Pull button action";
+            // 
+            // toolStripButtonPush
+            // 
+            toolStripButtonPush.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButtonPush.Image = Properties.Images.Push;
+            toolStripButtonPush.ImageTransparentColor = Color.Magenta;
+            toolStripButtonPush.Name = "toolStripButtonPush";
+            toolStripButtonPush.Size = new Size(23, 22);
+            toolStripButtonPush.Text = "Push";
+            toolStripButtonPush.Click += ToolStripButtonPushClick;
+            // 
+            // toolStripButtonCommit
+            // 
+            toolStripButtonCommit.Image = Properties.Images.RepoStateClean;
+            toolStripButtonCommit.ImageAlign = ContentAlignment.MiddleLeft;
+            toolStripButtonCommit.ImageTransparentColor = Color.Magenta;
+            toolStripButtonCommit.Name = "toolStripButtonCommit";
+            toolStripButtonCommit.Size = new Size(71, 22);
+            toolStripButtonCommit.Text = "Commit";
+            toolStripButtonCommit.TextAlign = ContentAlignment.MiddleLeft;
+            toolStripButtonCommit.Click += CommitToolStripMenuItemClick;
+            // 
             // toolStripSplitStash
             // 
-            toolStripSplitStash.DropDownItems.AddRange(new ToolStripItem[] {
-            stashChangesToolStripMenuItem,
-            stashStagedToolStripMenuItem,
-            stashPopToolStripMenuItem,
-            toolStripSeparator9,
-            manageStashesToolStripMenuItem,
-            createAStashToolStripMenuItem});
+            toolStripSplitStash.DropDownItems.AddRange(new ToolStripItem[] { stashChangesToolStripMenuItem, stashStagedToolStripMenuItem, stashPopToolStripMenuItem, toolStripSeparator9, manageStashesToolStripMenuItem, createAStashToolStripMenuItem });
             toolStripSplitStash.Image = Properties.Images.Stash;
             toolStripSplitStash.ImageTransparentColor = Color.Magenta;
             toolStripSplitStash.Name = "toolStripSplitStash";
@@ -381,109 +422,6 @@ namespace GitUI.CommandsDialogs
             createAStashToolStripMenuItem.Text = "&Create a stash...";
             createAStashToolStripMenuItem.Click += CreateStashToolStripMenuItemClick;
             // 
-            // toolStripButtonCommit
-            // 
-            toolStripButtonCommit.Image = Properties.Images.RepoStateClean;
-            toolStripButtonCommit.ImageAlign = ContentAlignment.MiddleLeft;
-            toolStripButtonCommit.ImageTransparentColor = Color.Magenta;
-            toolStripButtonCommit.Name = "toolStripButtonCommit";
-            toolStripButtonCommit.Size = new Size(71, 22);
-            toolStripButtonCommit.Text = "Commit";
-            toolStripButtonCommit.TextAlign = ContentAlignment.MiddleLeft;
-            toolStripButtonCommit.Click += CommitToolStripMenuItemClick;
-            // 
-            // toolStripButtonPull
-            // 
-            toolStripButtonPull.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripButtonPull.DropDownItems.AddRange(new ToolStripItem[] {
-            pullToolStripMenuItem1,
-            toolStripSeparator11,
-            mergeToolStripMenuItem,
-            rebaseToolStripMenuItem1,
-            fetchToolStripMenuItem,
-            fetchAllToolStripMenuItem,
-            fetchPruneAllToolStripMenuItem,
-            toolStripSeparator14,
-            setDefaultPullButtonActionToolStripMenuItem});
-            toolStripButtonPull.Image = Properties.Images.Pull;
-            toolStripButtonPull.ImageTransparentColor = Color.Magenta;
-            toolStripButtonPull.Name = "toolStripButtonPull";
-            toolStripButtonPull.Size = new Size(32, 22);
-            toolStripButtonPull.Text = "Pull";
-            toolStripButtonPull.ButtonClick += ToolStripButtonPullClick;
-            // 
-            // toolStripSeparator11
-            // 
-            toolStripSeparator11.Name = "toolStripSeparator11";
-            toolStripSeparator11.Size = new Size(236, 6);
-            // 
-            // mergeToolStripMenuItem
-            // 
-            mergeToolStripMenuItem.Image = Properties.Images.PullMerge;
-            mergeToolStripMenuItem.Name = "mergeToolStripMenuItem";
-            mergeToolStripMenuItem.Size = new Size(239, 22);
-            mergeToolStripMenuItem.Text = "Pull - &merge";
-            mergeToolStripMenuItem.Click += mergeToolStripMenuItem_Click;
-            // 
-            // rebaseToolStripMenuItem1
-            // 
-            rebaseToolStripMenuItem1.Image = Properties.Images.PullRebase;
-            rebaseToolStripMenuItem1.Name = "rebaseToolStripMenuItem1";
-            rebaseToolStripMenuItem1.Size = new Size(239, 22);
-            rebaseToolStripMenuItem1.Text = "Pull - &rebase";
-            rebaseToolStripMenuItem1.Click += rebaseToolStripMenuItem1_Click;
-            // 
-            // fetchToolStripMenuItem
-            // 
-            fetchToolStripMenuItem.Image = Properties.Images.PullFetch;
-            fetchToolStripMenuItem.Name = "fetchToolStripMenuItem";
-            fetchToolStripMenuItem.Size = new Size(239, 22);
-            fetchToolStripMenuItem.Text = "&Fetch";
-            fetchToolStripMenuItem.ToolTipText = "Fetch branches and tags";
-            fetchToolStripMenuItem.Click += fetchToolStripMenuItem_Click;
-            // 
-            // pullToolStripMenuItem1
-            // 
-            pullToolStripMenuItem1.Image = Properties.Images.Pull;
-            pullToolStripMenuItem1.Name = "pullToolStripMenuItem1";
-            pullToolStripMenuItem1.Size = new Size(239, 22);
-            pullToolStripMenuItem1.Text = "Open &pull dialog...";
-            pullToolStripMenuItem1.Click += pullToolStripMenuItem1_Click;
-            // 
-            // fetchAllToolStripMenuItem
-            // 
-            fetchAllToolStripMenuItem.Image = Properties.Images.PullFetchAll;
-            fetchAllToolStripMenuItem.Name = "fetchAllToolStripMenuItem";
-            fetchAllToolStripMenuItem.Size = new Size(239, 22);
-            fetchAllToolStripMenuItem.Text = "Fetch &all";
-            fetchAllToolStripMenuItem.ToolTipText = "Fetch branches and tags from all remote repositories";
-            fetchAllToolStripMenuItem.Click += fetchAllToolStripMenuItem_Click;
-            // 
-            // fetchPruneAllToolStripMenuItem
-            // 
-            fetchPruneAllToolStripMenuItem.Image = Properties.Images.PullFetchPruneAll;
-            fetchPruneAllToolStripMenuItem.Name = "fetchPruneAllToolStripMenuItem";
-            fetchPruneAllToolStripMenuItem.Size = new Size(239, 22);
-            fetchPruneAllToolStripMenuItem.Text = "F&etch and prune all";
-            fetchPruneAllToolStripMenuItem.ToolTipText = "Fetch branches and tags from all remote repositories also prune deleted branches";
-            fetchPruneAllToolStripMenuItem.Click += fetchPruneAllToolStripMenuItem_Click;
-            // 
-            // setDefaultPullButtonActionToolStripMenuItem
-            // 
-            setDefaultPullButtonActionToolStripMenuItem.Name = "setDefaultPullButtonActionToolStripMenuItem";
-            setDefaultPullButtonActionToolStripMenuItem.Size = new Size(239, 22);
-            setDefaultPullButtonActionToolStripMenuItem.Text = "Set &default Pull button action";
-            // 
-            // toolStripButtonPush
-            // 
-            toolStripButtonPush.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripButtonPush.Image = Properties.Images.Push;
-            toolStripButtonPush.ImageTransparentColor = Color.Magenta;
-            toolStripButtonPush.Name = "toolStripButtonPush";
-            toolStripButtonPush.Size = new Size(23, 22);
-            toolStripButtonPush.Text = "Push";
-            toolStripButtonPush.Click += ToolStripButtonPushClick;
-            // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
@@ -504,7 +442,7 @@ namespace GitUI.CommandsDialogs
             userShell.Image = Properties.Images.GitForWindows;
             userShell.ImageTransparentColor = Color.Magenta;
             userShell.Name = "userShell";
-            userShell.Size = new Size(23, 22);
+            userShell.Size = new Size(32, 22);
             userShell.ToolTipText = "Git bash";
             userShell.Click += userShell_Click;
             // 
@@ -516,239 +454,6 @@ namespace GitUI.CommandsDialogs
             EditSettings.Size = new Size(23, 22);
             EditSettings.ToolTipText = "Settings";
             EditSettings.Click += OnShowSettingsClick;
-            // 
-            // MainSplitContainer
-            // 
-            MainSplitContainer.Dock = DockStyle.Fill;
-            MainSplitContainer.FixedPanel = FixedPanel.Panel1;
-            MainSplitContainer.Location = new Point(0, 0);
-            MainSplitContainer.Margin = new Padding(0);
-            MainSplitContainer.Name = "MainSplitContainer";
-            // 
-            // MainSplitContainer.Panel1
-            // 
-            MainSplitContainer.Panel1.Controls.Add(LeftSplitContainer);
-            MainSplitContainer.Panel1.Padding = new Padding(1);
-            MainSplitContainer.Panel1MinSize = 192;
-            // 
-            // MainSplitContainer.Panel2
-            // 
-            MainSplitContainer.Panel2.Controls.Add(RightSplitContainer);
-            MainSplitContainer.Size = new Size(923, 502);
-            MainSplitContainer.SplitterWidth = 6;
-            MainSplitContainer.TabIndex = 1;
-            // 
-            // LeftSplitContainer
-            // 
-            LeftSplitContainer.BackColor = SystemColors.Window;
-            LeftSplitContainer.Dock = DockStyle.Fill;
-            LeftSplitContainer.FixedPanel = FixedPanel.Panel2;
-            LeftSplitContainer.Location = new Point(1, 1);
-            LeftSplitContainer.Margin = new Padding(0);
-            LeftSplitContainer.Name = "LeftSplitContainer";
-            LeftSplitContainer.Orientation = Orientation.Horizontal;
-            // 
-            // LeftSplitContainer.Panel1
-            // 
-            LeftSplitContainer.Panel1.Controls.Add(repoObjectsTree);
-            LeftSplitContainer.Panel2Collapsed = true;
-            LeftSplitContainer.Panel2MinSize = 0;
-            LeftSplitContainer.Size = new Size(190, 480);
-            LeftSplitContainer.SplitterDistance = 388;
-            LeftSplitContainer.SplitterWidth = 7;
-            LeftSplitContainer.TabIndex = 2;
-            LeftSplitContainer.TabStop = false;
-            // 
-            // repoObjectsTree
-            // 
-            repoObjectsTree.Dock = DockStyle.Fill;
-            repoObjectsTree.Location = new Point(0, 0);
-            repoObjectsTree.Margin = new Padding(0);
-            repoObjectsTree.MinimumSize = new Size(190, 0);
-            repoObjectsTree.Name = "repoObjectsTree";
-            repoObjectsTree.Size = new Size(190, 480);
-            repoObjectsTree.TabIndex = 1;
-            // 
-            // RightSplitContainer
-            // 
-            RightSplitContainer.Dock = DockStyle.Fill;
-            RightSplitContainer.Location = new Point(0, 0);
-            RightSplitContainer.Margin = new Padding(0);
-            RightSplitContainer.Name = "RightSplitContainer";
-            RightSplitContainer.Orientation = Orientation.Horizontal;
-            // 
-            // RightSplitContainer.Panel1
-            // 
-            RightSplitContainer.Panel1.Controls.Add(RevisionsSplitContainer);
-            // 
-            // RightSplitContainer.Panel2
-            // 
-            RightSplitContainer.Panel2.Controls.Add(CommitInfoTabControl);
-            RightSplitContainer.Panel2MinSize = 0;
-            RightSplitContainer.Size = new Size(650, 502);
-            RightSplitContainer.SplitterDistance = 209;
-            RightSplitContainer.SplitterWidth = 6;
-            RightSplitContainer.TabIndex = 1;
-            RightSplitContainer.TabStop = false;
-            // 
-            // RevisionsSplitContainer
-            // 
-            RevisionsSplitContainer.Dock = DockStyle.Fill;
-            RevisionsSplitContainer.FixedPanel = FixedPanel.Panel2;
-            RevisionsSplitContainer.Location = new Point(0, 0);
-            RevisionsSplitContainer.Margin = new Padding(0);
-            RevisionsSplitContainer.Name = "RevisionsSplitContainer";
-            RevisionsSplitContainer.Panel1.Padding = new Padding(1);
-            RevisionsSplitContainer.Panel2.Padding = new Padding(1);
-            // 
-            // RevisionsSplitContainer.Panel1
-            // 
-            RevisionsSplitContainer.Size = new Size(650, 209);
-            RevisionsSplitContainer.SplitterDistance = 350;
-            RevisionsSplitContainer.SplitterWidth = 6;
-            RevisionsSplitContainer.Panel1.Controls.Add(RevisionGridContainer);
-            RevisionsSplitContainer.TabIndex = 0;
-            // 
-            // RevisionGridContainer
-            // 
-            RevisionGridContainer.Controls.Add(RevisionGrid);
-            RevisionGridContainer.Controls.Add(notificationBarBisectInProgress);
-            RevisionGridContainer.Controls.Add(notificationBarGitActionInProgress);
-            RevisionGridContainer.Dock = DockStyle.Fill;
-            RevisionGridContainer.Location = new Point(0, 0);
-            RevisionGridContainer.Name = "RevisionGridContainer";
-            RevisionGridContainer.Size = new Size(606, 205);
-            RevisionGridContainer.TabIndex = 2;
-            // 
-            // RevisionGrid
-            // 
-            RevisionGrid.Dock = DockStyle.Fill;
-            RevisionGrid.Location = new Point(0, 0);
-            RevisionGrid.Name = "RevisionGrid";
-            RevisionGrid.Size = new Size(350, 209);
-            RevisionGrid.ShowBuildServerInfo = true;
-            RevisionGrid.TabIndex = 2;
-            // 
-            // notificationBarBisectInProgress
-            // 
-            notificationBarBisectInProgress.Dock = DockStyle.Top;
-            notificationBarBisectInProgress.Location = new Point(0, 33);
-            notificationBarBisectInProgress.MinimumSize = new Size(0, 33);
-            notificationBarBisectInProgress.Name = "notificationBarBisectInProgress";
-            notificationBarBisectInProgress.Size = new Size(561, 33);
-            notificationBarBisectInProgress.TabIndex = 1;
-            notificationBarBisectInProgress.Visible = false;
-            // 
-            // notificationBarGitActionInProgress
-            // 
-            notificationBarGitActionInProgress.Dock = DockStyle.Top;
-            notificationBarGitActionInProgress.Location = new Point(0, 0);
-            notificationBarGitActionInProgress.MinimumSize = new Size(0, 33);
-            notificationBarGitActionInProgress.Name = "notificationBarGitActionInProgress";
-            notificationBarGitActionInProgress.Size = new Size(561, 33);
-            notificationBarGitActionInProgress.TabIndex = 0;
-            notificationBarGitActionInProgress.Visible = false;
-            // 
-            // CommitInfoTabControl
-            // 
-            CommitInfoTabControl.Controls.Add(CommitInfoTabPage);
-            CommitInfoTabControl.Controls.Add(DiffTabPage);
-            CommitInfoTabControl.Controls.Add(TreeTabPage);
-            CommitInfoTabControl.Controls.Add(GpgInfoTabPage);
-            CommitInfoTabControl.Dock = DockStyle.Fill;
-            CommitInfoTabControl.Location = new Point(0, 0);
-            CommitInfoTabControl.Margin = new Padding(0);
-            CommitInfoTabControl.Name = "CommitInfoTabControl";
-            CommitInfoTabControl.Padding = new Point(0, 0);
-            CommitInfoTabControl.SelectedIndex = 0;
-            CommitInfoTabControl.Size = new Size(650, 287);
-            CommitInfoTabControl.TabIndex = 0;
-            CommitInfoTabControl.SelectedIndexChanged += CommitInfoTabControl_SelectedIndexChanged;
-            // 
-            // CommitInfoTabPage
-            // 
-            CommitInfoTabPage.Controls.Add(RevisionInfo);
-            CommitInfoTabPage.Location = new Point(1, 21);
-            CommitInfoTabPage.Margin = new Padding(0);
-            CommitInfoTabPage.Name = "CommitInfoTabPage";
-            CommitInfoTabPage.Size = new Size(646, 264);
-            CommitInfoTabPage.TabIndex = 2;
-            CommitInfoTabPage.Text = "Commit";
-            CommitInfoTabPage.UseVisualStyleBackColor = true;
-            // 
-            // RevisionInfo
-            // 
-            RevisionInfo.BackColor = SystemColors.Window;
-            RevisionInfo.Cursor = Cursors.IBeam;
-            RevisionInfo.Dock = DockStyle.Fill;
-            RevisionInfo.Location = new Point(0, 0);
-            RevisionInfo.Margin = new Padding(0);
-            RevisionInfo.Name = "RevisionInfo";
-            RevisionInfo.ShowBranchesAsLinks = true;
-            RevisionInfo.Size = new Size(646, 264);
-            RevisionInfo.TabIndex = 0;
-            RevisionInfo.CommandClicked += new System.EventHandler<ResourceManager.CommandEventArgs>(RevisionInfo_CommandClicked);
-            // 
-            // TreeTabPage
-            // 
-            TreeTabPage.Controls.Add(fileTree);
-            TreeTabPage.Location = new Point(1, 21);
-            TreeTabPage.Margin = new Padding(0);
-            TreeTabPage.Name = "TreeTabPage";
-            TreeTabPage.Size = new Size(646, 264);
-            TreeTabPage.TabIndex = 0;
-            TreeTabPage.Text = "File tree";
-            TreeTabPage.UseVisualStyleBackColor = true;
-            // 
-            // fileTree
-            // 
-            fileTree.Dock = DockStyle.Fill;
-            fileTree.Location = new Point(0, 0);
-            fileTree.Margin = new Padding(0);
-            fileTree.Name = "fileTree";
-            fileTree.Size = new Size(646, 264);
-            fileTree.TabIndex = 0;
-            // 
-            // DiffTabPage
-            // 
-            DiffTabPage.Controls.Add(revisionDiff);
-            DiffTabPage.Location = new Point(1, 21);
-            DiffTabPage.Margin = new Padding(0);
-            DiffTabPage.Name = "DiffTabPage";
-            DiffTabPage.Size = new Size(646, 264);
-            DiffTabPage.TabIndex = 1;
-            DiffTabPage.Text = "Diff";
-            DiffTabPage.UseVisualStyleBackColor = true;
-            // 
-            // revisionDiff
-            // 
-            revisionDiff.Dock = DockStyle.Fill;
-            revisionDiff.Location = new Point(0, 0);
-            revisionDiff.Margin = new Padding(0);
-            revisionDiff.Name = "revisionDiff";
-            revisionDiff.Size = new Size(646, 264);
-            revisionDiff.TabIndex = 0;
-            // 
-            // GpgInfoTabPage
-            // 
-            GpgInfoTabPage.Controls.Add(revisionGpgInfo1);
-            GpgInfoTabPage.Location = new Point(1, 21);
-            GpgInfoTabPage.Margin = new Padding(0);
-            GpgInfoTabPage.Name = "GpgInfoTabPage";
-            GpgInfoTabPage.Size = new Size(646, 264);
-            GpgInfoTabPage.TabIndex = 3;
-            GpgInfoTabPage.Text = "GPG";
-            GpgInfoTabPage.UseVisualStyleBackColor = true;
-            // 
-            // revisionGpgInfo1
-            // 
-            revisionGpgInfo1.Dock = DockStyle.Fill;
-            revisionGpgInfo1.Location = new Point(0, 0);
-            revisionGpgInfo1.Margin = new Padding(0);
-            revisionGpgInfo1.Name = "revisionGpgInfo1";
-            revisionGpgInfo1.Padding = new Padding(6);
-            revisionGpgInfo1.Size = new Size(646, 264);
-            revisionGpgInfo1.TabIndex = 0;
             // 
             // FilterToolTip
             // 
@@ -780,38 +485,16 @@ namespace GitUI.CommandsDialogs
             // 
             fileExplorerToolStripMenuItem.Image = Properties.Images.BrowseFileExplorer;
             fileExplorerToolStripMenuItem.Name = "fileExplorerToolStripMenuItem";
-            fileExplorerToolStripMenuItem.ShortcutKeys = ((Keys)(((Keys.Control | Keys.Shift) 
-            | Keys.O)));
+            fileExplorerToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Shift | Keys.O;
             fileExplorerToolStripMenuItem.Size = new Size(221, 22);
             fileExplorerToolStripMenuItem.Text = "File E&xplorer";
             fileExplorerToolStripMenuItem.Click += FileExplorerToolStripMenuItemClick;
             // 
-            // repositoryToolStripMenuItem
+            // mnuRepository
             // 
-            mnuRepository.DropDownItems.AddRange(new ToolStripItem[] {
-            refreshToolStripMenuItem,
-            fileExplorerToolStripMenuItem,
-            toolStripSeparator8,
-            manageRemoteRepositoriesToolStripMenuItem1,
-            toolStripSeparator43,
-            manageSubmodulesToolStripMenuItem,
-            updateAllSubmodulesToolStripMenuItem,
-            synchronizeAllSubmodulesToolStripMenuItem,
-            toolStripSeparator10,
-            manageWorktreeToolStripMenuItem,
-            toolStripSeparator44,
-            editgitignoreToolStripMenuItem1,
-            editgitinfoexcludeToolStripMenuItem,
-            editGitAttributesToolStripMenuItem,
-            editmailmapToolStripMenuItem,
-            menuitemSparse,
-            toolStripSeparator4,
-            gitMaintenanceToolStripMenuItem,
-            repoSettingsToolStripMenuItem,
-            toolStripSeparator13,
-            closeToolStripMenuItem});
-            mnuRepository.Name = "repositoryToolStripMenuItem";
-            mnuRepository.Size = new Size(75, 20);
+            mnuRepository.DropDownItems.AddRange(new ToolStripItem[] { refreshToolStripMenuItem, fileExplorerToolStripMenuItem, toolStripSeparator8, manageRemoteRepositoriesToolStripMenuItem1, toolStripSeparator43, manageSubmodulesToolStripMenuItem, updateAllSubmodulesToolStripMenuItem, synchronizeAllSubmodulesToolStripMenuItem, toolStripSeparator10, manageWorktreeToolStripMenuItem, toolStripSeparator44, editgitignoreToolStripMenuItem1, editgitinfoexcludeToolStripMenuItem, editGitAttributesToolStripMenuItem, editmailmapToolStripMenuItem, menuitemSparse, toolStripSeparator4, gitMaintenanceToolStripMenuItem, repoSettingsToolStripMenuItem, toolStripSeparator13, closeToolStripMenuItem });
+            mnuRepository.Name = "mnuRepository";
+            mnuRepository.Size = new Size(75, 19);
             mnuRepository.Text = "&Repository";
             // 
             // toolStripSeparator8
@@ -865,7 +548,7 @@ namespace GitUI.CommandsDialogs
             // 
             manageWorktreeToolStripMenuItem.Image = Properties.Images.WorkTree;
             manageWorktreeToolStripMenuItem.Name = "manageWorktreeToolStripMenuItem";
-            manageWorktreeToolStripMenuItem.Size = new Size(180, 22);
+            manageWorktreeToolStripMenuItem.Size = new Size(221, 22);
             manageWorktreeToolStripMenuItem.Text = "Manage &worktrees...";
             manageWorktreeToolStripMenuItem.Click += manageWorktreeToolStripMenuItem_Click;
             // 
@@ -917,11 +600,7 @@ namespace GitUI.CommandsDialogs
             // 
             // gitMaintenanceToolStripMenuItem
             // 
-            gitMaintenanceToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] {
-            compressGitDatabaseToolStripMenuItem,
-            recoverLostObjectsToolStripMenuItem,
-            deleteIndexLockToolStripMenuItem,
-            editLocalGitConfigToolStripMenuItem});
+            gitMaintenanceToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { compressGitDatabaseToolStripMenuItem, recoverLostObjectsToolStripMenuItem, deleteIndexLockToolStripMenuItem, editLocalGitConfigToolStripMenuItem });
             gitMaintenanceToolStripMenuItem.Image = Properties.Images.Maintenance;
             gitMaintenanceToolStripMenuItem.Name = "gitMaintenanceToolStripMenuItem";
             gitMaintenanceToolStripMenuItem.Size = new Size(221, 22);
@@ -972,46 +651,18 @@ namespace GitUI.CommandsDialogs
             toolStripSeparator13.Name = "toolStripSeparator13";
             toolStripSeparator13.Size = new Size(218, 6);
             // 
-            // commandsToolStripMenuItem
+            // mnuCommands
             // 
-            mnuCommands.DropDownItems.AddRange(new ToolStripItem[] {
-            commitToolStripMenuItem,
-            undoLastCommitToolStripMenuItem,
-            pullToolStripMenuItem,
-            pushToolStripMenuItem,
-            toolStripSeparator21,
-            stashToolStripMenuItem,
-            resetToolStripMenuItem,
-            cleanupToolStripMenuItem,
-            toolStripSeparator25,
-            branchToolStripMenuItem,
-            deleteBranchToolStripMenuItem,
-            checkoutBranchToolStripMenuItem,
-            mergeBranchToolStripMenuItem,
-            rebaseToolStripMenuItem,
-            runMergetoolToolStripMenuItem,
-            toolStripSeparator45,
-            tagToolStripMenuItem,
-            deleteTagToolStripMenuItem,
-            toolStripSeparator23,
-            cherryPickToolStripMenuItem,
-            archiveToolStripMenuItem,
-            checkoutToolStripMenuItem,
-            bisectToolStripMenuItem,
-            toolStripMenuItemReflog,
-            toolStripSeparator22,
-            formatPatchToolStripMenuItem,
-            applyPatchToolStripMenuItem,
-            patchToolStripMenuItem});
-            mnuCommands.Name = "commandsToolStripMenuItem";
-            mnuCommands.Size = new Size(81, 20);
+            mnuCommands.DropDownItems.AddRange(new ToolStripItem[] { commitToolStripMenuItem, undoLastCommitToolStripMenuItem, pullToolStripMenuItem, pushToolStripMenuItem, toolStripSeparator21, stashToolStripMenuItem, resetToolStripMenuItem, cleanupToolStripMenuItem, toolStripSeparator25, branchToolStripMenuItem, deleteBranchToolStripMenuItem, checkoutBranchToolStripMenuItem, mergeBranchToolStripMenuItem, rebaseToolStripMenuItem, runMergetoolToolStripMenuItem, toolStripSeparator45, tagToolStripMenuItem, deleteTagToolStripMenuItem, toolStripSeparator23, cherryPickToolStripMenuItem, archiveToolStripMenuItem, checkoutToolStripMenuItem, bisectToolStripMenuItem, toolStripMenuItemReflog, toolStripSeparator22, formatPatchToolStripMenuItem, applyPatchToolStripMenuItem, patchToolStripMenuItem });
+            mnuCommands.Name = "mnuCommands";
+            mnuCommands.Size = new Size(81, 19);
             mnuCommands.Text = "&Commands";
             // 
             // commitToolStripMenuItem
             // 
             commitToolStripMenuItem.Image = Properties.Images.RepoStateClean;
             commitToolStripMenuItem.Name = "commitToolStripMenuItem";
-            commitToolStripMenuItem.Size = new Size(213, 22);
+            commitToolStripMenuItem.Size = new Size(209, 22);
             commitToolStripMenuItem.Text = "&Commit...";
             commitToolStripMenuItem.Click += CommitToolStripMenuItemClick;
             // 
@@ -1019,7 +670,7 @@ namespace GitUI.CommandsDialogs
             // 
             undoLastCommitToolStripMenuItem.Image = Properties.Images.ResetFileTo;
             undoLastCommitToolStripMenuItem.Name = "undoLastCommitToolStripMenuItem";
-            undoLastCommitToolStripMenuItem.Size = new Size(213, 22);
+            undoLastCommitToolStripMenuItem.Size = new Size(209, 22);
             undoLastCommitToolStripMenuItem.Text = "&Undo last commit...";
             undoLastCommitToolStripMenuItem.Click += undoLastCommitToolStripMenuItem_Click;
             // 
@@ -1027,7 +678,7 @@ namespace GitUI.CommandsDialogs
             // 
             pullToolStripMenuItem.Image = Properties.Images.Pull;
             pullToolStripMenuItem.Name = "pullToolStripMenuItem";
-            pullToolStripMenuItem.Size = new Size(213, 22);
+            pullToolStripMenuItem.Size = new Size(209, 22);
             pullToolStripMenuItem.Text = "Pull&/Fetch...";
             pullToolStripMenuItem.Click += PullToolStripMenuItemClick;
             // 
@@ -1035,20 +686,20 @@ namespace GitUI.CommandsDialogs
             // 
             pushToolStripMenuItem.Image = Properties.Images.Push;
             pushToolStripMenuItem.Name = "pushToolStripMenuItem";
-            pushToolStripMenuItem.Size = new Size(213, 22);
+            pushToolStripMenuItem.Size = new Size(209, 22);
             pushToolStripMenuItem.Text = "&Push...";
             pushToolStripMenuItem.Click += PushToolStripMenuItemClick;
             // 
             // toolStripSeparator21
             // 
             toolStripSeparator21.Name = "toolStripSeparator21";
-            toolStripSeparator21.Size = new Size(210, 6);
+            toolStripSeparator21.Size = new Size(206, 6);
             // 
             // stashToolStripMenuItem
             // 
             stashToolStripMenuItem.Image = Properties.Images.Stash;
             stashToolStripMenuItem.Name = "stashToolStripMenuItem";
-            stashToolStripMenuItem.Size = new Size(213, 22);
+            stashToolStripMenuItem.Size = new Size(209, 22);
             stashToolStripMenuItem.Text = "Ma&nage stashes...";
             stashToolStripMenuItem.Click += StashToolStripMenuItemClick;
             // 
@@ -1056,7 +707,7 @@ namespace GitUI.CommandsDialogs
             // 
             resetToolStripMenuItem.Image = Properties.Images.ResetWorkingDirChanges;
             resetToolStripMenuItem.Name = "resetToolStripMenuItem";
-            resetToolStripMenuItem.Size = new Size(213, 22);
+            resetToolStripMenuItem.Size = new Size(209, 22);
             resetToolStripMenuItem.Text = "&Reset changes...";
             resetToolStripMenuItem.Click += ResetToolStripMenuItem_Click;
             // 
@@ -1064,20 +715,20 @@ namespace GitUI.CommandsDialogs
             // 
             cleanupToolStripMenuItem.Image = Properties.Images.CleanupRepo;
             cleanupToolStripMenuItem.Name = "cleanupToolStripMenuItem";
-            cleanupToolStripMenuItem.Size = new Size(213, 22);
+            cleanupToolStripMenuItem.Size = new Size(209, 22);
             cleanupToolStripMenuItem.Text = "Clean &working directory...";
             cleanupToolStripMenuItem.Click += CleanupToolStripMenuItemClick;
             // 
             // toolStripSeparator25
             // 
             toolStripSeparator25.Name = "toolStripSeparator25";
-            toolStripSeparator25.Size = new Size(210, 6);
+            toolStripSeparator25.Size = new Size(206, 6);
             // 
             // branchToolStripMenuItem
             // 
             branchToolStripMenuItem.Image = Properties.Images.BranchCreate;
             branchToolStripMenuItem.Name = "branchToolStripMenuItem";
-            branchToolStripMenuItem.Size = new Size(213, 22);
+            branchToolStripMenuItem.Size = new Size(209, 22);
             branchToolStripMenuItem.Text = "Create &branch...";
             branchToolStripMenuItem.Click += CreateBranchToolStripMenuItemClick;
             // 
@@ -1085,7 +736,7 @@ namespace GitUI.CommandsDialogs
             // 
             deleteBranchToolStripMenuItem.Image = Properties.Images.BranchDelete;
             deleteBranchToolStripMenuItem.Name = "deleteBranchToolStripMenuItem";
-            deleteBranchToolStripMenuItem.Size = new Size(213, 22);
+            deleteBranchToolStripMenuItem.Size = new Size(209, 22);
             deleteBranchToolStripMenuItem.Text = "De&lete branch...";
             deleteBranchToolStripMenuItem.Click += DeleteBranchToolStripMenuItemClick;
             // 
@@ -1093,7 +744,7 @@ namespace GitUI.CommandsDialogs
             // 
             checkoutBranchToolStripMenuItem.Image = Properties.Images.BranchCheckout;
             checkoutBranchToolStripMenuItem.Name = "checkoutBranchToolStripMenuItem";
-            checkoutBranchToolStripMenuItem.Size = new Size(213, 22);
+            checkoutBranchToolStripMenuItem.Size = new Size(209, 22);
             checkoutBranchToolStripMenuItem.Text = "Chec&kout branch...";
             checkoutBranchToolStripMenuItem.Click += CheckoutBranchToolStripMenuItemClick;
             // 
@@ -1101,7 +752,7 @@ namespace GitUI.CommandsDialogs
             // 
             mergeBranchToolStripMenuItem.Image = Properties.Images.Merge;
             mergeBranchToolStripMenuItem.Name = "mergeBranchToolStripMenuItem";
-            mergeBranchToolStripMenuItem.Size = new Size(213, 22);
+            mergeBranchToolStripMenuItem.Size = new Size(209, 22);
             mergeBranchToolStripMenuItem.Text = "&Merge branches...";
             mergeBranchToolStripMenuItem.Click += MergeBranchToolStripMenuItemClick;
             // 
@@ -1109,7 +760,7 @@ namespace GitUI.CommandsDialogs
             // 
             rebaseToolStripMenuItem.Image = Properties.Images.Rebase;
             rebaseToolStripMenuItem.Name = "rebaseToolStripMenuItem";
-            rebaseToolStripMenuItem.Size = new Size(213, 22);
+            rebaseToolStripMenuItem.Size = new Size(209, 22);
             rebaseToolStripMenuItem.Text = "R&ebase...";
             rebaseToolStripMenuItem.Click += RebaseToolStripMenuItemClick;
             // 
@@ -1117,20 +768,20 @@ namespace GitUI.CommandsDialogs
             // 
             runMergetoolToolStripMenuItem.Image = Properties.Images.Unmerged;
             runMergetoolToolStripMenuItem.Name = "runMergetoolToolStripMenuItem";
-            runMergetoolToolStripMenuItem.Size = new Size(213, 22);
+            runMergetoolToolStripMenuItem.Size = new Size(209, 22);
             runMergetoolToolStripMenuItem.Text = "&Solve merge conflicts...";
             runMergetoolToolStripMenuItem.Click += RunMergetoolToolStripMenuItemClick;
             // 
             // toolStripSeparator45
             // 
             toolStripSeparator45.Name = "toolStripSeparator45";
-            toolStripSeparator45.Size = new Size(210, 6);
+            toolStripSeparator45.Size = new Size(206, 6);
             // 
             // tagToolStripMenuItem
             // 
             tagToolStripMenuItem.Image = Properties.Images.TagCreate;
             tagToolStripMenuItem.Name = "tagToolStripMenuItem";
-            tagToolStripMenuItem.Size = new Size(213, 22);
+            tagToolStripMenuItem.Size = new Size(209, 22);
             tagToolStripMenuItem.Text = "Create &tag...";
             tagToolStripMenuItem.Click += TagToolStripMenuItemClick;
             // 
@@ -1138,20 +789,20 @@ namespace GitUI.CommandsDialogs
             // 
             deleteTagToolStripMenuItem.Image = Properties.Images.TagDelete;
             deleteTagToolStripMenuItem.Name = "deleteTagToolStripMenuItem";
-            deleteTagToolStripMenuItem.Size = new Size(213, 22);
+            deleteTagToolStripMenuItem.Size = new Size(209, 22);
             deleteTagToolStripMenuItem.Text = "&Delete tag...";
             deleteTagToolStripMenuItem.Click += DeleteTagToolStripMenuItemClick;
             // 
             // toolStripSeparator23
             // 
             toolStripSeparator23.Name = "toolStripSeparator23";
-            toolStripSeparator23.Size = new Size(210, 6);
+            toolStripSeparator23.Size = new Size(206, 6);
             // 
             // cherryPickToolStripMenuItem
             // 
             cherryPickToolStripMenuItem.Image = Properties.Images.CherryPick;
             cherryPickToolStripMenuItem.Name = "cherryPickToolStripMenuItem";
-            cherryPickToolStripMenuItem.Size = new Size(213, 22);
+            cherryPickToolStripMenuItem.Size = new Size(209, 22);
             cherryPickToolStripMenuItem.Text = "Cherr&y pick...";
             cherryPickToolStripMenuItem.Click += CherryPickToolStripMenuItemClick;
             // 
@@ -1159,7 +810,7 @@ namespace GitUI.CommandsDialogs
             // 
             archiveToolStripMenuItem.Image = Properties.Images.ArchiveRevision;
             archiveToolStripMenuItem.Name = "archiveToolStripMenuItem";
-            archiveToolStripMenuItem.Size = new Size(213, 22);
+            archiveToolStripMenuItem.Size = new Size(209, 22);
             archiveToolStripMenuItem.Text = "Archi&ve revision...";
             archiveToolStripMenuItem.Click += ArchiveToolStripMenuItemClick;
             // 
@@ -1167,7 +818,7 @@ namespace GitUI.CommandsDialogs
             // 
             checkoutToolStripMenuItem.Image = Properties.Images.Checkout;
             checkoutToolStripMenuItem.Name = "checkoutToolStripMenuItem";
-            checkoutToolStripMenuItem.Size = new Size(213, 22);
+            checkoutToolStripMenuItem.Size = new Size(209, 22);
             checkoutToolStripMenuItem.Text = "Check&out revision...";
             checkoutToolStripMenuItem.Click += CheckoutToolStripMenuItemClick;
             // 
@@ -1175,7 +826,7 @@ namespace GitUI.CommandsDialogs
             // 
             bisectToolStripMenuItem.Image = Properties.Images.Bisect;
             bisectToolStripMenuItem.Name = "bisectToolStripMenuItem";
-            bisectToolStripMenuItem.Size = new Size(213, 22);
+            bisectToolStripMenuItem.Size = new Size(209, 22);
             bisectToolStripMenuItem.Text = "B&isect...";
             bisectToolStripMenuItem.Click += BisectClick;
             // 
@@ -1183,20 +834,20 @@ namespace GitUI.CommandsDialogs
             // 
             toolStripMenuItemReflog.Image = Properties.Images.Book;
             toolStripMenuItemReflog.Name = "toolStripMenuItemReflog";
-            toolStripMenuItemReflog.Size = new Size(213, 22);
+            toolStripMenuItemReflog.Size = new Size(209, 22);
             toolStripMenuItemReflog.Text = "Show reflo&g...";
             toolStripMenuItemReflog.Click += toolStripMenuItemReflog_Click;
             // 
             // toolStripSeparator22
             // 
             toolStripSeparator22.Name = "toolStripSeparator22";
-            toolStripSeparator22.Size = new Size(210, 6);
+            toolStripSeparator22.Size = new Size(206, 6);
             // 
             // formatPatchToolStripMenuItem
             // 
             formatPatchToolStripMenuItem.Image = Properties.Images.PatchFormat;
             formatPatchToolStripMenuItem.Name = "formatPatchToolStripMenuItem";
-            formatPatchToolStripMenuItem.Size = new Size(213, 22);
+            formatPatchToolStripMenuItem.Size = new Size(209, 22);
             formatPatchToolStripMenuItem.Text = "&Format patch...";
             formatPatchToolStripMenuItem.Click += FormatPatchToolStripMenuItemClick;
             // 
@@ -1204,7 +855,7 @@ namespace GitUI.CommandsDialogs
             // 
             applyPatchToolStripMenuItem.Image = Properties.Images.PatchApply;
             applyPatchToolStripMenuItem.Name = "applyPatchToolStripMenuItem";
-            applyPatchToolStripMenuItem.Size = new Size(213, 22);
+            applyPatchToolStripMenuItem.Size = new Size(209, 22);
             applyPatchToolStripMenuItem.Text = "&Apply patch...";
             applyPatchToolStripMenuItem.Click += ApplyPatchToolStripMenuItemClick;
             // 
@@ -1212,7 +863,7 @@ namespace GitUI.CommandsDialogs
             // 
             patchToolStripMenuItem.Image = Properties.Images.PatchView;
             patchToolStripMenuItem.Name = "patchToolStripMenuItem";
-            patchToolStripMenuItem.Size = new Size(213, 22);
+            patchToolStripMenuItem.Size = new Size(209, 22);
             patchToolStripMenuItem.Text = "View patc&h file...";
             patchToolStripMenuItem.Click += PatchToolStripMenuItemClick;
             // 
@@ -1221,15 +872,11 @@ namespace GitUI.CommandsDialogs
             toolStripSeparator46.Name = "toolStripSeparator46";
             toolStripSeparator46.Size = new Size(268, 6);
             // 
-            // _repositoryHostsToolStripMenuItem
+            // mnuRepositoryHosts
             // 
-            mnuRepositoryHosts.DropDownItems.AddRange(new ToolStripItem[] {
-            _forkCloneRepositoryToolStripMenuItem,
-            _viewPullRequestsToolStripMenuItem,
-            _createPullRequestsToolStripMenuItem,
-            _addUpstreamRemoteToolStripMenuItem});
-            mnuRepositoryHosts.Name = "_repositoryHostsToolStripMenuItem";
-            mnuRepositoryHosts.Size = new Size(114, 20);
+            mnuRepositoryHosts.DropDownItems.AddRange(new ToolStripItem[] { _forkCloneRepositoryToolStripMenuItem, _viewPullRequestsToolStripMenuItem, _createPullRequestsToolStripMenuItem, _addUpstreamRemoteToolStripMenuItem });
+            mnuRepositoryHosts.Name = "mnuRepositoryHosts";
+            mnuRepositoryHosts.Size = new Size(114, 19);
             mnuRepositoryHosts.Text = "(Repository hosts)";
             // 
             // _forkCloneRepositoryToolStripMenuItem
@@ -1253,38 +900,48 @@ namespace GitUI.CommandsDialogs
             _createPullRequestsToolStripMenuItem.Text = "&Create pull requests...";
             _createPullRequestsToolStripMenuItem.Click += _createPullRequestToolStripMenuItem_Click;
             // 
-            // pluginsToolStripMenuItem
+            // _addUpstreamRemoteToolStripMenuItem
+            // 
+            _addUpstreamRemoteToolStripMenuItem.Name = "_addUpstreamRemoteToolStripMenuItem";
+            _addUpstreamRemoteToolStripMenuItem.Size = new Size(198, 22);
+            _addUpstreamRemoteToolStripMenuItem.Text = "&Add upstream remote";
+            _addUpstreamRemoteToolStripMenuItem.Click += _addUpstreamRemoteToolStripMenuItem_Click;
+            // 
+            // mnuPlugins
             // 
             mnuPlugins.DropDownItems.AddRange(new ToolStripItem[] { pluginsLoadingToolStripMenuItem, toolStripSeparator15, pluginSettingsToolStripMenuItem });
-            mnuPlugins.Name = "pluginsToolStripMenuItem";
-            mnuPlugins.Size = new Size(58, 20);
+            mnuPlugins.Name = "mnuPlugins";
+            mnuPlugins.Size = new Size(58, 19);
             mnuPlugins.Text = "&Plugins";
+            // 
+            // pluginsLoadingToolStripMenuItem
+            // 
+            pluginsLoadingToolStripMenuItem.Enabled = false;
+            pluginsLoadingToolStripMenuItem.Name = "pluginsLoadingToolStripMenuItem";
+            pluginsLoadingToolStripMenuItem.Size = new Size(166, 22);
+            pluginsLoadingToolStripMenuItem.Text = "Loading...";
             // 
             // toolStripSeparator15
             // 
             toolStripSeparator15.Name = "toolStripSeparator15";
-            toolStripSeparator15.Size = new Size(150, 6);
+            toolStripSeparator15.Size = new Size(163, 6);
             // 
             // pluginSettingsToolStripMenuItem
             // 
             pluginSettingsToolStripMenuItem.Image = Properties.Images.Settings;
             pluginSettingsToolStripMenuItem.Name = "pluginSettingsToolStripMenuItem";
-            pluginSettingsToolStripMenuItem.Size = new Size(153, 22);
+            pluginSettingsToolStripMenuItem.Size = new Size(166, 22);
             pluginSettingsToolStripMenuItem.Text = "Plugins &settings...";
             pluginSettingsToolStripMenuItem.Click += PluginSettingsToolStripMenuItemClick;
             // 
             // mainMenuStrip
             // 
             mainMenuStrip.ClickThrough = true;
-            mainMenuStrip.Items.AddRange(new ToolStripItem[] {
-            mnuRepository,
-            mnuCommands,
-            mnuRepositoryHosts,
-            mnuPlugins});
+            mainMenuStrip.Items.AddRange(new ToolStripItem[] { mnuRepository, mnuCommands, mnuRepositoryHosts, mnuPlugins });
             mainMenuStrip.Location = new Point(0, 0);
             mainMenuStrip.Name = "mainMenuStrip";
-            mainMenuStrip.Size = new Size(923, 24);
             mainMenuStrip.Padding = new Padding(4);
+            mainMenuStrip.Size = new Size(923, 27);
             mainMenuStrip.TabIndex = 0;
             // 
             // toolPanel
@@ -1296,16 +953,14 @@ namespace GitUI.CommandsDialogs
             toolPanel.ContentPanel.Controls.Add(MainSplitContainer);
             toolPanel.ContentPanel.Margin = new Padding(0);
             toolPanel.ContentPanel.Padding = new Padding(6);
-            toolPanel.ContentPanel.Size = new Size(1846, 1023);
+            toolPanel.ContentPanel.Size = new Size(923, 496);
             toolPanel.Dock = DockStyle.Fill;
             toolPanel.LeftToolStripPanelVisible = false;
-            toolPanel.Location = new Point(0, 0);
+            toolPanel.Location = new Point(0, 27);
             toolPanel.Margin = new Padding(0);
             toolPanel.Name = "toolPanel";
-            toolPanel.Padding = new Padding(0);
-            toolPanel.TopToolStripPanel.Padding = new Padding(4, 0, 4, 0);
             toolPanel.RightToolStripPanelVisible = false;
-            toolPanel.Size = new Size(923, 527);
+            toolPanel.Size = new Size(923, 546);
             toolPanel.TabIndex = 1;
             // 
             // toolPanel.TopToolStripPanel
@@ -1313,107 +968,116 @@ namespace GitUI.CommandsDialogs
             toolPanel.TopToolStripPanel.Controls.Add(ToolStripMain);
             toolPanel.TopToolStripPanel.Controls.Add(ToolStripFilters);
             toolPanel.TopToolStripPanel.Controls.Add(ToolStripScripts);
+            toolPanel.TopToolStripPanel.Padding = new Padding(4, 0, 4, 0);
             // 
-            // ToolStripFilters
+            // MainSplitContainer
             // 
-            ToolStripFilters.Name = "ToolStripFilters";
-            ToolStripFilters.TabIndex = 1;
-            ToolStripFilters.Text = "Filters";
+            MainSplitContainer.Dock = DockStyle.Fill;
+            MainSplitContainer.FixedPanel = FixedPanel.Panel1;
+            MainSplitContainer.Location = new Point(6, 6);
+            MainSplitContainer.Margin = new Padding(0);
+            MainSplitContainer.Name = "MainSplitContainer";
             // 
-            // addUpstreamRemoteToolStripMenuItem
+            // MainSplitContainer.Panel1
             // 
-            _addUpstreamRemoteToolStripMenuItem.Name = "_addUpstreamRemoteToolStripMenuItem";
-            _addUpstreamRemoteToolStripMenuItem.Size = new Size(360, 38);
-            _addUpstreamRemoteToolStripMenuItem.Text = "&Add upstream remote";
-            _addUpstreamRemoteToolStripMenuItem.Click += _addUpstreamRemoteToolStripMenuItem_Click;
+            MainSplitContainer.Panel1.Controls.Add(LeftSplitContainer);
+            MainSplitContainer.Panel1.Padding = new Padding(1);
+            MainSplitContainer.Panel1MinSize = 192;
+            MainSplitContainer.Size = new Size(911, 484);
+            MainSplitContainer.SplitterDistance = 192;
+            MainSplitContainer.SplitterWidth = 6;
+            MainSplitContainer.TabIndex = 1;
             // 
-            // toolStripScripts
+            // LeftSplitContainer
             // 
+            LeftSplitContainer.BackColor = SystemColors.Window;
+            LeftSplitContainer.Dock = DockStyle.Fill;
+            LeftSplitContainer.FixedPanel = FixedPanel.Panel2;
+            LeftSplitContainer.Location = new Point(1, 1);
+            LeftSplitContainer.Margin = new Padding(0);
+            LeftSplitContainer.Name = "LeftSplitContainer";
+            LeftSplitContainer.Orientation = Orientation.Horizontal;
+            // 
+            // LeftSplitContainer.Panel1
+            // 
+            LeftSplitContainer.Panel1.Controls.Add(repoObjectsTree);
+            LeftSplitContainer.Panel2Collapsed = true;
+            LeftSplitContainer.Panel2MinSize = 0;
+            LeftSplitContainer.Size = new Size(190, 482);
+            LeftSplitContainer.SplitterDistance = 388;
+            LeftSplitContainer.SplitterWidth = 7;
+            LeftSplitContainer.TabIndex = 2;
+            LeftSplitContainer.TabStop = false;
+            // 
+            // repoObjectsTree
+            // 
+            repoObjectsTree.Dock = DockStyle.Fill;
+            repoObjectsTree.Location = new Point(0, 0);
+            repoObjectsTree.Margin = new Padding(0);
+            repoObjectsTree.MinimumSize = new Size(190, 0);
+            repoObjectsTree.Name = "repoObjectsTree";
+            repoObjectsTree.Size = new Size(190, 482);
+            repoObjectsTree.TabIndex = 1;
+            // 
+            // ToolStripScripts
+            // 
+            ToolStripScripts.Dock = DockStyle.None;
             ToolStripScripts.DrawBorder = false;
             ToolStripScripts.GripEnabled = false;
+            ToolStripScripts.Location = new Point(39, 25);
             ToolStripScripts.Name = "ToolStripScripts";
             ToolStripScripts.Padding = new Padding(0);
+            ToolStripScripts.Size = new Size(111, 25);
             ToolStripScripts.TabIndex = 2;
             ToolStripScripts.Text = "Scripts";
             // 
-            // pluginsLoadingToolStripMenuItem
+            // ToolStripFilters
             // 
-            pluginsLoadingToolStripMenuItem.Enabled = false;
-            pluginsLoadingToolStripMenuItem.Name = "pluginsLoadingToolStripMenuItem";
-            pluginsLoadingToolStripMenuItem.Size = new Size(180, 22);
-            pluginsLoadingToolStripMenuItem.Text = "Loading...";
+            ToolStripFilters.Dock = DockStyle.None;
+            ToolStripFilters.GripEnabled = false;
+            ToolStripFilters.GripMargin = new Padding(0);
+            ToolStripFilters.ImeMode = ImeMode.NoControl;
+            ToolStripFilters.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
+            ToolStripFilters.Location = new Point(3, 0);
+            ToolStripFilters.Name = "ToolStripFilters";
+            ToolStripFilters.Padding = new Padding(0);
+            ToolStripFilters.Size = new Size(551, 25);
+            ToolStripFilters.TabIndex = 1;
+            ToolStripFilters.Text = "Filters";
             // 
-            // FormBrowse
+            // RepoBrowser
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             AutoValidate = AutoValidate.EnablePreventFocusChange;
-            ClientSize = new Size(923, 573);
             Controls.Add(toolPanel);
             Controls.Add(mainMenuStrip);
-            Name = "FormBrowse";
-            Text = "Git Extensions";
+            Margin = new Padding(0);
+            Name = "RepoBrowser";
+            Size = new Size(923, 573);
             ToolStripMain.ResumeLayout(false);
             ToolStripMain.PerformLayout();
-            MainSplitContainer.Panel1.ResumeLayout(false);
-            MainSplitContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(MainSplitContainer)).EndInit();
-            MainSplitContainer.ResumeLayout(false);
-            LeftSplitContainer.Panel1.ResumeLayout(false);
-            ((ISupportInitialize)LeftSplitContainer).EndInit();
-            LeftSplitContainer.ResumeLayout(false);
-            RightSplitContainer.Panel1.ResumeLayout(false);
-            RightSplitContainer.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(RightSplitContainer)).EndInit();
-            RightSplitContainer.ResumeLayout(false);
-            RevisionsSplitContainer.Panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(RevisionsSplitContainer)).EndInit();
-            RevisionsSplitContainer.ResumeLayout(false);
-            RevisionGridContainer.ResumeLayout(false);
-            CommitInfoTabControl.ResumeLayout(false);
-            CommitInfoTabPage.ResumeLayout(false);
-            TreeTabPage.ResumeLayout(false);
-            DiffTabPage.ResumeLayout(false);
-            GpgInfoTabPage.ResumeLayout(false);
             mainMenuStrip.ResumeLayout(false);
             mainMenuStrip.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(gitItemBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(gitRevisionBindingSource)).EndInit();
             toolPanel.ContentPanel.ResumeLayout(false);
             toolPanel.TopToolStripPanel.ResumeLayout(false);
             toolPanel.TopToolStripPanel.PerformLayout();
             toolPanel.ResumeLayout(false);
             toolPanel.PerformLayout();
-            ToolStripFilters.ResumeLayout(false);
-            ToolStripFilters.PerformLayout();
-            ToolStripScripts.ResumeLayout(false);
-            ToolStripScripts.PerformLayout();
+            MainSplitContainer.Panel1.ResumeLayout(false);
+            ((ISupportInitialize)MainSplitContainer).EndInit();
+            MainSplitContainer.ResumeLayout(false);
+            LeftSplitContainer.Panel1.ResumeLayout(false);
+            ((ISupportInitialize)LeftSplitContainer).EndInit();
+            LeftSplitContainer.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        internal SplitContainer MainSplitContainer;
-        private SplitContainer RightSplitContainer;
-        private SplitContainer RevisionsSplitContainer;
-
-        private FullBleedTabControl CommitInfoTabControl;
-        private TabPage CommitInfoTabPage;
-        private TabPage DiffTabPage;
-        private TabPage TreeTabPage;
-        private TabPage GpgInfoTabPage;
-
-        private BindingSource gitRevisionBindingSource;
-        private BindingSource gitItemBindingSource;
-        private GitUI.RevisionGridControl RevisionGrid;
-        private CommitInfo.CommitInfo RevisionInfo;
-        private GitUI.LeftPanel.RepoObjectsTree repoObjectsTree;
         private ToolTip FilterToolTip;
-        private RevisionFileTreeControl fileTree;
-        private RevisionDiffControl revisionDiff;
         private ToolStripContainer toolPanel;
-        private RevisionGpgInfoControl revisionGpgInfo1;
 
         private MenuStripEx mainMenuStrip;
         private ToolStripEx ToolStripMain;
@@ -1518,12 +1182,11 @@ namespace GitUI.CommandsDialogs
         private ToolStripMenuItem commitInfoBelowMenuItem;
         private ToolStripMenuItem commitInfoLeftwardMenuItem;
         private ToolStripMenuItem commitInfoRightwardMenuItem;
-        private Panel RevisionGridContainer;
-        private UserControls.InteractiveGitActionControl notificationBarBisectInProgress;
-        private UserControls.InteractiveGitActionControl notificationBarGitActionInProgress;
         private ToolStripMenuItem pluginsLoadingToolStripMenuItem;
-        private SplitContainer LeftSplitContainer;
         internal ToolStripMenuItem navigateToolStripMenuItem;
         internal ToolStripMenuItem viewToolStripMenuItem;
+        internal SplitContainer MainSplitContainer;
+        private SplitContainer LeftSplitContainer;
+        private LeftPanel.RepoObjectsTree repoObjectsTree;
     }
 }
