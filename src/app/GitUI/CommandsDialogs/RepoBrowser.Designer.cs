@@ -187,12 +187,8 @@ namespace GitUI.CommandsDialogs
             // 
             // ToolStripMain
             // 
-            ToolStripMain.ClickThrough = true;
-            ToolStripMain.Dock = DockStyle.None;
             ToolStripMain.DrawBorder = false;
             ToolStripMain.GripEnabled = false;
-            ToolStripMain.GripMargin = new Padding(0);
-            ToolStripMain.ImeMode = ImeMode.NoControl;
             ToolStripMain.Items.AddRange(new ToolStripItem[] {
             RefreshButton,
             toolStripSeparator0,
@@ -213,10 +209,7 @@ namespace GitUI.CommandsDialogs
             userShell,
             EditSettings});
             ToolStripMain.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            ToolStripMain.Location = new Point(3, 0);
             ToolStripMain.Name = "ToolStripMain";
-            ToolStripMain.Padding = new Padding(0);
-            ToolStripMain.Size = new Size(479, 25);
             ToolStripMain.TabIndex = 0;
             ToolStripMain.Text = "Standard";
             // 
@@ -1306,7 +1299,7 @@ namespace GitUI.CommandsDialogs
             toolPanel.ContentPanel.Size = new Size(1846, 1023);
             toolPanel.Dock = DockStyle.Fill;
             toolPanel.LeftToolStripPanelVisible = false;
-            toolPanel.Location = new Point(0, 24);
+            toolPanel.Location = new Point(0, 0);
             toolPanel.Margin = new Padding(0);
             toolPanel.Name = "toolPanel";
             toolPanel.Padding = new Padding(0);
@@ -1336,17 +1329,10 @@ namespace GitUI.CommandsDialogs
             // 
             // toolStripScripts
             // 
-            ToolStripScripts.ClickThrough = true;
-            ToolStripScripts.Dock = DockStyle.None;
             ToolStripScripts.DrawBorder = false;
             ToolStripScripts.GripEnabled = false;
-            ToolStripScripts.GripMargin = new Padding(0);
-            ToolStripScripts.ImeMode = ImeMode.NoControl;
-            ToolStripScripts.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            ToolStripScripts.Location = new Point(890, 0);
             ToolStripScripts.Name = "ToolStripScripts";
             ToolStripScripts.Padding = new Padding(0);
-            ToolStripScripts.Size = new Size(43, 25);
             ToolStripScripts.TabIndex = 2;
             ToolStripScripts.Text = "Scripts";
             // 
