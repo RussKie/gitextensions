@@ -67,7 +67,7 @@ See the changes in the commit form.");
             BlameControl.HideCommitInfo();
             filterFileInGridToolStripMenuItem.Text = TranslatedStrings.FilterFileInGrid;
 
-            copyPathsToolStripMenuItem.Initialize(() => UICommands, () => new string[] { (tvGitTree.SelectedNode?.Tag as GitItem)?.FileName });
+            copyPathsToolStripMenuItem.Initialize(UICommands, () => UICommands, () => new string[] { (tvGitTree.SelectedNode?.Tag as GitItem)?.FileName });
         }
 
         public void Bind(IRevisionGridInfo revisionGridInfo, IRevisionGridUpdate revisionGridUpdate, Action? refreshGitStatus, bool isBlame)

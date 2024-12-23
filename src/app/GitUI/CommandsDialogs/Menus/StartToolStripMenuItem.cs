@@ -41,9 +41,9 @@ namespace GitUI.CommandsDialogs.Menus
             base.Dispose(disposing);
         }
 
-        public override void OnInitialized()
+        public override void OnInitialized(IServiceProvider serviceProvider)
         {
-            base.OnInitialized();
+            base.OnInitialized(serviceProvider);
 
             _repositoryHistoryUIService = UICommands.GetRequiredService<IRepositoryHistoryUIService>();
             _repositoryHistoryUIService.GitModuleChanged += repositoryHistoryUIService_GitModuleChanged;

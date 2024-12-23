@@ -68,7 +68,7 @@ namespace GitUI.CommandsDialogs
             DiffText.LinePatchingBlocksUntilReload = true;
             BlameControl.HideCommitInfo();
             diffFilterFileInGridToolStripMenuItem.Text = TranslatedStrings.FilterFileInGrid;
-            copyPathsToolStripMenuItem.Initialize(() => UICommands, () => DiffFiles.SelectedItems.Select(fsi => fsi.Item.Name));
+            copyPathsToolStripMenuItem.Initialize(UICommands, () => UICommands, () => DiffFiles.SelectedItems.Select(fsi => fsi.Item.Name));
 
             showFindInCommitFilesGitGrepToolStripMenuItem.Checked = AppSettings.ShowFindInCommitFilesGitGrep.Value;
             DiffFiles.SetFindInCommitFilesGitGrepVisibility(AppSettings.ShowFindInCommitFilesGitGrep.Value);

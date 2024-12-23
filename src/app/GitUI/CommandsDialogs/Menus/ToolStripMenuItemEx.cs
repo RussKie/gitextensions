@@ -30,19 +30,19 @@ namespace GitUI.CommandsDialogs.Menus
         ///  Initializes the menu item.
         /// </summary>
         /// <param name="getUICommands">The method that returns the current instance of UI commands.</param>
-        public void Initialize(Func<IGitUICommands> getUICommands)
+        public void Initialize(IServiceProvider serviceProvider, Func<IGitUICommands> getUICommands)
         {
             Translator.Translate(this, AppSettings.CurrentTranslation);
 
             _getUICommands = getUICommands;
 
-            OnInitialized();
+            OnInitialized(serviceProvider);
         }
 
         /// <summary>
         ///  Allows the menu item to perform any initialization logic.
         /// </summary>
-        public virtual void OnInitialized()
+        public virtual void OnInitialized(IServiceProvider serviceProvider)
         {
         }
 

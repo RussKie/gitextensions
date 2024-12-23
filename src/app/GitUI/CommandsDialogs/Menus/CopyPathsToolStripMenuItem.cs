@@ -15,9 +15,9 @@ namespace GitUI.CommandsDialogs.Menus
             copyFullPathsNativeToolStripMenuItem.Font = new(copyFullPathsNativeToolStripMenuItem.Font, FontStyle.Bold);
         }
 
-        public CopyPathsToolStripMenuItem Initialize(Func<IGitUICommands> getUICommands, Func<IEnumerable<string?>> getSelectedFilePaths)
+        public CopyPathsToolStripMenuItem Initialize(IServiceProvider serviceProvider, Func<IGitUICommands> getUICommands, Func<IEnumerable<string?>> getSelectedFilePaths)
         {
-            Initialize(getUICommands);
+            Initialize(serviceProvider, getUICommands);
             _getSelectedFilePaths = getSelectedFilePaths;
             return this;
         }

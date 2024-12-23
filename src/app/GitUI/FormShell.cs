@@ -6,6 +6,7 @@ using System.Diagnostics;
 using GitCommands;
 using GitExtensions.Extensibility;
 using GitExtensions.Extensibility.Git;
+using GitExtUtils;
 using GitExtUtils.GitUI.Theming;
 using GitUI.CommandsDialogs;
 using GitUI.CommandsDialogs.BrowseDialog;
@@ -58,11 +59,10 @@ namespace GitUI
             mainMenuStrip.BackColor = Color.Transparent;
 
             HotkeysEnabled = true;
-            ////Hotkeys = HotkeySettingsManager.LoadHotkeys(HotkeySettingsName);
 
-            fileToolStripMenuItem.Initialize(() => UICommands);
-            helpToolStripMenuItem.Initialize(() => UICommands);
-            toolsToolStripMenuItem.Initialize(() => UICommands);
+            fileToolStripMenuItem.Initialize(commands, () => UICommands);
+            helpToolStripMenuItem.Initialize(commands, () => UICommands);
+            toolsToolStripMenuItem.Initialize(commands, () => UICommands);
 
             InitializeComplete();
 
@@ -131,13 +131,12 @@ namespace GitUI
                 _dashboard.RefreshContent();
             }
 
+            Text = UICommands.GetRequiredService<IAppTitleGenerator>().Generate();
+
             ControlAdd(_dashboard);
             _dashboard.GitModuleChanged += SetGitModule;
 
             DiagnosticsClient.TrackPageView("Dashboard");
-
-            // Explicit call: Title is normally updated on RevisionGrid filter change
-            ////Text = _appTitleGenerator.Generate();
         }
 
         protected override void Dispose(bool disposing)
@@ -227,6 +226,8 @@ namespace GitUI
                 return;
             }
 
+            _repoBrowser.TextChanged -= repoBrowser_TextChanged;
+
             ControlRemove(_repoBrowser);
             UICommands = new GitUICommands(UICommands, new GitModule(workingDir: null));
         }
@@ -235,18 +236,23 @@ namespace GitUI
         {
             if (_repoBrowser is null)
             {
-                _repoBrowser = new(new GitUICommands(UICommands, new GitModule(workingDir: null)), _browseArguments)
+                _repoBrowser = new(serviceProvider: UICommands, _browseArguments)
                 {
+                    BorderStyle = BorderStyle.FixedSingle,
+                    BackColor = Color.AliceBlue,
+
                     Dock = DockStyle.Fill,
                     Visible = true
                 };
+
+                _repoBrowser.TextChanged += repoBrowser_TextChanged;
             }
 
             ControlAdd(_repoBrowser);
 
             DiagnosticsClient.TrackPageView("Revision graph");
 
-            UICommands = new GitUICommands(UICommands, gitModule);
+            RepositorySwitch(gitModule);
         }
 
         private void RepositorySwitch(IGitModule gitModule)
@@ -324,6 +330,11 @@ namespace GitUI
         private void fileToolStripMenuItem_RecentRepositoriesCleared(object sender, EventArgs e)
         {
             _dashboard?.RefreshContent();
+        }
+
+        private void repoBrowser_TextChanged(object? sender, EventArgs e)
+        {
+            Text = _repoBrowser.Text;
         }
 
         private void toolsToolStripMenuItem_SettingsChanged(object sender, CommandsDialogs.Menus.SettingsChangedEventArgs e)

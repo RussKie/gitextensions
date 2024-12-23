@@ -1,10 +1,8 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using ConEmu.WinForms;
 using GitCommands;
 using GitCommands.Config;
 using GitCommands.Git;
-using GitCommands.Gpg;
 using GitCommands.Submodules;
 using GitExtensions.Extensibility;
 using GitExtensions.Extensibility.Git;
@@ -196,7 +194,9 @@ namespace GitUI.CommandsDialogs
 
         private readonly SplitterManager _splitterManager;
         private readonly FormBrowseMenus _formBrowseMenus;
+        private readonly IBrowseRepo _browseRepo;
         private readonly IAheadBehindDataProvider? _aheadBehindDataProvider;
+        private readonly IAppTitleGenerator _appTitleGenerator;
         private readonly IWindowsJumpListManager _windowsJumpListManager;
         private readonly ISubmoduleStatusProvider _submoduleStatusProvider;
         private readonly IScriptsManager _scriptsManager;
@@ -208,18 +208,25 @@ namespace GitUI.CommandsDialogs
         /// <summary>
         /// Open Browse - main GUI including dashboard.
         /// </summary>
-        /// <param name="commands">The commands in the current form.</param>
+        /// <param name="serviceProvider">The service registry.</param>
         /// <param name="args">The start up arguments.</param>
-        public RepoBrowser(IGitUICommands commands, BrowseArguments args)
+        public RepoBrowser(IServiceProvider serviceProvider, BrowseArguments args)
 #pragma warning disable CS0618 // Type or member is obsolete
-            : this(commands, args, new AppSettingsPath("FormBrowse"))
+            : this(serviceProvider, args, new AppSettingsPath("FormBrowse"))
 #pragma warning restore CS0618 // Type or member is obsolete
         {
         }
 
         [Obsolete("Test only!")]
-        internal RepoBrowser(IGitUICommands commands, BrowseArguments args, SettingsSource settingsSource)
+        internal RepoBrowser(IServiceProvider serviceProvider, BrowseArguments args, SettingsSource settingsSource)
         {
+            _browseRepo = serviceProvider.GetService<IBrowseRepo>();
+            _appTitleGenerator = serviceProvider.GetService<IAppTitleGenerator>();
+            _windowsJumpListManager = serviceProvider.GetRequiredService<IWindowsJumpListManager>();
+            _scriptsManager = serviceProvider.GetRequiredService<IScriptsManager>();
+            _repositoryHistoryUIService = serviceProvider.GetRequiredService<IRepositoryHistoryUIService>();
+            _repositoryHistoryUIService.GitModuleChanged += GitModuleChanged;
+
             _splitterManager = new(settingsSource);
 
             SystemEvents.SessionEnding += (sender, args) => SaveApplicationSettings();
@@ -227,18 +234,11 @@ namespace GitUI.CommandsDialogs
             _isFileHistoryMode = args.IsFileHistoryMode;
             InitializeComponent();
 
-            _repositoryHistoryUIService = commands.GetRequiredService<IRepositoryHistoryUIService>();
-
             _NO_TRANSLATE_WorkingDir.Initialize(() => UICommands, _repositoryHistoryUIService, closeToolStripMenuItem);
-
-            _repositoryHistoryUIService.GitModuleChanged += OpenGitModule;
 
             BackColor = OtherColors.BackgroundColor;
 
             WorkaroundPaddingIncreaseBug();
-
-            _windowsJumpListManager = commands.GetRequiredService<IWindowsJumpListManager>();
-            _scriptsManager = commands.GetRequiredService<IScriptsManager>();
 
             mnuRepositoryHosts.Visible = false;
 
@@ -261,7 +261,7 @@ namespace GitUI.CommandsDialogs
             SetShortcutKeyDisplayStringsFromHotkeySettings();
             InitMenusAndToolbars(args.RevFilter, args.PathFilter.ToPosixPath());
 
-            _submoduleStatusProvider = commands.GetRequiredService<ISubmoduleStatusProvider>();
+            _submoduleStatusProvider = serviceProvider.GetRequiredService<ISubmoduleStatusProvider>();
             _submoduleStatusProvider.StatusUpdating += SubmoduleStatusProvider_StatusUpdating;
             _submoduleStatusProvider.StatusUpdated += SubmoduleStatusProvider_StatusUpdated;
 
@@ -288,10 +288,7 @@ namespace GitUI.CommandsDialogs
         {
             if (disposing)
             {
-                if (_repositoryHistoryUIService is not null)
-                {
-                    _repositoryHistoryUIService.GitModuleChanged -= OpenGitModule;
-                }
+                _repositoryHistoryUIService.GitModuleChanged -= GitModuleChanged;
 
                 _formBrowseMenus?.Dispose();
                 components?.Dispose();
@@ -322,14 +319,21 @@ namespace GitUI.CommandsDialogs
         }
         */
 
+        protected override void OnRuntimeLoad()
+        {
+            base.OnRuntimeLoad();
+
+            InitializeView();
+        }
+
         protected override void OnUICommandsSourceSet(IGitUICommandsSource source)
         {
             base.OnUICommandsSourceSet(source);
 
             source.UICommandsChanged += UICommandsSource_UICommandsChanged;
 
-            // TODO: work out how to not call this, and delegate everything to UICommandsSource_UICommandsChanged
-            OpenGitModule(this, new(source.UICommands.Module));
+            InitializeView();
+
             return;
 
             void UICommandsSource_UICommandsChanged(object? sender, GitUICommandsChangedEventArgs e)
@@ -343,7 +347,8 @@ namespace GitUI.CommandsDialogs
 
                 UICommands.PostRepositoryChanged += UICommands_PostRepositoryChanged;
 
-                OpenGitModule(this, new(UICommands.Module));
+                InitializeView();
+
                 return;
 
                 void UICommands_PostRepositoryChanged(object sender, GitUIEventArgs e)
@@ -1005,27 +1010,46 @@ namespace GitUI.CommandsDialogs
             UICommands.StartRepoSettingsDialog(this);
         }
 
-        private void CloseToolStripMenuItemClick(object sender, EventArgs e)
-        {
-            SetWorkingDir("");
-        }
+        private void CloseToolStripMenuItemClick(object sender, EventArgs e) => CloseOrSwitchRepository();
 
         private void CleanupToolStripMenuItemClick(object sender, EventArgs e)
         {
             UICommands.StartCleanupRepositoryDialog(this);
         }
 
-        public void SetWorkingDir(string? path, ObjectId? selectedId = null, ObjectId? firstId = null)
-        {
-            OpenGitModule(this, new GitModuleEventArgs(new GitModule(path)));
-        }
+        ////public void SetWorkingDir(string? path, ObjectId? selectedId = null, ObjectId? firstId = null)
+        ////{
+        ////    OpenGitModule(this, new GitModuleEventArgs(new GitModule(path)));
+        ////}
+        private void GitModuleChanged(object sender, GitModuleEventArgs e) => CloseOrSwitchRepository(e.GitModule?.WorkingDir);
 
-        private void OpenGitModule(object sender, GitModuleEventArgs e)
+        /// <summary>
+        ///  Resets the current view and the requests the shell to either close the current repository
+        ///  (if <paramref name="newWorkingDir"/> is <see langword="null"/> or <see cref="string.Empty"/>),
+        ///  or switch to the new repository.
+        /// </summary>
+        /// <param name="newWorkingDir">
+        ///  The repository to open. If it is <see langword="null"/> or <see cref="string.Empty"/> the current view
+        ///  will get closed.
+        /// </param>
+        private void CloseOrSwitchRepository(string? newWorkingDir = null)
         {
+            string originalWorkingDir = Module.WorkingDir;
+            if (string.Equals(originalWorkingDir, newWorkingDir, StringComparison.Ordinal))
+            {
+                return;
+            }
+
             PluginRegistry.Unregister(UICommands);
             _submoduleStatusProvider.Init();
 
-            repoObjectsTree.ClearTrees();
+            // Notify the shell to switch or to close.
+            _browseRepo.SetWorkingDir(newWorkingDir ?? string.Empty);
+        }
+
+        private void InitializeView()
+        {
+            Text = _appTitleGenerator.Generate(Module.WorkingDir, Module.IsValidGitWorkingDir(), branchName: "", defaultBranchName: TranslatedStrings.NoBranch, pathName: "e.PathFilter");
 
             if (!Module.IsValidGitWorkingDir())
             {
@@ -1143,7 +1167,7 @@ namespace GitUI.CommandsDialogs
         {
             if (PluginRegistry.GitHosters.Count > 0)
             {
-                UICommands.StartCloneForkFromHoster(this, PluginRegistry.GitHosters[0], OpenGitModule);
+                UICommands.StartCloneForkFromHoster(this, PluginRegistry.GitHosters[0], GitModuleChanged);
             }
             else
             {
@@ -1326,7 +1350,7 @@ namespace GitUI.CommandsDialogs
                 case Command.QuickPull: DoPull(pullAction: GitPullAction.Merge, isSilent: true); break;
                 case Command.QuickPullOrFetch: toolStripButtonPull.PerformButtonClick(); break;
                 case Command.QuickPush: UICommands.StartPushDialog(this, true); break;
-                case Command.CloseRepository: SetWorkingDir(""); break;
+                case Command.CloseRepository: CloseOrSwitchRepository(); break;
                 case Command.Stash: UICommands.StashSave(this, AppSettings.IncludeUntrackedFilesInManualStash); break;
                 case Command.StashStaged: UICommands.StashStaged(this); break;
                 case Command.StashPop: UICommands.StashPop(this); break;
@@ -1489,7 +1513,7 @@ namespace GitUI.CommandsDialogs
                 return;
             }
 
-            SetWorkingDir(path);
+            CloseOrSwitchRepository(path);
         }
 
         #region Submodules
@@ -1692,7 +1716,7 @@ namespace GitUI.CommandsDialogs
         {
             if (Module.SuperprojectModule is not null)
             {
-                OpenGitModule(this, new GitModuleEventArgs(Module.SuperprojectModule));
+                CloseOrSwitchRepository(Module.SuperprojectModule.WorkingDir);
             }
             else
             {

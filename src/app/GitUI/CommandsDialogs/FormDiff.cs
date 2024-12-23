@@ -93,7 +93,7 @@ namespace GitUI.CommandsDialogs
             DiffText.BottomScrollReached += FileViewer_BottomScrollReached;
             Load += delegate { PopulateDiffFiles(); };
 
-            copyPathsToolStripMenuItem.Initialize(() => UICommands, () => DiffFiles.SelectedItems.Select(fsi => fsi.Item.Name));
+            copyPathsToolStripMenuItem.Initialize(UICommands, () => UICommands, () => DiffFiles.SelectedItems.Select(fsi => fsi.Item.Name));
         }
 
         /// <summary>

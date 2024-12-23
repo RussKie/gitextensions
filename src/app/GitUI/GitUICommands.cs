@@ -8,6 +8,7 @@ using GitExtensions.Extensibility;
 using GitExtensions.Extensibility.Git;
 using GitExtensions.Extensibility.Plugins;
 using GitExtensions.Extensibility.Settings;
+using GitExtUtils;
 using GitUI.CommandsDialogs;
 using GitUI.CommandsDialogs.RepoHosting;
 using GitUI.CommandsDialogs.SettingsDialog;
@@ -1149,6 +1150,8 @@ namespace GitUI
         {
             // FormBrowse form = new(this, args ?? new BrowseArguments());
             FormShell form = new(this, args ?? new BrowseArguments());
+
+            ((ServiceContainer)_serviceProvider).AddService<IBrowseRepo>(form);
 
             if (Application.MessageLoop)
             {
