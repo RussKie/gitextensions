@@ -242,13 +242,15 @@ namespace GitUI
                     BackColor = Color.AliceBlue,
 
                     Dock = DockStyle.Fill,
-                    Visible = true
+                    Visible = false
                 };
 
                 _repoBrowser.TextChanged += repoBrowser_TextChanged;
             }
 
             ControlAdd(_repoBrowser);
+
+            _repoBrowser.Visible = true;
 
             DiagnosticsClient.TrackPageView("Revision graph");
 

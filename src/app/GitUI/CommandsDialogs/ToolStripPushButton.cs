@@ -10,12 +10,16 @@ namespace GitUI.CommandsDialogs
     public class ToolStripPushButton : ToolStripButton
     {
         private readonly TranslationString _push = new("Push");
+        private readonly TranslationString _aheadCommitsToPush = new("{0} new commit(s) will be pushed");
+        private readonly TranslationString _behindCommitsTointegrateOrForcePush = new("{0} commit(s) should be integrated (or will be lost if force pushed)");
 
-        private readonly TranslationString _aheadCommitsToPush =
-            new("{0} new commit(s) will be pushed");
+        private IAheadBehindDataProvider? _aheadBehindDataProvider;
 
-        private readonly TranslationString _behindCommitsTointegrateOrForcePush =
-            new("{0} commit(s) should be integrated (or will be lost if force pushed)");
+        public void Initialize(IAheadBehindDataProvider? aheadBehindDataProvider)
+        {
+            _aheadBehindDataProvider = aheadBehindDataProvider;
+            ResetToDefaultState();
+        }
 
         public void DisplayAheadBehindInformation(IDictionary<string, AheadBehindData>? aheadBehindData, string branchName, string shortcut)
         {

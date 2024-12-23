@@ -242,7 +242,6 @@ namespace GitUI.CommandsDialogs
 
             mnuRepositoryHosts.Visible = false;
 
-            MainSplitContainer.Visible = false;
             MainSplitContainer.SplitterDistance = DpiUtil.Scale(260);
 
             _formBrowseMenus = new FormBrowseMenus(mainMenuStrip);
@@ -1055,6 +1054,11 @@ namespace GitUI.CommandsDialogs
             {
                 return;
             }
+
+            RevisionGridControl revisionGrid = new();
+
+            toolStripButtonPush.Initialize(_aheadBehindDataProvider);
+            repoObjectsTree.Initialize(_aheadBehindDataProvider, filterRevisionGridBySpaceSeparatedRefs: ToolStripFilters.SetBranchFilter, revisionGrid, revisionGrid);
 
             string path = Module.WorkingDir;
             AppSettings.RecentWorkingDir = path;
