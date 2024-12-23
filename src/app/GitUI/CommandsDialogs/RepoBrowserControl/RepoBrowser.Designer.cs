@@ -1,5 +1,4 @@
-﻿﻿using System.ComponentModel;
-using GitExtensions.Extensibility.Git;
+﻿using System.ComponentModel;
 using GitUI.CommandsDialogs.Menus;
 
 namespace GitUI.CommandsDialogs
