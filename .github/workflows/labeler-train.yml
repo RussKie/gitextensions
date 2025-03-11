@@ -60,5 +60,5 @@ jobs:
       data_limit: ${{ inputs.data_limit && fromJSON(inputs.data_limit) || 0 }}
       cache_key_suffix: ${{ inputs.cache_key_suffix }}
       repository: ${{ inputs.repository }}
-      label_prefix: "area-"
+      label_prefix: "area:"
       threshold: 0.40
