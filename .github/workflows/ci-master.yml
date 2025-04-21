@@ -85,7 +85,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: master-xlfs
+          name: master-xlfs-${{ runner.os }}
           path: src\app\GitUI\Translation\English*.xlf
           retention-days: 1
 
@@ -98,7 +98,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: tests-results
+          name: tests-results-${{ runner.os }}
           path: artifacts\Release\TestsResults\*.trx
           retention-days: 1
 
@@ -132,7 +132,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: build-logs
+          name: build-logs-${{ runner.os }}
           path: artifacts\log\*.binlog
           retention-days: 1
 
