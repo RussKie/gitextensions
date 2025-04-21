@@ -113,9 +113,10 @@ jobs:
 
                   [xml]$xml = Get-Content -Path $fileSanitised
                   $xml.TestRun.Results.UnitTestResult | Where-Object outcome -eq 'Failed' | ForEach-Object {
+                      $failedTestInfo = ($xml.TestRun.TestDefinitions.UnitTest | Where-Object name -eq $_.testName);
                       $testAssembly = Split-Path $failedTestInfo.storage -Leaf
-                      $testName = "$($failedTestInfo.TestMethod.className).$($_.testName)"
-                      echo "::warning file=$testAssembly::Test failed: $testName"
+                      $testFullName = "$($failedTestInfo.TestMethod.className).$($_.testName)"
+                      echo "::warning file=$testAssembly::Test failed: $testFullName"
                       $errorMessage = "$($_.Output.ErrorInfo.Message)`r`n$($_.Output.ErrorInfo.StackTrace)`r`n"
                       Write-Host $errorMessage -ForegroundColor Red
                   }
