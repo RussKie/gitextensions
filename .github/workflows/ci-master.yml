@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: [windows-latest, windows-11-arm]
+    runs-on: windows-11-arm
 
     env:
       DOTNET_NOLOGO: true
