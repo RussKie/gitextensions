@@ -807,12 +807,13 @@ namespace GitUI.CommandsDialogs
                     }
                 }
 
-                if (!RemoteBranch.Items.Contains(_NO_TRANSLATE_Branch.Text))
+                string newRemoteBranchName = $"{_selectedRemote.Prefix}{_NO_TRANSLATE_Branch.Text}";
+                if (!RemoteBranch.Items.Contains(newRemoteBranchName))
                 {
-                    RemoteBranch.Items.Add(_NO_TRANSLATE_Branch.Text);
+                    RemoteBranch.Items.Add(newRemoteBranchName);
                 }
 
-                RemoteBranch.Text = _NO_TRANSLATE_Branch.Text;
+                RemoteBranch.Text = newRemoteBranchName;
             }
         }
 
