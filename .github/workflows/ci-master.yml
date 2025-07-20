@@ -14,7 +14,10 @@ concurrency:
 
 jobs:
   build:
-    runs-on: windows-11-arm
+    strategy:
+      matrix:
+        os: [windows-latest, windows-11-arm]
+    runs-on: ${{ matrix.os }}
 
     env:
       DOTNET_NOLOGO: true
@@ -45,11 +48,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
-
-      - name: Install Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
 
       - name: Set version
         run: |
