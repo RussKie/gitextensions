@@ -128,7 +128,10 @@ public interface IGitUICommands : IServiceProvider
     void UpdateSubmodules(IWin32Window? owner);
     IGitUICommands WithGitModule(IGitModule module);
     IGitUICommands WithWorkingDirectory(string? workingDirectory);
+}
 
+public interface IWorktreeUICommands
+{
     /// <summary>
     ///  Shows the create worktree dialog and optionally switches to the new worktree.
     /// </summary>

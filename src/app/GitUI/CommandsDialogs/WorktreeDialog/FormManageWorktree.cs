@@ -1,13 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using GitCommands;
 using GitExtensions.Extensibility.Git;
-using GitExtUtils;
 using GitExtUtils.GitUI;
 
 namespace GitUI.CommandsDialogs.WorktreeDialog;
 
 public partial class FormManageWorktree : GitExtensionsDialog
 {
+    private IWorktreeUICommands _worktreeCommands;
     private IReadOnlyList<GitWorktree>? _worktrees;
 
     public bool ShouldRefreshRevisionGrid { get; private set; }
@@ -16,6 +16,8 @@ public partial class FormManageWorktree : GitExtensionsDialog
         : base(commands, enablePositionRestore: false)
     {
         InitializeComponent();
+
+        _worktreeCommands = new WorktreeUICommands(commands);
 
         Sha1.Width = DpiUtil.Scale(53);
         Worktrees.AutoGenerateColumns = false;
@@ -80,7 +82,7 @@ public partial class FormManageWorktree : GitExtensionsDialog
             return;
         }
 
-        if (UICommands.WorktreeDelete(this, workTree.Path))
+        if (_worktreeCommands.WorktreeDelete(this, workTree.Path))
         {
             Initialize();
         }
@@ -111,7 +113,7 @@ public partial class FormManageWorktree : GitExtensionsDialog
             return;
         }
 
-        if (UICommands.WorktreeSwitch(this, workTree.Path))
+        if (_worktreeCommands.WorktreeSwitch(this, workTree.Path))
         {
             Close();
         }
@@ -154,7 +156,7 @@ public partial class FormManageWorktree : GitExtensionsDialog
             ? _worktrees[0].Path
             : UICommands.Module.WorkingDir;
 
-        if (UICommands.WorktreeCreate(this, basePath))
+        if (_worktreeCommands.WorktreeCreate(this, basePath))
         {
             ShouldRefreshRevisionGrid = true;
             Initialize();
