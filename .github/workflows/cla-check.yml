@@ -2,10 +2,10 @@ name: CLA Check
 
 # Validates that the author of a pull request has signed the project's Certificate of Origin by adding themselves to `contributors.txt`.
 #
-# The `contributors.txt` file is read from both the *head* of the pull request (so a contributor adding their own sign-off in the same pull
-# request is recognized) and the *base* branch (so a sign-off merged via another pull request is recognized even if this pull request's
-# branch has not been updated yet). Only the plain text file is read via the API, no code from the fork is executed, so this remains safe
-# to run with the elevated `pull_request_target` token.
+# The `contributors.txt` file is evaluated as it would be after the PR is merged: it is read from the PR head when the PR modifies the file
+# (so a sign-off being added within the PR is recognized), and from the latest base branch otherwise (so a sign-off merged via another PR
+# is recognized, and a sign-off removed from the base correctly invalidates PRs that never touched the file). Only the plain text file is
+# read via the API, no code from the fork is executed, so this remains safe to run with the elevated `pull_request_target` token.
 #
 # The result is published as a `CLA` commit status on the pull request head so it can be required via branch protection. A push to the
 # default branch re-validates all open pull requests, so merging a sign-off elsewhere flips affected pull requests to passing without them
@@ -37,7 +37,6 @@ concurrency:
 
 env:
   NEEDS_CLA_LABEL: ":scroll: status: needs cla"
-  CLA_SIGNED_LABEL: ":pen: status: cla signed"
   CONTRIBUTORS_FILE: "contributors.txt"
   # Commit status context that branch protection should require.
   CLA_STATUS_CONTEXT: "CLA"
@@ -53,7 +52,6 @@ jobs:
         with:
           script: |
             const needsClaLabel = process.env.NEEDS_CLA_LABEL;
-            const claSignedLabel = process.env.CLA_SIGNED_LABEL;
             const contributorsFile = process.env.CONTRIBUTORS_FILE;
             const statusContext = process.env.CLA_STATUS_CONTEXT;
 
@@ -114,21 +112,30 @@ jobs:
                 return 'signed';
               }
 
-              // Read contributors.txt from both:
-              //  - the PR head, so a sign-off added within this PR is recognized; and
-              //  - the latest base branch, so a sign-off merged via another PR is recognized even if this PR's branch has not been updated yet.
-              // The base branch name (pr.base.ref) is used rather than the snapshot commit (pr.base.sha) so re-runs pick up newly merged sign-offs.
-              const headContent = await readContributors(pr.head.sha);
-              const baseContent = await readContributors(pr.base.ref);
+              // Evaluate contributors.txt as it would be AFTER the PR is merged:
+              //  - If the PR modifies contributors.txt, read it from the PR head (so a sign-off being added within this PR is recognized).
+              //  - Otherwise, read it from the latest base branch (so a sign-off merged via another PR is recognized, and a sign-off
+              //    removed from the base correctly invalidates PRs that never touched the file).
+              // The base branch name (pr.base.ref) is used rather than the snapshot commit (pr.base.sha) so re-runs pick up the latest base.
+              const changedFiles = await github.paginate(github.rest.pulls.listFiles, {
+                owner,
+                repo,
+                pull_number: pr.number,
+                per_page: 100,
+              });
+              const prModifiesContributors = changedFiles.some(f => f.filename === contributorsFile);
+              const sourceRef = prModifiesContributors ? pr.head.sha : pr.base.ref;
+              const sourceLabel = prModifiesContributors ? 'PR head' : 'base branch';
+              const content = await readContributors(sourceRef);
 
-              if (headContent === null && baseContent === null) {
-                core.warning(`Unable to read '${contributorsFile}' for PR #${pr.number}; leaving status unchanged.`);
+              if (content === null) {
+                core.warning(`Unable to read '${contributorsFile}' from ${sourceLabel} for PR #${pr.number}; leaving status unchanged.`);
                 return 'error';
               }
 
-              const signedIds = parseSignedIds(`${headContent ?? ''}\n${baseContent ?? ''}`);
+              const signedIds = parseSignedIds(content);
               const hasSigned = signedIds.has(author.toLowerCase());
-              core.info(`PR #${pr.number}: author '${author}' signed contributors certification: ${hasSigned}`);
+              core.info(`PR #${pr.number}: author '${author}' signed contributors certification (source: ${sourceLabel}): ${hasSigned}`);
 
               const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
                 owner,
@@ -163,9 +170,7 @@ jobs:
 
               if (hasSigned) {
                 await removeLabel(needsClaLabel);
-                await addLabel(claSignedLabel);
               } else {
-                await removeLabel(claSignedLabel);
                 await addLabel(needsClaLabel);
               }
 
