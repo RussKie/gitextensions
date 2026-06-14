@@ -42,7 +42,7 @@ your contribution and you warrant and represent the following:
    this project or the open source license indicated in the file.
 
 I have read this agreement and do so certify by adding my signoff to
-the end of the following contributors list.
+the end of the following contributors list. 
 
 CONTRIBUTORS:
 
