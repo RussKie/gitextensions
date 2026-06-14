@@ -45,7 +45,7 @@ env:
 jobs:
   validate-cla:
     # Do not run on forks of the project; labels only make sense upstream.
-    if: ${{ github.repository_owner == 'gitextensions' }}
+    if: ${{ github.repository_owner == 'RussKie' }}
     runs-on: ubuntu-latest
     steps:
       - name: Validate contributor sign-off
