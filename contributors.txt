@@ -48,7 +48,6 @@ CONTRIBUTORS:
 
 YYYY/MM/DD, github id, Full name, email
 2019/01/23, spdr870, Henk Westhuis, henk.westhuis(at)gmail.com
-2019/01/23, RussKie, Igor Velikorossov, russkie(at)gmail.com
 2019/01/23, gerhardol, Gerhard Olsson, gerhard.nospam(at)gmail.com
 2019/01/23, drewnoakes, Drew Noakes, git(at)drewnoakes.com
 2019/01/23, amaiorano, Antonio Maiorano, amaiorano(at)gmail.com
