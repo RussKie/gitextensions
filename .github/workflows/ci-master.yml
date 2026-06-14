@@ -1,0 +1,144 @@
+name: Build, test, publish
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, windows-11-arm]
+    runs-on: ${{ matrix.os }}
+
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      GE_USE_LATEST_DOTNET: true
+      VERSION: 5.3.0.${{ github.run_number }}
+
+    steps:
+
+      - name: Set version
+        if: ${{ github.event_name == 'pull_request' }}
+        shell: pwsh
+        run: |
+          echo "VERSION=${{ env.VERSION }}-dev-${{ github.run_attempt }}" >> $env:GITHUB_ENV
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+            fetch-depth: 0
+            fetch-tags: false
+            submodules: true
+
+      - name: Determine required .NET version
+        run: |
+          .\eng\Update-DotnetVersion.ps1
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Set version
+        run: |
+          cd eng
+          python set_version_to.py -v ${{ env.VERSION }} -t ${{ env.VERSION }}
+
+      - name: Determine build arguments
+        if: ${{ github.event_name == 'pull_request' }}
+        shell: pwsh
+        run: |
+          $buildArgs = '/p:ContinuousIntegrationBuild=true'
+          # if building a PR override the hash with the PR commit's so the build contains the PR's hash instead of the merge-commit's hash
+          if ('${{ github.sha }}' -ne '${{ github.event.pull_request.head.sha }}') {
+              $gitCommit = $(git rev-parse --short ${{ github.event.pull_request.head.sha }});
+              $buildArgs += " /p:GitCommit=$gitCommit /p:GitSha=${{ github.event.pull_request.head.sha }}";
+          }
+          echo "BuildArgs=$buildArgs" >> $env:GITHUB_ENV
+
+      - name: Build native dependencies
+        shell: pwsh
+        run: |
+          dotnet build .\src\native\build.proj -c Release --verbosity q --nologo /bl:.\artifacts\log\native.binlog
+
+      - name: Build the app
+        shell: pwsh
+        run: |
+          $cmd = "dotnet build -c Release --verbosity q --nologo /bl:.\artifacts\log\build.binlog ${{ env.BuildArgs }}"
+          Invoke-Expression $cmd
+
+      - name: Update English translations
+        shell: pwsh
+        run: |
+          pushd .\src\app\GitExtensions
+          dotnet msbuild /p:Configuration=Release /t:_UpdateEnglishTranslations /p:RunTranslationApp=true /p:ContinuousIntegrationBuild=true /v:m
+
+      - name: Upload master XLF, if failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: master-xlfs-${{ runner.os }}
+          path: src\app\GitUI\Translation\English*.xlf
+          retention-days: 1
+
+      - name: Run tests
+        shell: pwsh
+        run: |
+          dotnet test -c Release --no-restore --no-build --nologo --verbosity q --test-adapter-path:. --logger:trx /bl:.\artifacts\log\tests.binlog
+
+      - name: Upload test results, if failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: tests-results-${{ runner.os }}
+          path: artifacts\Release\TestsResults\*.trx
+          retention-days: 1
+
+      - name: Report test failures
+        if: ${{ failure() }}
+        shell: pwsh
+        run: |
+          Get-ChildItem -recurse artifacts\Release\TestsResults\*.trx | `
+              ForEach-Object {
+                  $file = $_.FullName
+                  $fileSanitised = $file.Replace('[', '``[').Replace(']', '``]')
+
+                  [xml]$xml = Get-Content -Path $fileSanitised
+                  $xml.TestRun.Results.UnitTestResult | Where-Object outcome -eq 'Failed' | ForEach-Object {
+                      $failedTestInfo = ($xml.TestRun.TestDefinitions.UnitTest | Where-Object name -eq $_.testName);
+                      $testAssembly = Split-Path $failedTestInfo.storage -Leaf
+                      $testFullName = "$($failedTestInfo.TestMethod.className).$($_.testName)"
+                      echo "::warning file=$testAssembly::Test failed: $testFullName"
+                      $errorMessage = "$($_.Output.ErrorInfo.Message)`r`n$($_.Output.ErrorInfo.StackTrace)`r`n"
+                      Write-Host $errorMessage -ForegroundColor Red
+                  }
+              }
+
+      - name: Publish the app
+        shell: pwsh
+        run: |
+          $cmd = "dotnet publish -c Release --no-build /bl:.\artifacts\log\publish.binlog $buildArgs"
+          Invoke-Expression $cmd
+
+      - name: Upload build logs, if failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs-${{ runner.os }}
+          path: artifacts\log\*.binlog
+          retention-days: 1
+
+
+  # arm64:
+  #   runs-on: windows-11-arm
+
