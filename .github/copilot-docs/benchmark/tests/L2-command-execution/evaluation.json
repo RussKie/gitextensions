@@ -1,0 +1,10 @@
+{
+  "id": "L2-command-execution",
+  "layer": "L2",
+  "runs": 5,
+  "pass_threshold": 0.8,
+  "rubric_weights": { "correct_conclusion": 0.4, "correct_code_pointers": 0.4, "flow_completeness": 0.2 },
+  "must_mention": ["Executable", "IGitCommand", "ArgumentString", "StartCommandLineProcessDialog", "ExecutionResult"],
+  "should_mention": ["GetOutput", "AccessesRemote", "ChangesRepoState", "FormProcess", "ArgumentBuilder"],
+  "must_not_hallucinate": ["Process.Start(\"git\")", "vector database", "embedding"]
+}

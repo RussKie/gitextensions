@@ -1,0 +1,10 @@
+{
+  "id": "L2-translation-strings",
+  "layer": "L2",
+  "runs": 5,
+  "pass_threshold": 0.8,
+  "rubric_weights": { "correct_conclusion": 0.5, "correct_code_pointers": 0.3, "flow_completeness": 0.2 },
+  "must_mention": ["TranslationString", "update-loc.cmd", "English.xlf"],
+  "should_mention": ["TranslationApp", "CI fails", "same commit"],
+  "must_not_hallucinate": ["hand-edit English.xlf", "manually edit the .xlf", "edit English.xlf directly"]
+}

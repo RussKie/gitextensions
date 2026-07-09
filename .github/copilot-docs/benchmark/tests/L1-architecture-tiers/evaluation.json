@@ -1,0 +1,10 @@
+{
+  "id": "L1-architecture-tiers",
+  "layer": "L1",
+  "runs": 5,
+  "pass_threshold": 0.8,
+  "rubric_weights": { "correct_conclusion": 0.4, "correct_code_pointers": 0.4, "flow_completeness": 0.2 },
+  "must_mention": ["GitExtensions.Extensibility", "GitCommands", "GitUI"],
+  "should_mention": ["IGitModule", "dependency direction", "plugins", "native"],
+  "must_not_hallucinate": ["GitCommands depends on GitUI", "GitCommands references GitUI"]
+}

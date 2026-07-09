@@ -58,4 +58,4 @@ These are **hard rules**. Agents behave inconsistently when docs are long or bur
 1. Write the doc in the correct layer folder following the rules above.
 2. Add a one-line entry to that layer's `docs-index.md`.
 3. If it participates in a common query, add/extend a **reading chain** in the master [docs-index.md](docs-index.md).
-4. (Later) Add a benchmark test so growth doesn't regress other areas.
+4. Add a benchmark test so growth doesn't regress other areas — see [benchmark/](benchmark/README.md).

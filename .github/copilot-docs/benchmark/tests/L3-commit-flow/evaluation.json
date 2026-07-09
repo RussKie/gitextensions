@@ -1,0 +1,10 @@
+{
+  "id": "L3-commit-flow",
+  "layer": "L3",
+  "runs": 5,
+  "pass_threshold": 0.8,
+  "rubric_weights": { "correct_conclusion": 0.4, "correct_code_pointers": 0.4, "flow_completeness": 0.2 },
+  "must_mention": ["FormCommit", "DoCommit", "Commands.Commit", "FormProcess", "RepoChangedNotifier"],
+  "should_mention": ["BeforeCommit", "AfterCommit", "CommitMessageManager", "ArgumentString"],
+  "must_not_hallucinate": ["IGitCommand", "StartCommandLineProcessDialog"]
+}

@@ -1,0 +1,110 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+#
+# Git Extensions DAG docs — regression benchmark (EXAMPLE; NOT wired into CI).
+#
+# Run:
+#   cd .github/copilot-docs/benchmark
+#   npx promptfoo@latest eval -c promptfooconfig.yaml --repeat 5
+#   npx promptfoo@latest view          # open the results UI
+#
+# Requires an API key for your chosen provider, e.g. OPENAI_API_KEY or ANTHROPIC_API_KEY.
+# Pin ONE model and keep it fixed over time — consistency matters more than which model,
+# because the point is to detect *changes* in answer quality as the docs grow.
+#
+# NOTE: model ids drift; update the `providers` / grader ids below to a current model.
+
+description: Git Extensions DAG docs regression benchmark (starter set)
+
+# The prompt loads the whole docs corpus (excluding benchmark/) + the test question.
+prompts:
+  - file://build-prompt.js
+
+providers:
+  - id: openai:gpt-4o
+    config:
+      temperature: 0
+  # - id: anthropic:messages:claude-3-7-sonnet-latest
+  #   config:
+  #     temperature: 0
+
+defaultTest:
+  options:
+    # Model used to grade `llm-rubric` assertions. Keep it fixed too.
+    provider: openai:gpt-4o
+
+# NOTE: each assertion below must pass for a test to pass (simple all-pass gate).
+# evaluation.json defines the canonical *weighted* 0.8 rubric; to replicate weighted
+# scoring in promptfoo, wrap a test's asserts in an `assert-set` with a `threshold` and
+# per-assert `weight` (see README).
+
+tests:
+  - description: L1 — architecture tiers & dependency direction
+    vars:
+      question: file://tests/L1-architecture-tiers/question.md
+    assert:
+      - type: icontains-all
+        value: ['GitExtensions.Extensibility', 'GitCommands', 'GitUI']
+      - type: llm-rubric
+        value: >
+          The answer lists the four tiers (GitExtensions.Extensibility, GitCommands, GitUI,
+          GitExtensions exe) and states the dependency direction is one-way
+          (Extensibility <- GitCommands <- GitUI <- exe) and never reverses. Score low if it
+          claims GitCommands depends on GitUI.
+
+  - description: L2 — git command execution (structured vs legacy)
+    vars:
+      question: file://tests/L2-command-execution/question.md
+    assert:
+      - type: icontains-all
+        value: ['Executable', 'IGitCommand', 'ArgumentString', 'StartCommandLineProcessDialog']
+      - type: llm-rubric
+        value: >
+          The answer explains git runs via Executable/ExecutableExtensions returning
+          ExecutionResult, and correctly distinguishes the structured pattern (Commands.* ->
+          IGitCommand -> GitUICommands.StartCommandLineProcessDialog, preferred for
+          state-changing ops) from the legacy pattern (ArgumentString -> FormProcess.ShowDialog,
+          e.g. Commit). Score low for hallucinated infrastructure.
+      - type: not-icontains
+        value: 'vector database'
+      - type: not-icontains
+        value: 'embedding'
+
+  - description: L2 — adding a translatable UI string
+    vars:
+      question: file://tests/L2-translation-strings/question.md
+    assert:
+      - type: icontains-all
+        value: ['TranslationString', 'update-loc.cmd', 'English.xlf']
+      - type: llm-rubric
+        value: >
+          The answer says to make the label a TranslationString, build, run update-loc.cmd to
+          regenerate English.xlf (via TranslationApp), and commit English.xlf together with the
+          code. It must warn NOT to hand-edit .xlf and note CI fails if English.xlf is stale.
+
+  - description: L3 — commit flow (must use the LEGACY pattern)
+    vars:
+      question: file://tests/L3-commit-flow/question.md
+    assert:
+      - type: icontains-all
+        value: ['FormCommit', 'DoCommit', 'Commands.Commit', 'FormProcess', 'RepoChangedNotifier']
+      - type: llm-rubric
+        value: >
+          The answer traces FormCommit.DoCommit: validate state, persist message
+          (CommitMessageManager), BeforeCommit scripts, build Commands.Commit which returns an
+          ArgumentString, run via FormProcess.ShowDialog, then RepoChangedNotifier.Notify and
+          AfterCommit scripts. Score LOW if it claims commit uses IGitCommand or
+          StartCommandLineProcessDialog (commit uses the legacy ArgumentString path).
+
+  - description: L3 — checkout flow (must use the STRUCTURED pattern)
+    vars:
+      question: file://tests/L3-checkout-flow/question.md
+    assert:
+      - type: icontains-all
+        value: ['FormCheckoutBranch', 'Commands.CheckoutBranch', 'IGitCommand', 'StartCommandLineProcessDialog']
+      - type: llm-rubric
+        value: >
+          The answer explains FormCheckoutBranch builds Commands.CheckoutBranch returning an
+          IGitCommand (ChangesRepoState) run via UICommands.StartCommandLineProcessDialog (the
+          structured path), handles LocalChangesAction, and contrasts it with commit's legacy
+          ArgumentString + FormProcess path. Score low if it claims checkout uses
+          FormProcess.ShowDialog or an ArgumentString.
